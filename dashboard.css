@@ -131,7 +131,6 @@ svg {
    GENERAL SVG ICON STYLE
 ========================================================= */
 
-.nav-icon,
 .search-icon,
 .theme-icon,
 .collapse-icon,
@@ -502,25 +501,89 @@ svg {
 }
 
 .sidebar-link__icon {
-    width: 25px;
-    height: 25px;
+    width: 34px;
+    height: 34px;
 
     flex:
-        0 0 25px;
+        0 0 34px;
 
     display: grid;
     place-items: center;
-
-    color: #e4b77f;
 }
 
-.sidebar-link--active .sidebar-link__icon {
-    color: #4a2a34;
+
+/* =========================================================
+   ILLUSTRATED ICON ART
+========================================================= */
+
+.art-sprite {
+    position: absolute;
+
+    width: 0;
+    height: 0;
+
+    overflow: hidden;
 }
 
-.nav-icon {
-    width: 21px;
-    height: 21px;
+.nav-art {
+    width: 34px;
+    height: 34px;
+
+    overflow: visible;
+
+    stroke: #2a1a1f;
+    stroke-width: 1.4;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    filter:
+        drop-shadow(
+            0 3px
+            4px rgba(8, 3, 5, 0.35)
+        );
+
+    transform-origin:
+        center bottom;
+
+    transition:
+        transform 0.35s cubic-bezier(.2, .8, .2, 1),
+        filter 0.25s ease;
+}
+
+.sidebar-link:hover .nav-art {
+    transform:
+        translateY(-2px)
+        rotate(-5deg)
+        scale(1.08);
+
+    filter:
+        drop-shadow(
+            0 0
+            6px rgba(243, 203, 121, 0.3)
+        )
+        drop-shadow(
+            0 4px
+            4px rgba(8, 3, 5, 0.35)
+        );
+}
+
+.sidebar-link--active .nav-art {
+    transform: scale(1.06);
+
+    filter:
+        drop-shadow(
+            0 3px
+            3px rgba(74, 32, 42, 0.35)
+        );
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .nav-art {
+        transition: none;
+    }
+
 }
 
 .sidebar-link__text {
