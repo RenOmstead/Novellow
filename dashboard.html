@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
 
@@ -10,20 +11,23 @@
 
     <meta
         name="description"
-        content="Novellow — your personal virtual library, reading journal, and book collection."
+        content="Novellow — your personal virtual library and reading journal."
     >
 
     <title>My Library | Novellow</title>
 
-   <script>
-    const dashboardStyles = document.createElement("link");
-
-    dashboardStyles.rel = "stylesheet";
-    dashboardStyles.href = `dashboard.css?v=${Date.now()}`;
-
-    document.head.appendChild(dashboardStyles);
-</script>
+    <!--
+        Automatic cache busting.
+        You do NOT need to manually change ?v=1, ?v=2, etc.
+    -->
+    <script>
+        const dashboardStyles = document.createElement("link");
+        dashboardStyles.rel = "stylesheet";
+        dashboardStyles.href = `dashboard.css?v=${Date.now()}`;
+        document.head.appendChild(dashboardStyles);
+    </script>
 </head>
+
 
 <body>
 
@@ -43,175 +47,219 @@
     ====================================================== -->
 
     <aside
-        class="sidebar"
+        class="library-sidebar"
         id="sidebar"
     >
 
-        <div class="sidebar__top">
+        <!-- Decorative top vines -->
+
+        <div
+            class="sidebar-vine sidebar-vine--left"
+            aria-hidden="true"
+        ></div>
+
+        <div
+            class="sidebar-vine sidebar-vine--right"
+            aria-hidden="true"
+        ></div>
+
+
+        <!-- =================================================
+             BRAND
+        ================================================== -->
+
+        <div class="sidebar-brand">
+
+            <div
+                class="brand-illustration"
+                aria-hidden="true"
+            >
+
+                <div class="brand-moon">
+                    ☾
+                </div>
+
+                <div class="brand-cat">
+
+                    <div class="brand-cat__ear brand-cat__ear--left"></div>
+                    <div class="brand-cat__ear brand-cat__ear--right"></div>
+
+                    <div class="brand-cat__head"></div>
+
+                    <div class="brand-cat__body"></div>
+
+                    <div class="brand-cat__tail"></div>
+
+                </div>
+
+
+                <div class="brand-books">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                </div>
+
+
+                <div class="brand-cup">
+
+                    <span class="brand-cup__steam brand-cup__steam--one"></span>
+                    <span class="brand-cup__steam brand-cup__steam--two"></span>
+
+                </div>
+
+            </div>
+
 
             <a
                 href="dashboard.html"
-                class="brand"
-                aria-label="Novellow Home"
+                class="brand-wordmark"
             >
-                <span class="brand__mark">
-                    N
-                </span>
-
-                <div class="brand__text">
-                    <span class="brand__name">
-                        Novellow
-                    </span>
-
-                    <span class="brand__tagline">
-                        Your reading life.
-                    </span>
-                </div>
+                Novellow
             </a>
 
 
-            <button
-                class="sidebar__close"
-                id="sidebarClose"
-                type="button"
-                aria-label="Close navigation"
-            >
-                ×
-            </button>
+            <p class="brand-tagline">
+                Your reading life
+            </p>
 
         </div>
 
 
+        <!-- =================================================
+             NAV
+        ================================================== -->
+
         <nav
-            class="sidebar__nav"
+            class="sidebar-nav"
             aria-label="Main Navigation"
         >
 
             <a
                 href="dashboard.html"
-                class="nav-link nav-link--active"
-                aria-current="page"
+                class="sidebar-link sidebar-link--active"
             >
-                <span class="nav-link__icon">
-                    ✦
+                <span class="sidebar-link__icon">
+                    ⌂
                 </span>
 
-                <span>
-                    Library Home
+                <span class="sidebar-link__text">
+                    Home
                 </span>
             </a>
 
 
             <a
                 href="library.html"
-                class="nav-link"
+                class="sidebar-link"
             >
-                <span class="nav-link__icon">
-                    ▤
+                <span class="sidebar-link__icon">
+                    ▣
                 </span>
 
-                <span>
-                    My Library
+                <span class="sidebar-link__text">
+                    My Books
                 </span>
             </a>
 
 
             <a
                 href="currently-reading.html"
-                class="nav-link"
+                class="sidebar-link"
             >
-                <span class="nav-link__icon">
-                    ◫
+                <span class="sidebar-link__icon">
+                    ☾
                 </span>
 
-                <span>
-                    Currently Reading
+                <span class="sidebar-link__text">
+                    Reading Now
+                </span>
+            </a>
+
+
+            <a
+                href="to-read.html"
+                class="sidebar-link"
+            >
+                <span class="sidebar-link__icon">
+                    ♡
+                </span>
+
+                <span class="sidebar-link__text">
+                    To Be Read
+                </span>
+            </a>
+
+
+            <a
+                href="community.html"
+                class="sidebar-link"
+            >
+                <span class="sidebar-link__icon">
+                    ♧
+                </span>
+
+                <span class="sidebar-link__text">
+                    Community
+                </span>
+            </a>
+
+
+            <a
+                href="challenges.html"
+                class="sidebar-link"
+            >
+                <span class="sidebar-link__icon">
+                    ✦
+                </span>
+
+                <span class="sidebar-link__text">
+                    Challenges
                 </span>
             </a>
 
 
             <a
                 href="journal.html"
-                class="nav-link"
+                class="sidebar-link"
             >
-                <span class="nav-link__icon">
+                <span class="sidebar-link__icon">
                     ✎
                 </span>
 
-                <span>
-                    Reading Journal
+                <span class="sidebar-link__text">
+                    Journal
                 </span>
             </a>
 
 
             <a
-                href="quotes.html"
-                class="nav-link"
+                href="discover.html"
+                class="sidebar-link"
             >
-                <span class="nav-link__icon">
-                    “
-                </span>
-
-                <span>
-                    Quotes
-                </span>
-            </a>
-
-
-            <a
-                href="stats.html"
-                class="nav-link"
-            >
-                <span class="nav-link__icon">
+                <span class="sidebar-link__icon">
                     ◇
                 </span>
 
-                <span>
-                    Reading Stats
+                <span class="sidebar-link__text">
+                    Discover
                 </span>
             </a>
 
 
-            <div class="nav-divider"></div>
-
-
-            <a
-                href="shelves.html"
-                class="nav-link"
-            >
-                <span class="nav-link__icon">
-                    ▱
-                </span>
-
-                <span>
-                    Manage Shelves
-                </span>
-            </a>
-
-
-            <a
-                href="themes.html"
-                class="nav-link"
-            >
-                <span class="nav-link__icon">
-                    ☾
-                </span>
-
-                <span>
-                    Themes
-                </span>
-            </a>
+            <div class="sidebar-divider"></div>
 
 
             <a
                 href="settings.html"
-                class="nav-link"
+                class="sidebar-link"
             >
-                <span class="nav-link__icon">
+                <span class="sidebar-link__icon">
                     ⚙
                 </span>
 
-                <span>
+                <span class="sidebar-link__text">
                     Settings
                 </span>
             </a>
@@ -219,118 +267,118 @@
         </nav>
 
 
-        <div class="sidebar__bottom">
+        <!-- =================================================
+             USER
+        ================================================== -->
 
-            <div class="sidebar-user">
+        <div class="sidebar-user">
 
-                <button
-                    class="user-avatar"
-                    id="sidebarAvatar"
-                    type="button"
-                    aria-label="Open profile"
-                >
-                    N
-                </button>
+            <button
+                class="sidebar-avatar"
+                id="sidebarAvatar"
+                type="button"
+            >
+                N
+            </button>
 
+            <div class="sidebar-user__text">
 
-                <div class="sidebar-user__details">
+                <strong id="sidebarUserName">
+                    Reader
+                </strong>
 
-                    <span
-                        class="sidebar-user__name"
-                        id="sidebarUserName"
-                    >
-                        Reader
-                    </span>
-
-                    <span class="sidebar-user__label">
-                        My Library
-                    </span>
-
-                </div>
+                <span>
+                    My library
+                </span>
 
             </div>
 
-
-            <button
-                class="logout-button"
-                id="logoutButton"
-                type="button"
-            >
-                Sign Out
-            </button>
-
         </div>
+
+
+        <!-- =================================================
+             COLLAPSE HANDLE
+        ================================================== -->
+
+        <button
+            class="sidebar-collapse"
+            id="sidebarCollapse"
+            type="button"
+            aria-label="Collapse sidebar"
+        >
+            ‹
+        </button>
 
     </aside>
 
 
+
     <!-- =====================================================
-         MAIN APPLICATION
+         APP
     ====================================================== -->
 
-    <div class="app-shell">
+    <main
+        class="library-stage"
+        id="libraryStage"
+    >
 
 
         <!-- =================================================
-             TOP BAR
+             SCENE HEADER
         ================================================== -->
 
-        <header class="topbar">
+        <header class="scene-header">
 
-            <div class="topbar__left">
-
-                <button
-                    class="menu-button"
-                    id="menuButton"
-                    type="button"
-                    aria-label="Open navigation"
-                >
-                    ☰
-                </button>
+            <button
+                class="mobile-menu"
+                id="menuButton"
+                type="button"
+                aria-label="Open menu"
+            >
+                ☰
+            </button>
 
 
-                <div class="topbar__title">
+            <div class="scene-heading">
 
-                    <span class="eyebrow">
-                        Private Library
+                <span>
+                    My Library
+                </span>
+
+                <h1>
+                    Welcome back,
+                    <span id="welcomeName">
+                        Reader
                     </span>
-
-                    <h1>
-                        My Library
-                    </h1>
-
-                </div>
+                </h1>
 
             </div>
 
 
-            <div class="topbar__right">
+            <div class="scene-tools">
 
-                <div class="library-search">
-
-                    <label
-                        for="librarySearch"
-                        class="sr-only"
-                    >
-                        Search your library
-                    </label>
+                <label
+                    class="library-search"
+                    for="librarySearch"
+                >
+                    <span>
+                        ⌕
+                    </span>
 
                     <input
-                        type="search"
                         id="librarySearch"
-                        placeholder="Search books, authors, notes..."
+                        type="search"
+                        placeholder="Search your library..."
                         autocomplete="off"
                     >
-
-                </div>
+                </label>
 
 
                 <button
-                    class="icon-button"
+                    class="round-tool"
                     id="themeButton"
                     type="button"
-                    aria-label="Change library theme"
-                    title="Change Theme"
+                    aria-label="Themes"
                 >
                     ☾
                 </button>
@@ -340,13 +388,16 @@
                     class="profile-button"
                     id="profileButton"
                     type="button"
-                    aria-label="Open profile menu"
                 >
                     <span
-                        class="profile-button__avatar"
+                        class="profile-avatar"
                         id="profileAvatar"
                     >
                         N
+                    </span>
+
+                    <span class="profile-label">
+                        My Library
                     </span>
                 </button>
 
@@ -357,550 +408,931 @@
 
 
         <!-- =================================================
-             DASHBOARD CONTENT
+             LIBRARY ROOM
         ================================================== -->
 
-        <main class="dashboard">
+        <div class="library-room">
 
 
-            <!-- =============================================
-                 WELCOME
-            ============================================== -->
+            <!-- =================================================
+                 BOOKCASE SIDE
+            ================================================== -->
 
-            <section class="welcome-section">
-
-                <div class="welcome-section__content">
-
-                    <p class="eyebrow">
-                        Welcome back
-                    </p>
-
-                    <h2>
-                        Good afternoon,
-                        <span id="welcomeName">
-                            Reader
-                        </span>.
-                    </h2>
-
-                    <p class="welcome-section__text">
-                        Your books are waiting exactly where you left them.
-                    </p>
-
-                </div>
+            <section class="bookcase-zone">
 
 
-                <div class="welcome-section__actions">
+                <!-- Decorative top -->
+
+                <div class="bookcase-top">
+
+                    <div
+                        class="bookcase-vines"
+                        aria-hidden="true"
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+
+                    <div
+                        class="sleeping-cat"
+                        aria-hidden="true"
+                    >
+
+                        <div class="sleeping-cat__tail"></div>
+
+                        <div class="sleeping-cat__body"></div>
+
+                        <div class="sleeping-cat__head">
+
+                            <span class="sleeping-cat__ear sleeping-cat__ear--left"></span>
+                            <span class="sleeping-cat__ear sleeping-cat__ear--right"></span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="bookcase-title">
+
+                        <span class="bookcase-title__ornament">
+                            ✦
+                        </span>
+
+                        <span>
+                            My Library
+                        </span>
+
+                        <span class="bookcase-title__ornament">
+                            ✦
+                        </span>
+
+                    </div>
+
 
                     <button
-                        class="button button--primary"
+                        class="add-book-button"
                         id="addBookButton"
                         type="button"
                     >
-                        <span>
-                            +
-                        </span>
-
-                        Add a Book
-                    </button>
-
-
-                    <button
-                        class="button button--secondary"
-                        id="addJournalButton"
-                        type="button"
-                    >
-                        Write in Journal
+                        + Add Book
                     </button>
 
                 </div>
+
+
+
+                <!-- =================================================
+                     SHELF 1
+                ================================================== -->
+
+                <article
+                    class="shelf-section"
+                    data-shelf="fantasy"
+                    data-shelf-capacity="10"
+                >
+
+                    <div class="shelf-interior">
+
+                        <div class="shelf-books">
+
+
+                            <button
+                                class="book-spine book-spine--tall"
+                                type="button"
+                                data-book-id="sample-1"
+                                data-book-title="A Willow of Stars"
+                                data-book-author="Elara Finch"
+                                style="
+                                    --book-color: #74444f;
+                                    --book-accent: #d8ae75;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ☾
+                                </span>
+
+                                <span class="spine-title">
+                                    A Willow of Stars
+                                </span>
+
+                                <span class="spine-detail">
+                                    ✦
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine"
+                                type="button"
+                                data-book-id="sample-2"
+                                data-book-title="The Hollow Wood"
+                                data-book-author="M. Vale"
+                                style="
+                                    --book-color: #445647;
+                                    --book-accent: #d6b781;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ❦
+                                </span>
+
+                                <span class="spine-title">
+                                    The Hollow Wood
+                                </span>
+
+                                <span class="spine-detail">
+                                    ♧
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine book-spine--short"
+                                type="button"
+                                data-book-id="sample-3"
+                                data-book-title="Small Magic"
+                                data-book-author="Nora Bell"
+                                style="
+                                    --book-color: #bb7884;
+                                    --book-accent: #4c3b45;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ✦
+                                </span>
+
+                                <span class="spine-title">
+                                    Small Magic
+                                </span>
+
+                                <span class="spine-detail">
+                                    ♡
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine book-spine--medium"
+                                type="button"
+                                data-book-id="sample-4"
+                                data-book-title="Garden of Spells"
+                                data-book-author="Rowan Gray"
+                                style="
+                                    --book-color: #796083;
+                                    --book-accent: #e7c8a6;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ✿
+                                </span>
+
+                                <span class="spine-title">
+                                    Garden of Spells
+                                </span>
+
+                                <span class="spine-detail">
+                                    ☾
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine"
+                                type="button"
+                                data-book-id="sample-5"
+                                data-book-title="Moonlit Pages"
+                                data-book-author="June Avery"
+                                style="
+                                    --book-color: #31564e;
+                                    --book-accent: #deb876;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ☾
+                                </span>
+
+                                <span class="spine-title">
+                                    Moonlit Pages
+                                </span>
+
+                                <span class="spine-detail">
+                                    ✦
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine book-spine--short"
+                                type="button"
+                                data-book-id="sample-6"
+                                data-book-title="A Curious Witch"
+                                data-book-author="Wren Fox"
+                                style="
+                                    --book-color: #c87b66;
+                                    --book-accent: #50392d;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ♢
+                                </span>
+
+                                <span class="spine-title">
+                                    A Curious Witch
+                                </span>
+
+                                <span class="spine-detail">
+                                    ☕
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine"
+                                type="button"
+                                data-book-id="sample-7"
+                                data-book-title="Moth & Moon"
+                                data-book-author="L. Bloom"
+                                style="
+                                    --book-color: #403f55;
+                                    --book-accent: #d9b06a;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ◇
+                                </span>
+
+                                <span class="spine-title">
+                                    Moth & Moon
+                                </span>
+
+                                <span class="spine-detail">
+                                    ☾
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine book-spine--medium"
+                                type="button"
+                                data-book-id="sample-8"
+                                data-book-title="Petals & Bones"
+                                data-book-author="A. Moore"
+                                style="
+                                    --book-color: #d1968c;
+                                    --book-accent: #5e554c;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ❀
+                                </span>
+
+                                <span class="spine-title">
+                                    Petals & Bones
+                                </span>
+
+                                <span class="spine-detail">
+                                    ✦
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine"
+                                type="button"
+                                data-book-id="sample-9"
+                                data-book-title="The Spell House"
+                                data-book-author="Hazel Hart"
+                                style="
+                                    --book-color: #4a352f;
+                                    --book-accent: #d79564;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ✦
+                                </span>
+
+                                <span class="spine-title">
+                                    The Spell House
+                                </span>
+
+                                <span class="spine-detail">
+                                    ☾
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine book-spine--short"
+                                type="button"
+                                data-book-id="sample-10"
+                                data-book-title="Forest Tea"
+                                data-book-author="Ivy June"
+                                style="
+                                    --book-color: #88966e;
+                                    --book-accent: #44392c;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ❦
+                                </span>
+
+                                <span class="spine-title">
+                                    Forest Tea
+                                </span>
+
+                                <span class="spine-detail">
+                                    ☕
+                                </span>
+                            </button>
+
+
+                        </div>
+
+
+                        <div
+                            class="shelf-decor shelf-decor--ghost"
+                            aria-hidden="true"
+                        >
+                            <span></span>
+                        </div>
+
+
+                        <div
+                            class="shelf-decor shelf-decor--mushroom"
+                            aria-hidden="true"
+                        ></div>
+
+                    </div>
+
+
+                    <div class="wood-shelf">
+
+                        <span class="shelf-label">
+                            Fantasy & Magic
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =================================================
+                     SHELF 2
+                ================================================== -->
+
+                <article
+                    class="shelf-section"
+                    data-shelf="cozy"
+                    data-shelf-capacity="10"
+                >
+
+                    <div class="shelf-interior">
+
+                        <div class="shelf-books">
+
+                            <button
+                                class="book-spine book-spine--medium"
+                                type="button"
+                                data-book-title="A Quiet Autumn"
+                                data-book-author="P. Maple"
+                                style="
+                                    --book-color: #a36958;
+                                    --book-accent: #e5bd7b;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ❦
+                                </span>
+
+                                <span class="spine-title">
+                                    A Quiet Autumn
+                                </span>
+
+                                <span class="spine-detail">
+                                    ✦
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine"
+                                type="button"
+                                data-book-title="Tea at Midnight"
+                                data-book-author="Mara Rose"
+                                style="
+                                    --book-color: #6a405b;
+                                    --book-accent: #dfb77c;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ☕
+                                </span>
+
+                                <span class="spine-title">
+                                    Tea at Midnight
+                                </span>
+
+                                <span class="spine-detail">
+                                    ☾
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine book-spine--short"
+                                type="button"
+                                data-book-title="Soft Places"
+                                data-book-author="A. Fern"
+                                style="
+                                    --book-color: #98a080;
+                                    --book-accent: #56453d;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ❀
+                                </span>
+
+                                <span class="spine-title">
+                                    Soft Places
+                                </span>
+
+                                <span class="spine-detail">
+                                    ♡
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine"
+                                type="button"
+                                data-book-title="The Pink Cottage"
+                                data-book-author="Elsie Moon"
+                                style="
+                                    --book-color: #bb6e7c;
+                                    --book-accent: #f1d0b1;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ♡
+                                </span>
+
+                                <span class="spine-title">
+                                    The Pink Cottage
+                                </span>
+
+                                <span class="spine-detail">
+                                    ✿
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine book-spine--medium"
+                                type="button"
+                                data-book-title="Little Familiar"
+                                data-book-author="R. Moss"
+                                style="
+                                    --book-color: #344c43;
+                                    --book-accent: #d8ad75;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ♧
+                                </span>
+
+                                <span class="spine-title">
+                                    Little Familiar
+                                </span>
+
+                                <span class="spine-detail">
+                                    ☾
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine"
+                                type="button"
+                                data-book-title="Rainy Day Reader"
+                                data-book-author="Faye Bell"
+                                style="
+                                    --book-color: #65687d;
+                                    --book-accent: #ecc7a4;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ☂
+                                </span>
+
+                                <span class="spine-title">
+                                    Rainy Day Reader
+                                </span>
+
+                                <span class="spine-detail">
+                                    ✦
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine book-spine--short"
+                                type="button"
+                                data-book-title="Coffee & Chapters"
+                                data-book-author="Cora Lane"
+                                style="
+                                    --book-color: #8c5746;
+                                    --book-accent: #ead0ae;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ☕
+                                </span>
+
+                                <span class="spine-title">
+                                    Coffee & Chapters
+                                </span>
+
+                                <span class="spine-detail">
+                                    ♡
+                                </span>
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            class="shelf-candle"
+                            aria-hidden="true"
+                        >
+
+                            <div class="shelf-candle__flame"></div>
+
+                            <div class="shelf-candle__wax"></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="wood-shelf">
+
+                        <span class="shelf-label">
+                            Cozy & Contemporary
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =================================================
+                     SHELF 3
+                ================================================== -->
+
+                <article
+                    class="shelf-section"
+                    data-shelf="mystery"
+                    data-shelf-capacity="10"
+                >
+
+                    <div class="shelf-interior">
+
+                        <div class="shelf-books">
+
+                            <button
+                                class="book-spine"
+                                type="button"
+                                data-book-title="Murder at Dusk"
+                                data-book-author="M. Crow"
+                                style="
+                                    --book-color: #283d38;
+                                    --book-accent: #c99c63;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ☾
+                                </span>
+
+                                <span class="spine-title">
+                                    Murder at Dusk
+                                </span>
+
+                                <span class="spine-detail">
+                                    ✦
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine book-spine--short"
+                                type="button"
+                                data-book-title="Curious Crimes"
+                                data-book-author="A. Black"
+                                style="
+                                    --book-color: #4d3434;
+                                    --book-accent: #d6a66c;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ♢
+                                </span>
+
+                                <span class="spine-title">
+                                    Curious Crimes
+                                </span>
+
+                                <span class="spine-detail">
+                                    ☠
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine"
+                                type="button"
+                                data-book-title="The Black Bird"
+                                data-book-author="E. Poe"
+                                style="
+                                    --book-color: #26282b;
+                                    --book-accent: #bd9275;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ✦
+                                </span>
+
+                                <span class="spine-title">
+                                    The Black Bird
+                                </span>
+
+                                <span class="spine-detail">
+                                    ♧
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine book-spine--medium"
+                                type="button"
+                                data-book-title="A House in Fog"
+                                data-book-author="Nell Gray"
+                                style="
+                                    --book-color: #72665f;
+                                    --book-accent: #d8b38f;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ◇
+                                </span>
+
+                                <span class="spine-title">
+                                    A House in Fog
+                                </span>
+
+                                <span class="spine-detail">
+                                    ☾
+                                </span>
+                            </button>
+
+
+                            <button
+                                class="book-spine"
+                                type="button"
+                                data-book-title="The Last Lantern"
+                                data-book-author="C. Hollow"
+                                style="
+                                    --book-color: #754a38;
+                                    --book-accent: #dfaf6a;
+                                "
+                            >
+                                <span class="spine-ornament">
+                                    ✧
+                                </span>
+
+                                <span class="spine-title">
+                                    The Last Lantern
+                                </span>
+
+                                <span class="spine-detail">
+                                    ✦
+                                </span>
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            class="shelf-skull"
+                            aria-hidden="true"
+                        >
+                            ☠
+                        </div>
+
+
+                        <div
+                            class="mini-plant"
+                            aria-hidden="true"
+                        >
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="wood-shelf">
+
+                        <span class="shelf-label">
+                            Mystery & Thriller
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =================================================
+                     ADD SHELF
+                ================================================== -->
+
+                <button
+                    class="add-shelf-button"
+                    type="button"
+                    id="addShelfButton"
+                >
+                    <span>
+                        +
+                    </span>
+
+                    Create another shelf
+                </button>
 
             </section>
 
 
 
-            <!-- =============================================
-                 DASHBOARD GRID
-            ============================================== -->
-
-            <div class="dashboard-grid">
-
-
-                <!-- =========================================
-                     CURRENTLY READING
-                ========================================== -->
-
-                <section
-                    class="dashboard-card currently-reading-card"
-                    aria-labelledby="currentlyReadingTitle"
-                >
-
-                    <div class="card-header">
-
-                        <div>
-
-                            <p class="eyebrow">
-                                On Your Nightstand
-                            </p>
-
-                            <h3 id="currentlyReadingTitle">
-                                Currently Reading
-                            </h3>
-
-                        </div>
-
-
-                        <a
-                            href="currently-reading.html"
-                            class="text-link"
-                        >
-                            View all
-                        </a>
-
-                    </div>
-
-
-                    <div
-                        class="currently-reading"
-                        id="currentlyReadingList"
-                    >
-
-                        <!--
-                            JavaScript will populate currently
-                            reading books here.
-                        -->
-
-
-                        <!-- Temporary Empty State -->
-
-                        <div
-                            class="empty-state"
-                            id="currentlyReadingEmpty"
-                        >
-
-                            <div
-                                class="empty-state__book"
-                                aria-hidden="true"
-                            >
-                                +
-                            </div>
-
-                            <h4>
-                                Nothing on your nightstand yet.
-                            </h4>
-
-                            <p>
-                                Add a book and mark it as currently reading
-                                to begin tracking your progress.
-                            </p>
-
-                            <button
-                                class="text-button"
-                                id="emptyAddBookButton"
-                                type="button"
-                            >
-                                Add your first book →
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- =========================================
-                     READING GOAL
-                ========================================== -->
-
-                <section
-                    class="dashboard-card goal-card"
-                    aria-labelledby="goalTitle"
-                >
-
-                    <div class="card-header">
-
-                        <div>
-
-                            <p class="eyebrow">
-                                This Year
-                            </p>
-
-                            <h3 id="goalTitle">
-                                Reading Goal
-                            </h3>
-
-                        </div>
-
-
-                        <button
-                            class="small-button"
-                            id="editGoalButton"
-                            type="button"
-                        >
-                            Edit
-                        </button>
-
-                    </div>
-
-
-                    <div class="goal-display">
-
-                        <div class="goal-display__numbers">
-
-                            <span
-                                class="goal-display__current"
-                                id="booksReadCount"
-                            >
-                                0
-                            </span>
-
-                            <span class="goal-display__separator">
-                                /
-                            </span>
-
-                            <span
-                                class="goal-display__target"
-                                id="readingGoalTarget"
-                            >
-                                24
-                            </span>
-
-                        </div>
-
-                        <p>
-                            books read
-                        </p>
-
-
-                        <div
-                            class="progress-bar"
-                            role="progressbar"
-                            aria-label="Reading goal progress"
-                            aria-valuemin="0"
-                            aria-valuemax="24"
-                            aria-valuenow="0"
-                        >
-
-                            <div
-                                class="progress-bar__fill"
-                                id="readingGoalProgress"
-                                style="width: 0%;"
-                            ></div>
-
-                        </div>
-
-
-                        <p
-                            class="goal-display__message"
-                            id="readingGoalMessage"
-                        >
-                            Your reading year is ready to begin.
-                        </p>
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- =========================================
-                     QUICK STATS
-                ========================================== -->
-
-                <section
-                    class="dashboard-card stats-card"
-                    aria-labelledby="statsTitle"
-                >
-
-                    <div class="card-header">
-
-                        <div>
-
-                            <p class="eyebrow">
-                                Your Reading Life
-                            </p>
-
-                            <h3 id="statsTitle">
-                                Library at a Glance
-                            </h3>
-
-                        </div>
-
-
-                        <a
-                            href="stats.html"
-                            class="text-link"
-                        >
-                            More stats
-                        </a>
-
-                    </div>
-
-
-                    <div class="stat-grid">
-
-                        <article class="stat-item">
-
-                            <span
-                                class="stat-item__number"
-                                id="totalBooksStat"
-                            >
-                                0
-                            </span>
-
-                            <span class="stat-item__label">
-                                Books
-                            </span>
-
-                        </article>
-
-
-                        <article class="stat-item">
-
-                            <span
-                                class="stat-item__number"
-                                id="booksFinishedStat"
-                            >
-                                0
-                            </span>
-
-                            <span class="stat-item__label">
-                                Finished
-                            </span>
-
-                        </article>
-
-
-                        <article class="stat-item">
-
-                            <span
-                                class="stat-item__number"
-                                id="currentlyReadingStat"
-                            >
-                                0
-                            </span>
-
-                            <span class="stat-item__label">
-                                Reading
-                            </span>
-
-                        </article>
-
-
-                        <article class="stat-item">
-
-                            <span
-                                class="stat-item__number"
-                                id="journalEntriesStat"
-                            >
-                                0
-                            </span>
-
-                            <span class="stat-item__label">
-                                Journal Entries
-                            </span>
-
-                        </article>
-
-                    </div>
-
-                </section>
-
-            </div>
-
-
-
-            <!-- =============================================
-                 BOOKSHELF
-            ============================================== -->
+            <!-- =================================================
+                 JOURNAL SIDE
+            ================================================== -->
 
             <section
-                class="library-section"
-                aria-labelledby="libraryTitle"
+                class="journal-zone"
+                id="journalZone"
             >
 
-                <div class="section-heading">
 
-                    <div>
+                <!-- Decorative arched window -->
 
-                        <p class="eyebrow">
-                            Your Collection
-                        </p>
+                <div
+                    class="moon-window"
+                    aria-hidden="true"
+                >
 
-                        <h2 id="libraryTitle">
-                            My Bookshelves
-                        </h2>
-
-                        <p>
-                            Every shelf tells a different part of your story.
-                        </p>
-
+                    <div class="moon-window__moon">
+                        ☾
                     </div>
 
-
-                    <div class="section-heading__actions">
-
-                        <button
-                            class="button button--secondary"
-                            id="manageShelvesButton"
-                            type="button"
-                        >
-                            Manage Shelves
-                        </button>
-
-
-                        <button
-                            class="button button--primary"
-                            id="shelfAddBookButton"
-                            type="button"
-                        >
-                            + Add Book
-                        </button>
-
+                    <div class="moon-window__stars">
+                        ✦ · ✧ · ✦
                     </div>
 
+                    <div class="moon-window__hills"></div>
+
+                    <div class="moon-window__bar moon-window__bar--vertical"></div>
+                    <div class="moon-window__bar moon-window__bar--horizontal"></div>
+
+                </div>
+
+
+
+                <!-- Frames -->
+
+                <div
+                    class="wall-frame wall-frame--ghost"
+                    aria-hidden="true"
+                >
+                    <span>
+                        ♡
+                    </span>
                 </div>
 
 
                 <div
-                    class="bookshelf-container"
-                    id="bookshelfContainer"
+                    class="wall-frame wall-frame--moon"
+                    aria-hidden="true"
+                >
+                    <span>
+                        ☾
+                    </span>
+                </div>
+
+
+
+                <!-- =================================================
+                     OPEN JOURNAL
+                ================================================== -->
+
+                <div
+                    class="journal-book"
+                    id="journalBook"
                 >
 
-                    <!-- =====================================
-                         SHELF
-                    ====================================== -->
 
-                    <article
-                        class="bookcase"
-                        data-shelf-id="favorites"
-                    >
+                    <!-- Tabs -->
 
-                        <div class="bookcase__heading">
+                    <div class="journal-tabs">
 
-                            <div>
+                        <button
+                            class="journal-tab journal-tab--active"
+                            type="button"
+                        >
+                            Reading
+                        </button>
 
-                                <span class="bookcase__ornament">
-                                    ✦
-                                </span>
+                        <button
+                            class="journal-tab"
+                            type="button"
+                        >
+                            Journal
+                        </button>
 
-                                <h3>
-                                    Favorites
-                                </h3>
+                        <button
+                            class="journal-tab"
+                            type="button"
+                        >
+                            Notes
+                        </button>
 
-                            </div>
-
-
-                            <button
-                                class="shelf-menu-button"
-                                type="button"
-                                aria-label="Shelf options"
-                            >
-                                •••
-                            </button>
-
-                        </div>
+                    </div>
 
 
-                        <div class="shelf">
+
+                    <!-- Left page -->
+
+                    <article class="journal-page journal-page--left">
+
+                        <button
+                            class="journal-arrow journal-arrow--left"
+                            type="button"
+                            aria-label="Previous page"
+                        >
+                            ‹
+                        </button>
+
+
+                        <div class="journal-cover-wrap">
 
                             <div
-                                class="shelf__books"
-                                id="favoritesShelf"
+                                class="journal-cover-placeholder"
+                                id="journalCoverPlaceholder"
                             >
 
-                                <!--
-                                    Books will eventually
-                                    be generated here.
-                                -->
-
-
-                                <button
-                                    class="empty-book-slot"
-                                    type="button"
-                                    data-action="add-book"
-                                >
-                                    <span>
-                                        +
-                                    </span>
-
-                                    <span>
-                                        Add a book
-                                    </span>
-                                </button>
-
-                            </div>
-
-
-                            <div class="shelf__wood"></div>
-
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- =====================================
-                         SECOND SHELF
-                    ====================================== -->
-
-                    <article
-                        class="bookcase"
-                        data-shelf-id="to-read"
-                    >
-
-                        <div class="bookcase__heading">
-
-                            <div>
-
-                                <span class="bookcase__ornament">
+                                <span class="cover-moon">
                                     ☾
                                 </span>
 
-                                <h3>
-                                    Want to Read
-                                </h3>
+                                <strong id="journalCoverTitle">
+                                    A Willow of Stars
+                                </strong>
+
+                                <small id="journalCoverAuthor">
+                                    Elara Finch
+                                </small>
+
+                                <div class="cover-landscape">
+
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+
+                                </div>
 
                             </div>
 
 
-                            <button
-                                class="shelf-menu-button"
-                                type="button"
-                                aria-label="Shelf options"
+                            <img
+                                id="journalCoverImage"
+                                class="journal-cover-image"
+                                src=""
+                                alt=""
+                                hidden
                             >
-                                •••
-                            </button>
 
                         </div>
 
 
-                        <div class="shelf">
+                        <div class="pressed-flower">
 
-                            <div
-                                class="shelf__books"
-                                id="wantToReadShelf"
-                            >
-
-                                <button
-                                    class="empty-book-slot"
-                                    type="button"
-                                    data-action="add-book"
-                                >
-                                    <span>
-                                        +
-                                    </span>
-
-                                    <span>
-                                        Add a book
-                                    </span>
-                                </button>
-
-                            </div>
-
-
-                            <div class="shelf__wood"></div>
+                            <span></span>
+                            <span></span>
+                            <span></span>
 
                         </div>
 
@@ -908,288 +1340,224 @@
 
 
 
-                    <!-- =====================================
-                         THIRD SHELF
-                    ====================================== -->
+                    <!-- Right page -->
 
-                    <article
-                        class="bookcase"
-                        data-shelf-id="finished"
-                    >
+                    <article class="journal-page journal-page--right">
 
-                        <div class="bookcase__heading">
+                        <button
+                            class="journal-close"
+                            type="button"
+                            aria-label="Close journal"
+                        >
+                            ×
+                        </button>
+
+
+                        <p class="journal-kicker">
+                            Currently Reading
+                        </p>
+
+
+                        <h2 id="journalBookTitle">
+                            A Willow of Stars
+                        </h2>
+
+
+                        <p
+                            class="journal-author"
+                            id="journalBookAuthor"
+                        >
+                            by Elara Finch
+                        </p>
+
+
+                        <div class="journal-rating">
+                            ★ ★ ★ ★ ☆
+                        </div>
+
+
+                        <div class="journal-note">
+
+                            <span class="journal-note__quote">
+                                “
+                            </span>
+
+                            <p>
+                                Somewhere between the pages,
+                                I found a braver version of myself.
+                            </p>
+
+                        </div>
+
+
+                        <div class="journal-entry">
+
+                            <time>
+                                October 14
+                            </time>
+
+                            <p>
+                                This book feels like coming home.
+                                The world is lush and alive, and
+                                I keep wanting to stay inside it
+                                just a little longer.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="journal-edit-button"
+                            id="addJournalButton"
+                            type="button"
+                        >
+                            Write in journal
+                        </button>
+
+
+                        <button
+                            class="journal-arrow journal-arrow--right"
+                            type="button"
+                            aria-label="Next page"
+                        >
+                            ›
+                        </button>
+
+                    </article>
+
+
+                    <div class="journal-spine"></div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     BELOW JOURNAL
+                ================================================== -->
+
+                <div class="journal-lower-grid">
+
+
+                    <article class="paper-widget currently-reading-widget">
+
+                        <span class="paper-widget__label">
+                            Currently Reading
+                        </span>
+
+
+                        <div class="current-book-mini">
+
+                            <div class="mini-cover">
+                                ☾
+                            </div>
 
                             <div>
 
-                                <span class="bookcase__ornament">
-                                    ◇
-                                </span>
+                                <strong>
+                                    A Willow of Stars
+                                </strong>
 
-                                <h3>
-                                    Finished
-                                </h3>
+                                <small>
+                                    Elara Finch
+                                </small>
 
-                            </div>
+                                <div class="mini-progress">
 
+                                    <span style="width: 48%;"></span>
 
-                            <button
-                                class="shelf-menu-button"
-                                type="button"
-                                aria-label="Shelf options"
-                            >
-                                •••
-                            </button>
-
-                        </div>
-
-
-                        <div class="shelf">
-
-                            <div
-                                class="shelf__books"
-                                id="finishedShelf"
-                            >
-
-                                <button
-                                    class="empty-book-slot"
-                                    type="button"
-                                    data-action="add-book"
-                                >
-                                    <span>
-                                        +
-                                    </span>
-
-                                    <span>
-                                        Add a book
-                                    </span>
-                                </button>
+                                </div>
 
                             </div>
 
-
-                            <div class="shelf__wood"></div>
+                            <b>
+                                48%
+                            </b>
 
                         </div>
+
+                    </article>
+
+
+
+                    <article class="paper-widget journal-snippet-widget">
+
+                        <span class="paper-widget__label">
+                            Journal Snippets
+                        </span>
+
+
+                        <blockquote>
+                            “Books always give me a softer
+                            place to land.”
+                        </blockquote>
+
+
+                        <button type="button">
+                            →
+                        </button>
 
                     </article>
 
                 </div>
 
 
-                <div class="library-section__footer">
 
-                    <a
-                        href="library.html"
-                        class="button button--secondary"
-                    >
-                        View Full Library
-                    </a>
+                <!-- =================================================
+                     COZY TABLE
+                ================================================== -->
+
+                <div
+                    class="cozy-corner"
+                    aria-hidden="true"
+                >
+
+                    <div class="cozy-books">
+
+                        <span>
+                            Good Books
+                        </span>
+
+                        <span>
+                            Kinder People
+                        </span>
+
+                        <span>
+                            Brighter Days
+                        </span>
+
+                    </div>
+
+
+                    <div class="cozy-cup">
+
+                        <span class="cozy-cup__steam"></span>
+                        <span class="cozy-cup__steam cozy-cup__steam--two"></span>
+
+                        ☾
+
+                    </div>
+
+
+                    <div class="cozy-cat">
+
+                        <span class="cozy-cat__tail"></span>
+
+                    </div>
 
                 </div>
 
             </section>
 
+        </div>
 
-
-            <!-- =============================================
-                 JOURNAL + RECENT ACTIVITY
-            ============================================== -->
-
-            <div class="lower-dashboard-grid">
-
-
-                <!-- =========================================
-                     RECENT JOURNAL
-                ========================================== -->
-
-                <section
-                    class="dashboard-card journal-preview-card"
-                    aria-labelledby="journalPreviewTitle"
-                >
-
-                    <div class="card-header">
-
-                        <div>
-
-                            <p class="eyebrow">
-                                Between the Pages
-                            </p>
-
-                            <h3 id="journalPreviewTitle">
-                                Recent Journal Entries
-                            </h3>
-
-                        </div>
-
-
-                        <a
-                            href="journal.html"
-                            class="text-link"
-                        >
-                            Open journal
-                        </a>
-
-                    </div>
-
-
-                    <div
-                        class="journal-entry-list"
-                        id="recentJournalEntries"
-                    >
-
-                        <div class="empty-state empty-state--small">
-
-                            <h4>
-                                Your journal is waiting.
-                            </h4>
-
-                            <p>
-                                Add notes, questions, quotes, and thoughts
-                                while you read.
-                            </p>
-
-                            <button
-                                class="text-button"
-                                id="emptyJournalButton"
-                                type="button"
-                            >
-                                Write your first entry →
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- =========================================
-                     RECENT ACTIVITY
-                ========================================== -->
-
-                <section
-                    class="dashboard-card activity-card"
-                    aria-labelledby="activityTitle"
-                >
-
-                    <div class="card-header">
-
-                        <div>
-
-                            <p class="eyebrow">
-                                Recently
-                            </p>
-
-                            <h3 id="activityTitle">
-                                Library Activity
-                            </h3>
-
-                        </div>
-
-                    </div>
-
-
-                    <div
-                        class="activity-list"
-                        id="activityList"
-                    >
-
-                        <div class="activity-item">
-
-                            <span class="activity-item__marker">
-                                ✦
-                            </span>
-
-                            <div class="activity-item__content">
-
-                                <strong>
-                                    Welcome to Novellow.
-                                </strong>
-
-                                <p>
-                                    Your reading history will appear here
-                                    as you build your library.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-            </div>
-
-
-
-            <!-- =============================================
-                 QUOTE AREA
-            ============================================== -->
-
-            <section class="library-quote">
-
-                <span
-                    class="library-quote__mark"
-                    aria-hidden="true"
-                >
-                    “
-                </span>
-
-                <blockquote id="featuredQuote">
-                    A reader lives a thousand lives before he dies.
-                </blockquote>
-
-                <p id="featuredQuoteSource">
-                    — George R. R. Martin
-                </p>
-
-            </section>
-
-        </main>
-
-
-
-        <!-- =================================================
-             FOOTER
-        ================================================== -->
-
-        <footer class="app-footer">
-
-            <p>
-                Novellow
-                <span aria-hidden="true">
-                    ✦
-                </span>
-                Your reading life, kept between the pages.
-            </p>
-
-            <nav aria-label="Footer Navigation">
-
-                <a href="settings.html">
-                    Settings
-                </a>
-
-                <a href="profile.html">
-                    Profile
-                </a>
-
-                <a href="help.html">
-                    Help
-                </a>
-
-            </nav>
-
-        </footer>
-
-    </div>
+    </main>
 
 
 
     <!-- =====================================================
-         ADD BOOK MODAL
-         Hidden until opened with JavaScript.
+         MINIMAL ADD BOOK MODAL
+         We'll redesign the actual form later.
     ====================================================== -->
 
     <div
@@ -1199,74 +1567,52 @@
     >
 
         <div
-            class="modal__backdrop"
+            class="modal-backdrop"
             data-close-modal
         ></div>
 
-
         <section
-            class="modal__panel"
+            class="modal-card"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="addBookModalTitle"
         >
 
-            <div class="modal__header">
+            <button
+                class="modal-close"
+                type="button"
+                data-close-modal
+            >
+                ×
+            </button>
 
-                <div>
+            <span class="modal-eyebrow">
+                Your Library
+            </span>
 
-                    <p class="eyebrow">
-                        Add to Your Collection
-                    </p>
+            <h2>
+                Add a Book
+            </h2>
 
-                    <h2 id="addBookModalTitle">
-                        Add a Book
-                    </h2>
-
-                </div>
-
-
-                <button
-                    class="modal__close"
-                    type="button"
-                    data-close-modal
-                    aria-label="Close"
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <div class="modal__body">
-
-                <p>
-                    The Novellow 2.0 book form will live here.
-                </p>
-
-                <p class="muted-text">
-                    We will build this after the dashboard layout is finished.
-                </p>
-
-            </div>
+            <p>
+                We'll build the complete book editor after
+                the dashboard design is finalized.
+            </p>
 
         </section>
 
     </div>
 
 
-
     <!-- =====================================================
-         SCRIPTS
+         SCRIPT
     ====================================================== -->
 
-   <script>
-    const dashboardScript = document.createElement("script");
-
-    dashboardScript.src = `dashboard.js?v=${Date.now()}`;
-
-    document.body.appendChild(dashboardScript);
-</script>
+    <script>
+        const dashboardScript = document.createElement("script");
+        dashboardScript.src = `dashboard.js?v=${Date.now()}`;
+        document.body.appendChild(dashboardScript);
+    </script>
 
 </body>
+
 </html>
