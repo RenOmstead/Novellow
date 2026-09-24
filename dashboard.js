@@ -1,545 +1,3935 @@
 /* =========================================================
    NOVELLOW
-   DASHBOARD INTERACTIONS
+   DASHBOARD
 ========================================================= */
 
-"use strict";
+@import url("https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,400;0,700;1,400&family=Berkshire+Swash&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Patrick+Hand&display=swap");
 
 
 /* =========================================================
-   ELEMENTS
+   ROOT
 ========================================================= */
 
-const sidebar =
-    document.getElementById("sidebar");
+:root {
+    --sidebar-width: 188px;
+    --sidebar-collapsed: 64px;
 
-const sidebarCollapse =
-    document.getElementById("sidebarCollapse");
+    --ink: #2b1d24;
+    --ink-soft: #655056;
 
-const mobileOverlay =
-    document.getElementById("mobileOverlay");
+    --plum-black: #21151b;
+    --plum-deep: #2d1a23;
+    --plum: #583444;
+    --berry: #7f4a59;
 
-const menuButton =
-    document.getElementById("menuButton");
+    --rose-dark: #9d6265;
+    --rose: #c47f82;
+    --dusty-pink: #d79b99;
+    --blush: #e4b7aa;
 
-const addBookButton =
-    document.getElementById("addBookButton");
+    --pumpkin: #bf744d;
+    --terracotta: #ad674f;
+    --apricot: #da9a6d;
 
-const addBookModal =
-    document.getElementById("addBookModal");
+    --forest: #33483c;
+    --moss: #5c6b51;
+    --sage: #879078;
+    --sage-light: #a6aa8e;
 
-const journalBook =
-    document.getElementById("journalBook");
+    --purple: #74617f;
+    --lavender: #9b82a0;
 
-const journalBookTitle =
-    document.getElementById("journalBookTitle");
+    --cream: #f0dfc8;
+    --paper: #f2e2c9;
+    --paper-light: #f7ead7;
+    --paper-dark: #dbc3a5;
 
-const journalBookAuthor =
-    document.getElementById("journalBookAuthor");
+    --brown-black: #231512;
+    --brown-dark: #352019;
+    --brown: #573327;
+    --wood: #704633;
+    --wood-light: #895a40;
 
-const journalCoverTitle =
-    document.getElementById("journalCoverTitle");
+    --gold: #b98955;
+    --gold-light: #ddb77c;
 
-const journalCoverAuthor =
-    document.getElementById("journalCoverAuthor");
+    --sidebar-border: rgba(224, 174, 126, 0.22);
 
-const journalCoverImage =
-    document.getElementById("journalCoverImage");
+    --shadow-soft:
+        0 8px 20px rgba(36, 17, 21, 0.15);
 
-const journalCoverPlaceholder =
-    document.getElementById("journalCoverPlaceholder");
+    --shadow-medium:
+        0 16px 35px rgba(30, 14, 18, 0.24);
 
-const librarySearch =
-    document.getElementById("librarySearch");
+    --shadow-heavy:
+        0 28px 65px rgba(24, 10, 14, 0.34);
+
+    --font-logo:
+        "Berkshire Swash",
+        serif;
+
+    --font-display:
+        "Averia Serif Libre",
+        serif;
+
+    --font-reading:
+        "Cormorant Garamond",
+        serif;
+
+    --font-hand:
+        "Patrick Hand",
+        cursive;
+}
 
 
 /* =========================================================
-   INITIALIZE
+   RESET
 ========================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+* {
+    box-sizing: border-box;
+}
 
-        setupSidebar();
-        setupBookInteractions();
-        setupModal();
-        setupSearch();
+html {
+    min-height: 100%;
+}
 
-    }
-);
+body {
+    min-height: 100vh;
+
+    margin: 0;
+
+    background: #b87971;
+
+    color: var(--ink);
+
+    font-family: var(--font-display);
+
+    overflow-x: hidden;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+svg {
+    display: block;
+}
+
+
+/* =========================================================
+   GENERAL SVG ICON STYLE
+========================================================= */
+
+.search-icon,
+.theme-icon,
+.collapse-icon,
+.mobile-menu svg,
+.journal-arrow svg,
+.journal-close svg,
+.modal-close svg,
+.journal-snippet-widget button svg {
+    fill: none;
+
+    stroke: currentColor;
+    stroke-width: 1.75;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* =========================================================
+   MOBILE OVERLAY
+========================================================= */
+
+.mobile-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 900;
+
+    background: rgba(25, 13, 19, 0.72);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease;
+}
+
+.mobile-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+}
 
 
 /* =========================================================
    SIDEBAR
 ========================================================= */
 
-function setupSidebar() {
+.library-sidebar {
+    position: fixed;
 
-    if (sidebarCollapse) {
+    top: 0;
+    left: 0;
 
-        sidebarCollapse.addEventListener(
-            "click",
-            toggleSidebarCollapse
+    width: var(--sidebar-width);
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 1000;
+
+    color: var(--cream);
+
+    background:
+        radial-gradient(
+            circle at 50% 4%,
+            rgba(131, 77, 95, 0.2),
+            transparent 23%
+        ),
+        linear-gradient(
+            180deg,
+            #25171e 0%,
+            #21151a 52%,
+            #1a1115 100%
         );
 
-    }
+    border-right:
+        1px solid var(--sidebar-border);
 
+    box-shadow:
+        7px 0 24px rgba(29, 14, 18, 0.24);
 
-    if (menuButton) {
-
-        menuButton.addEventListener(
-            "click",
-            openMobileSidebar
-        );
-
-    }
-
-
-    if (mobileOverlay) {
-
-        mobileOverlay.addEventListener(
-            "click",
-            closeMobileSidebar
-        );
-
-    }
-
-
-    const savedSidebarState =
-        localStorage.getItem(
-            "novellowSidebarCollapsed"
-        );
-
-
-    if (savedSidebarState === "true") {
-
-        sidebar?.classList.add(
-            "is-collapsed"
-        );
-
-        document.body.classList.add(
-            "sidebar-collapsed"
-        );
-
-    }
-
-}
-
-
-function toggleSidebarCollapse() {
-
-    if (!sidebar) {
-        return;
-    }
-
-
-    const collapsed =
-        sidebar.classList.toggle(
-            "is-collapsed"
-        );
-
-
-    document.body.classList.toggle(
-        "sidebar-collapsed",
-        collapsed
-    );
-
-
-    localStorage.setItem(
-        "novellowSidebarCollapsed",
-        String(collapsed)
-    );
-
-}
-
-
-function openMobileSidebar() {
-
-    sidebar?.classList.add(
-        "is-open"
-    );
-
-
-    mobileOverlay?.classList.add(
-        "is-active"
-    );
-
-
-    mobileOverlay?.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-}
-
-
-function closeMobileSidebar() {
-
-    sidebar?.classList.remove(
-        "is-open"
-    );
-
-
-    mobileOverlay?.classList.remove(
-        "is-active"
-    );
-
-
-    mobileOverlay?.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
+    transition:
+        width 0.35s ease,
+        transform 0.35s ease;
 }
 
 
 /* =========================================================
-   BOOK INTERACTION
+   SIDEBAR BRAND
 ========================================================= */
 
-function setupBookInteractions() {
+.sidebar-brand {
+    min-height: 194px;
 
-    const books =
-        document.querySelectorAll(
-            ".book-spine"
-        );
+    padding:
+        14px
+        10px
+        12px;
 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-    books.forEach((book) => {
+    position: relative;
 
-        book.addEventListener(
-            "click",
-            () => {
-
-                selectBook(book);
-
-            }
-        );
-
-    });
-
-}
-
-
-function selectBook(book) {
-
-    if (!book) {
-        return;
-    }
-
-
-    /*
-        Pull selected book from shelf.
-    */
-
-    document
-        .querySelectorAll(".book-spine")
-        .forEach((item) => {
-
-            item.classList.remove(
-                "is-selected"
-            );
-
-        });
-
-
-    book.classList.add(
-        "is-selected"
-    );
-
-
-    /*
-        Read book information.
-    */
-
-    const title =
-        book.dataset.bookTitle ||
-        "Untitled";
-
-    const author =
-        book.dataset.bookAuthor ||
-        "Unknown Author";
-
-    const cover =
-        book.dataset.cover || "";
-
-
-    /*
-        Update open journal.
-    */
-
-    if (journalBookTitle) {
-        journalBookTitle.textContent =
-            title;
-    }
-
-
-    if (journalBookAuthor) {
-
-        journalBookAuthor.textContent =
-            `by ${author}`;
-
-    }
-
-
-    if (journalCoverTitle) {
-        journalCoverTitle.textContent =
-            title;
-    }
-
-
-    if (journalCoverAuthor) {
-        journalCoverAuthor.textContent =
-            author;
-    }
-
-
-    /*
-        Real cover images will eventually
-        come from the database.
-    */
-
-    if (cover && journalCoverImage) {
-
-        journalCoverImage.src =
-            cover;
-
-        journalCoverImage.alt =
-            `${title} book cover`;
-
-        journalCoverImage.hidden =
-            false;
-
-
-        if (journalCoverPlaceholder) {
-
-            journalCoverPlaceholder.hidden =
-                true;
-
-        }
-
-    }
-
-    else {
-
-        if (journalCoverImage) {
-
-            journalCoverImage.hidden =
-                true;
-
-        }
-
-
-        if (journalCoverPlaceholder) {
-
-            journalCoverPlaceholder.hidden =
-                false;
-
-        }
-
-    }
-
-
-    /*
-        Animate journal opening.
-    */
-
-    animateJournal();
-
-
-    /*
-        On smaller screens, bring the journal
-        into view after selecting a book.
-    */
-
-    if (window.innerWidth < 1050) {
-
-        journalBook?.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
-
-    }
-
-}
-
-
-function animateJournal() {
-
-    if (!journalBook) {
-        return;
-    }
-
-
-    journalBook.classList.remove(
-        "is-changing"
-    );
-
-
-    void journalBook.offsetWidth;
-
-
-    journalBook.classList.add(
-        "is-changing"
-    );
-
-
-    window.setTimeout(
-        () => {
-
-            journalBook.classList.remove(
-                "is-changing"
-            );
-
-        },
-        600
-    );
-
+    transition:
+        min-height 0.35s ease;
 }
 
 
 /* =========================================================
-   SEARCH
+   LOGO ART
 ========================================================= */
 
-function setupSearch() {
+.brand-illustration {
+    width: 142px;
+    height: 87px;
 
-    if (!librarySearch) {
-        return;
-    }
+    display: block;
 
+    position: relative;
 
-    librarySearch.addEventListener(
-        "input",
-        handleSearch
-    );
+    margin-bottom: -2px;
 
+    transition:
+        width 0.3s ease,
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.brand-logo-art {
+    width: 100%;
+    height: 100%;
+
+    overflow: visible;
 }
 
 
-function handleSearch(event) {
+/* Moon */
 
-    const query =
-        event.target.value
-            .trim()
-            .toLowerCase();
+.logo-moon {
+    fill: #f3cb79;
 
-
-    const books =
-        document.querySelectorAll(
-            ".book-spine"
+    filter:
+        drop-shadow(
+            0 0
+            4px rgba(243, 203, 121, 0.2)
         );
+}
 
 
-    books.forEach((book) => {
+/* Books */
 
-        const title =
-            book.dataset.bookTitle
-                ?.toLowerCase() || "";
+.logo-book {
+    stroke: #d3a06d;
+    stroke-width: 1.3;
+}
 
-        const author =
-            book.dataset.bookAuthor
-                ?.toLowerCase() || "";
+.logo-book--bottom {
+    fill: #8f5361;
+}
+
+.logo-book--middle {
+    fill: #5e704f;
+}
+
+.logo-book--top {
+    fill: #b46f65;
+}
+
+.logo-book-line {
+    stroke: rgba(242, 208, 158, 0.58);
+    stroke-width: 1;
+}
 
 
-        const matches =
-            title.includes(query) ||
-            author.includes(query);
+/* Cat */
+
+.logo-cat__body,
+.logo-cat__head,
+.logo-cat__ear {
+    fill: #121013;
+}
+
+.logo-cat__tail {
+    fill: none;
+
+    stroke: #121013;
+    stroke-width: 11;
+
+    stroke-linecap: round;
+
+    transform-origin: 116px 42px;
+
+    animation:
+        logoTailSwish
+        4.8s ease-in-out infinite;
+}
+
+.logo-cat__eye {
+    fill: none;
+
+    stroke: #b68876;
+    stroke-width: 1.2;
+
+    stroke-linecap: round;
+}
 
 
-        book.style.display =
-            matches
-                ? ""
-                : "none";
+/* Cup */
 
-    });
+.logo-cup__body {
+    fill: #9b5a63;
 
+    stroke: #d9a169;
+    stroke-width: 1.5;
+}
+
+.logo-cup__handle {
+    fill: none;
+
+    stroke: #d9a169;
+    stroke-width: 2.2;
+
+    stroke-linecap: round;
+}
+
+.logo-cup__steam {
+    fill: none;
+
+    stroke: rgba(242, 222, 196, 0.74);
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+
+    animation:
+        svgSteam
+        2.8s ease-in-out infinite;
+}
+
+.logo-cup__steam--two {
+    animation-delay: 1.1s;
 }
 
 
 /* =========================================================
-   ADD BOOK MODAL
+   WORDMARK
 ========================================================= */
 
-function setupModal() {
+.brand-wordmark {
+    margin-top: -2px;
 
-    if (addBookButton) {
+    color: #f5dec0;
 
-        addBookButton.addEventListener(
-            "click",
-            openAddBookModal
+    font-family: var(--font-logo);
+    font-size: 38px;
+    line-height: 1;
+
+    text-shadow:
+        0 2px 0 #72434b,
+        0 5px 10px rgba(0, 0, 0, 0.38);
+
+    transition:
+        opacity 0.2s ease;
+}
+
+.brand-tagline {
+    margin:
+        9px
+        0
+        0;
+
+    color: #cf9f7e;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.27em;
+
+    text-transform: uppercase;
+
+    transition:
+        opacity 0.2s ease;
+}
+
+
+/* =========================================================
+   SIDEBAR NAVIGATION
+========================================================= */
+
+.sidebar-nav {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+
+    padding:
+        8px
+        12px
+        16px;
+
+    overflow-y: auto;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(223, 177, 126, 0.18);
+
+    border-radius: 999px;
+}
+
+.sidebar-link {
+    min-height: 44px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        9px
+        11px;
+
+    border-radius: 13px;
+
+    color: rgba(244, 222, 205, 0.82);
+
+    font-size: 12px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.sidebar-link:hover {
+    color: #ffe9d1;
+
+    background:
+        rgba(202, 128, 134, 0.12);
+
+    transform: translateX(2px);
+}
+
+.sidebar-link--active {
+    color: #342027;
+
+    background:
+        linear-gradient(
+            135deg,
+            #db9896,
+            #c77e83
         );
 
-    }
+    box-shadow:
+        0 6px 15px rgba(11, 4, 7, 0.23),
+        inset
+        0 1px
+        rgba(255, 255, 255, 0.3);
+}
+
+.sidebar-link__icon {
+    width: 34px;
+    height: 34px;
+
+    flex:
+        0 0 34px;
+
+    display: grid;
+    place-items: center;
+}
 
 
-    document
-        .querySelectorAll(
-            "[data-close-modal]"
+/* =========================================================
+   ILLUSTRATED ICON ART
+========================================================= */
+
+.art-sprite {
+    position: absolute;
+
+    width: 0;
+    height: 0;
+
+    overflow: hidden;
+}
+
+.nav-art {
+    width: 34px;
+    height: 34px;
+
+    overflow: visible;
+
+    stroke: #2a1a1f;
+    stroke-width: 1.4;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    filter:
+        drop-shadow(
+            0 3px
+            4px rgba(8, 3, 5, 0.35)
+        );
+
+    transform-origin:
+        center bottom;
+
+    transition:
+        transform 0.35s cubic-bezier(.2, .8, .2, 1),
+        filter 0.25s ease;
+}
+
+.sidebar-link:hover .nav-art {
+    transform:
+        translateY(-2px)
+        rotate(-5deg)
+        scale(1.08);
+
+    filter:
+        drop-shadow(
+            0 0
+            6px rgba(243, 203, 121, 0.3)
         )
-        .forEach((button) => {
+        drop-shadow(
+            0 4px
+            4px rgba(8, 3, 5, 0.35)
+        );
+}
 
-            button.addEventListener(
-                "click",
-                closeAddBookModal
-            );
+.sidebar-link--active .nav-art {
+    transform: scale(1.06);
 
-        });
+    filter:
+        drop-shadow(
+            0 3px
+            3px rgba(74, 32, 42, 0.35)
+        );
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .nav-art {
+        transition: none;
+    }
+
+}
+
+.sidebar-link__text {
+    white-space: nowrap;
+
+    transition:
+        opacity 0.2s ease;
+}
+
+.sidebar-divider {
+    height: 1px;
+
+    margin:
+        7px
+        9px;
+
+    background:
+        rgba(255, 255, 255, 0.075);
+}
 
 
-    document.addEventListener(
-        "keydown",
-        (event) => {
+/* =========================================================
+   USER PROFILE
+========================================================= */
 
-            if (event.key === "Escape") {
+.sidebar-user {
+    min-height: 70px;
 
-                closeAddBookModal();
-                closeMobileSidebar();
+    display: flex;
+    align-items: center;
 
-            }
+    gap: 10px;
 
-        }
+    padding:
+        11px
+        13px;
+
+    border-top:
+        1px solid rgba(255, 255, 255, 0.07);
+}
+
+.sidebar-avatar {
+    width: 39px;
+    height: 39px;
+
+    flex:
+        0 0 39px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        1px solid #c98d78;
+
+    border-radius: 50%;
+
+    color: #f2ddc8;
+
+    background:
+        linear-gradient(
+            145deg,
+            #784759,
+            #593343
+        );
+
+    font-family: var(--font-reading);
+    font-size: 17px;
+
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.22);
+}
+
+.sidebar-user__text {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    transition:
+        opacity 0.2s ease;
+}
+
+.sidebar-user__text strong {
+    color: #f4e0ca;
+
+    font-size: 11px;
+}
+
+.sidebar-user__text span {
+    margin-top: 2px;
+
+    color: rgba(243, 220, 201, 0.5);
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   SIDEBAR COLLAPSE
+========================================================= */
+
+.sidebar-collapse {
+    position: absolute;
+
+    right: -18px;
+    top: 47%;
+
+    width: 36px;
+    height: 60px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        1px solid #9a615c;
+
+    border-radius:
+        0
+        14px
+        14px
+        0;
+
+    color: #f1cdb8;
+
+    background:
+        linear-gradient(
+            180deg,
+            #583440,
+            #39222b
+        );
+
+    box-shadow:
+        6px 4px 12px rgba(31, 14, 18, 0.25);
+
+    z-index: 10;
+}
+
+.collapse-icon {
+    width: 23px;
+    height: 23px;
+
+    transition:
+        transform 0.35s ease;
+}
+
+.library-sidebar.is-collapsed .collapse-icon {
+    transform:
+        rotate(180deg);
+}
+
+
+/* =========================================================
+   COLLAPSED SIDEBAR
+========================================================= */
+
+.library-sidebar.is-collapsed {
+    width: var(--sidebar-collapsed);
+}
+
+.library-sidebar.is-collapsed .sidebar-brand {
+    min-height: 88px;
+
+    padding-top: 14px;
+}
+
+.library-sidebar.is-collapsed .brand-illustration {
+    width: 51px;
+    height: 51px;
+
+    overflow: hidden;
+
+    transform: scale(0.78);
+}
+
+.library-sidebar.is-collapsed .brand-wordmark,
+.library-sidebar.is-collapsed .brand-tagline,
+.library-sidebar.is-collapsed .sidebar-link__text,
+.library-sidebar.is-collapsed .sidebar-user__text {
+    width: 0;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+.library-sidebar.is-collapsed .sidebar-nav {
+    padding-left: 9px;
+    padding-right: 9px;
+}
+
+.library-sidebar.is-collapsed .sidebar-link {
+    justify-content: center;
+
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.library-sidebar.is-collapsed .sidebar-link__icon {
+    flex:
+        0 0 auto;
+
+    width: auto;
+}
+
+.library-sidebar.is-collapsed .sidebar-user {
+    justify-content: center;
+
+    padding-left: 0;
+    padding-right: 0;
+}
+
+
+/* =========================================================
+   MAIN STAGE
+========================================================= */
+
+.library-stage {
+    min-height: 100vh;
+
+    margin-left:
+        var(--sidebar-width);
+
+    background: #b97870;
+
+    transition:
+        margin-left 0.35s ease;
+}
+
+body.sidebar-collapsed .library-stage {
+    margin-left:
+        var(--sidebar-collapsed);
+}
+
+
+/* =========================================================
+   TOP HEADER
+========================================================= */
+
+.scene-header {
+    min-height: 77px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 24px;
+
+    padding:
+        13px
+        27px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 90;
+
+    background:
+        rgba(243, 218, 196, 0.95);
+
+    border-bottom:
+        1px solid rgba(93, 49, 52, 0.14);
+
+    backdrop-filter: blur(10px);
+}
+
+.mobile-menu {
+    display: none;
+
+    width: 39px;
+    height: 39px;
+
+    border: 0;
+
+    color: #57333f;
+
+    background: transparent;
+}
+
+.mobile-menu svg {
+    width: 24px;
+    height: 24px;
+}
+
+.scene-heading {
+    min-width: 210px;
+}
+
+.scene-heading > span {
+    color: #8f5c53;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.22em;
+
+    text-transform: uppercase;
+}
+
+.scene-heading h1 {
+    margin:
+        4px
+        0
+        0;
+
+    color: #3c2730;
+
+    font-family: var(--font-reading);
+    font-size: 25px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   HEADER TOOLS
+========================================================= */
+
+.scene-tools {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.library-search {
+    width: clamp(
+        260px,
+        30vw,
+        470px
     );
+
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        0
+        16px;
+
+    border:
+        1px solid rgba(89, 48, 53, 0.2);
+
+    border-radius: 999px;
+
+    background:
+        rgba(252, 239, 222, 0.91);
+
+    box-shadow:
+        0 5px 14px rgba(65, 32, 36, 0.07);
+}
+
+.search-icon {
+    width: 18px;
+    height: 18px;
+
+    flex:
+        0 0 18px;
+
+    color: #7b5357;
+}
+
+.library-search input {
+    width: 100%;
+
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+
+    color: #543b3f;
+
+    background: transparent;
+
+    font-family: var(--font-display);
+    font-size: 11px;
+}
+
+.library-search input::placeholder {
+    color: #97807c;
+}
+
+.round-tool {
+    width: 44px;
+    height: 44px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        1px solid rgba(89, 48, 53, 0.19);
+
+    border-radius: 50%;
+
+    color: #573845;
+
+    background:
+        rgba(252, 239, 222, 0.9);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.round-tool:hover {
+    transform: translateY(-2px);
+
+    background: #fff0dd;
+}
+
+.theme-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.profile-button {
+    min-width: 120px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding:
+        5px
+        13px
+        5px
+        6px;
+
+    border:
+        1px solid rgba(89, 48, 53, 0.18);
+
+    border-radius: 999px;
+
+    color: #4e3039;
+
+    background:
+        rgba(252, 239, 222, 0.9);
+}
+
+.profile-avatar {
+    width: 32px;
+    height: 32px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    color: #eed6c3;
+
+    background:
+        linear-gradient(
+            145deg,
+            #744657,
+            #573543
+        );
+
+    font-family: var(--font-reading);
+    font-size: 15px;
+}
+
+.profile-label {
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   LIBRARY ROOM
+========================================================= */
+
+.library-room {
+    min-height:
+        calc(100vh - 77px);
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(575px, 1.07fr)
+        minmax(470px, 0.93fr);
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   BOOKCASE ZONE
+========================================================= */
+
+.bookcase-zone {
+    min-width: 0;
+
+    position: relative;
+
+    padding:
+        105px
+        29px
+        35px;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(235, 164, 108, 0.14),
+            transparent 29%
+        ),
+        linear-gradient(
+            90deg,
+            #3c211b 0%,
+            #563127 45%,
+            #3f231c 100%
+        );
+
+    border-right:
+        5px solid #2f1a15;
+
+    box-shadow:
+        inset
+        -14px
+        0
+        24px rgba(17, 7, 6, 0.18);
+}
+
+
+/* =========================================================
+   BOOKCASE TOP
+========================================================= */
+
+.bookcase-top {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 108px;
+
+    border-bottom:
+        8px solid #301b16;
+
+    background:
+        linear-gradient(
+            180deg,
+            #67402f 0%,
+            #513025 72%,
+            #3d241d 100%
+        );
+
+    box-shadow:
+        inset
+        0 -12px
+        20px rgba(23, 10, 8, 0.22),
+        0 11px
+        16px rgba(20, 8, 7, 0.24);
+}
+
+.bookcase-top::before {
+    content: "";
+
+    position: absolute;
+
+    left: 24px;
+    right: 24px;
+    bottom: 12px;
+
+    height: 22px;
+
+    border:
+        2px solid rgba(191, 135, 81, 0.42);
+
+    border-radius:
+        70% 70% 14px 14px;
+
+    opacity: 0.48;
+}
+
+
+/* =========================================================
+   BOOKCASE SPARKLES
+========================================================= */
+
+.bookcase-sparkles {
+    position: absolute;
+
+    top: 14px;
+
+    width: 75px;
+    height: 45px;
+
+    pointer-events: none;
+}
+
+.bookcase-sparkles--left {
+    left: 24px;
+}
+
+.bookcase-sparkles--right {
+    right: 24px;
+}
+
+.bookcase-sparkles span {
+    position: absolute;
+
+    width: 7px;
+    height: 7px;
+
+    transform: rotate(45deg);
+
+    background: #d9aa6e;
+
+    opacity: 0.7;
+
+    box-shadow:
+        0 0
+        4px rgba(218, 174, 111, 0.2);
+}
+
+.bookcase-sparkles span:nth-child(1) {
+    left: 8px;
+    top: 8px;
+
+    width: 5px;
+    height: 5px;
+}
+
+.bookcase-sparkles span:nth-child(2) {
+    left: 33px;
+    top: 24px;
+}
+
+.bookcase-sparkles span:nth-child(3) {
+    right: 3px;
+    top: 6px;
+
+    width: 4px;
+    height: 4px;
+}
+
+
+/* =========================================================
+   TOP SLEEPING CAT
+========================================================= */
+
+.top-sleeping-cat {
+    position: absolute;
+
+    left: 34px;
+    bottom: 35px;
+
+    width: 145px;
+    height: 70px;
+
+    z-index: 5;
+
+    overflow: visible;
+}
+
+.top-cat__body,
+.top-cat__head,
+.top-cat__ear {
+    fill: #171315;
+}
+
+.top-cat__tail {
+    fill: none;
+
+    stroke: #171315;
+    stroke-width: 15;
+
+    stroke-linecap: round;
+
+    transform-origin: 136px 45px;
+
+    animation:
+        catTailSlow
+        5.5s ease-in-out infinite;
+}
+
+.top-cat__face {
+    fill: none;
+
+    stroke: #7f5a58;
+    stroke-width: 1.3;
+
+    stroke-linecap: round;
+}
+
+
+/* =========================================================
+   BOOKCASE TITLE
+========================================================= */
+
+.bookcase-title {
+    position: absolute;
+
+    left: 50%;
+    bottom: 13px;
+
+    transform: translateX(-50%);
+
+    min-width: 225px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    padding:
+        7px
+        19px;
+
+    border:
+        2px solid #4d2e23;
+
+    border-radius: 8px;
+
+    color: #43281f;
+
+    background:
+        linear-gradient(
+            180deg,
+            #dfb27e,
+            #c98c61
+        );
+
+    box-shadow:
+        inset
+        0 1px
+        rgba(255, 255, 255, 0.38),
+        0 4px
+        8px rgba(20, 8, 5, 0.25);
+
+    font-family: var(--font-display);
+    font-size: 14px;
+
+    letter-spacing: 0.08em;
+
+    text-transform: uppercase;
+
+    z-index: 7;
+}
+
+.bookcase-title__ornament {
+    color: #81523d;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   ADD BOOK BUTTON
+========================================================= */
+
+.add-book-button {
+    position: absolute;
+
+    right: 27px;
+    bottom: 13px;
+
+    padding:
+        8px
+        14px;
+
+    border:
+        1px solid #704332;
+
+    border-radius: 999px;
+
+    color: #482d24;
+
+    background:
+        linear-gradient(
+            180deg,
+            #dba274,
+            #c88560
+        );
+
+    font-size: 9px;
+
+    box-shadow:
+        0 4px
+        9px rgba(25, 9, 7, 0.23);
+
+    z-index: 8;
+
+    transition:
+        transform 0.2s ease,
+        filter 0.2s ease;
+}
+
+.add-book-button:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(1.07);
+}
+
+
+/* =========================================================
+   SHELF SECTIONS
+========================================================= */
+
+.shelf-section {
+    position: relative;
+
+    margin-bottom: 9px;
+
+    border-left:
+        8px solid #321c17;
+
+    border-right:
+        8px solid #321c17;
+
+    background: #291713;
+}
+
+.shelf-interior {
+    min-height: 186px;
+
+    position: relative;
+
+    display: flex;
+    align-items: flex-end;
+
+    padding:
+        27px
+        25px
+        9px;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(220, 148, 88, 0.085),
+            transparent 60%
+        ),
+        linear-gradient(
+            180deg,
+            #291713,
+            #392019
+        );
+
+    box-shadow:
+        inset
+        0 17px
+        22px rgba(0, 0, 0, 0.24);
+}
+
+.shelf-books {
+    min-width: 0;
+
+    display: flex;
+    align-items: flex-end;
+
+    gap: 5px;
+
+    position: relative;
+
+    z-index: 4;
+}
+
+
+/* =========================================================
+   BOOK SPINES
+========================================================= */
+
+.book-spine {
+    --book-color: #714858;
+    --book-accent: #d2ab75;
+
+    width: clamp(
+        44px,
+        4vw,
+        59px
+    );
+
+    height: 140px;
+
+    flex:
+        0 1 59px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    padding:
+        10px
+        5px;
+
+    position: relative;
+
+    border:
+        1px solid rgba(37, 19, 18, 0.72);
+
+    border-radius:
+        4px
+        7px
+        5px
+        4px;
+
+    color: var(--book-accent);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.22),
+            transparent 14%,
+            rgba(255, 255, 255, 0.05) 52%,
+            rgba(0, 0, 0, 0.14)
+        ),
+        var(--book-color);
+
+    box-shadow:
+        inset
+        3px
+        0
+        0 rgba(255, 255, 255, 0.06),
+        inset
+        -3px
+        0
+        0 rgba(0, 0, 0, 0.13),
+        2px
+        5px
+        6px rgba(0, 0, 0, 0.28);
+
+    transform-origin:
+        center bottom;
+
+    transition:
+        transform 0.35s cubic-bezier(.2, .8, .2, 1),
+        filter 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.book-spine::before,
+.book-spine::after {
+    content: "";
+
+    position: absolute;
+
+    left: 6px;
+    right: 6px;
+
+    height: 1px;
+
+    background: var(--book-accent);
+
+    opacity: 0.48;
+}
+
+.book-spine::before {
+    top: 25px;
+}
+
+.book-spine::after {
+    bottom: 23px;
+}
+
+.book-spine:hover {
+    transform:
+        translateY(-12px)
+        rotate(-1deg);
+
+    filter:
+        brightness(1.09);
+
+    box-shadow:
+        4px
+        13px
+        13px rgba(0, 0, 0, 0.32);
+}
+
+.book-spine.is-selected {
+    transform:
+        translateY(-28px)
+        rotate(-3deg)
+        scale(1.045);
+
+    z-index: 15;
+
+    filter:
+        brightness(1.07);
+
+    box-shadow:
+        0 0
+        0 2px rgba(226, 181, 115, 0.2),
+        7px
+        17px
+        18px rgba(0, 0, 0, 0.34);
+}
+
+.book-spine--short {
+    height: 119px;
+}
+
+.book-spine--medium {
+    height: 130px;
+}
+
+.book-spine--tall {
+    height: 153px;
+}
+
+.spine-title {
+    max-height: 93px;
+
+    overflow: hidden;
+
+    color: var(--book-accent);
+
+    writing-mode: vertical-rl;
+
+    transform: rotate(180deg);
+
+    font-family: var(--font-reading);
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.035em;
+}
+
+.spine-ornament,
+.spine-detail {
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   GHOST
+========================================================= */
+
+.shelf-ghost {
+    position: absolute;
+
+    right: 12px;
+    bottom: 12px;
+
+    width: 37px;
+    height: 49px;
+
+    border-radius:
+        50% 50% 17px 17px;
+
+    background: #e9dac5;
+
+    box-shadow:
+        0 5px
+        8px rgba(0, 0, 0, 0.24);
+
+    z-index: 7;
+}
+
+.shelf-ghost::before,
+.shelf-ghost::after {
+    content: "";
+
+    position: absolute;
+
+    bottom: -5px;
+
+    width: 16px;
+    height: 13px;
+
+    border-radius: 50%;
+
+    background: #e9dac5;
+}
+
+.shelf-ghost::before {
+    left: 0;
+}
+
+.shelf-ghost::after {
+    right: 0;
+}
+
+.shelf-ghost__eye {
+    position: absolute;
+
+    top: 19px;
+
+    width: 4px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #47383a;
+}
+
+.shelf-ghost__eye:nth-child(1) {
+    left: 10px;
+}
+
+.shelf-ghost__eye:nth-child(2) {
+    right: 10px;
+}
+
+
+/* =========================================================
+   CANDLE
+========================================================= */
+
+.shelf-candle {
+    position: absolute;
+
+    right: 14px;
+    bottom: 7px;
+
+    width: 30px;
+    height: 60px;
+
+    z-index: 6;
+}
+
+.shelf-candle__wax {
+    position: absolute;
+
+    left: 3px;
+    bottom: 0;
+
+    width: 24px;
+    height: 44px;
+
+    border-radius:
+        6px 6px 3px 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #cdb392,
+            #f0dab6 47%,
+            #c3a587
+        );
+
+    box-shadow:
+        0 5px
+        10px rgba(0, 0, 0, 0.31);
+}
+
+.shelf-candle__flame {
+    position: absolute;
+
+    left: 10px;
+    top: 0;
+
+    width: 10px;
+    height: 18px;
+
+    border-radius:
+        80%
+        20%
+        70%
+        35%;
+
+    background: #ffd377;
+
+    filter:
+        drop-shadow(
+            0 0
+            7px #e18c3b
+        );
+
+    animation:
+        candleFlicker
+        1.7s infinite alternate;
+}
+
+
+/* =========================================================
+   POTTED PLANT
+========================================================= */
+
+.shelf-potted-plant {
+    position: absolute;
+
+    right: 12px;
+    bottom: 6px;
+
+    width: 51px;
+    height: 69px;
+
+    z-index: 6;
+}
+
+.plant-pot {
+    position: absolute;
+
+    left: 10px;
+    bottom: 0;
+
+    width: 32px;
+    height: 25px;
+
+    border-radius:
+        4px
+        4px
+        11px
+        11px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #a96750,
+            #c38162,
+            #925641
+        );
+}
+
+.plant-leaf {
+    position: absolute;
+
+    bottom: 22px;
+
+    width: 18px;
+    height: 37px;
+
+    border-radius:
+        80%
+        20%
+        80%
+        20%;
+
+    background:
+        linear-gradient(
+            180deg,
+            #748062,
+            #526047
+        );
+
+    transform-origin:
+        bottom center;
+}
+
+.plant-leaf--one {
+    left: 5px;
+
+    transform: rotate(-37deg);
+}
+
+.plant-leaf--two {
+    left: 18px;
+
+    height: 43px;
+
+    transform: rotate(-6deg);
+}
+
+.plant-leaf--three {
+    right: 2px;
+
+    transform:
+        rotate(39deg)
+        scaleX(-1);
+}
+
+
+/* =========================================================
+   WOOD SHELF
+========================================================= */
+
+.wood-shelf {
+    height: 28px;
+
+    position: relative;
+
+    border-top:
+        2px solid #88583f;
+
+    border-bottom:
+        5px solid #2a1713;
+
+    background:
+        linear-gradient(
+            180deg,
+            #87573f 0%,
+            #5e382b 55%,
+            #3d241d 100%
+        );
+
+    box-shadow:
+        0 8px
+        12px rgba(0, 0, 0, 0.32);
+}
+
+.wood-shelf::before {
+    content: "";
+
+    position: absolute;
+
+    left: 15px;
+    right: 15px;
+    top: 5px;
+
+    height: 1px;
+
+    background:
+        rgba(217, 158, 109, 0.2);
+}
+
+.shelf-label {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    min-width: 170px;
+
+    padding:
+        3px
+        14px;
+
+    border:
+        1px solid #60392b;
+
+    border-radius: 4px;
+
+    color: #4c3027;
+
+    background:
+        linear-gradient(
+            180deg,
+            #dfa878,
+            #c78961
+        );
+
+    font-size: 9px;
+
+    letter-spacing: 0.05em;
+
+    text-align: center;
+    text-transform: uppercase;
+
+    box-shadow:
+        0 2px
+        5px rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================================================
+   ADD SHELF
+========================================================= */
+
+.add-shelf-button {
+    width: 100%;
+
+    margin-top: 18px;
+
+    padding:
+        13px
+        18px;
+
+    border:
+        1px dashed rgba(221, 169, 118, 0.4);
+
+    border-radius: 10px;
+
+    color: #d8af89;
+
+    background:
+        rgba(29, 15, 13, 0.29);
+
+    font-size: 9px;
+    font-weight: 700;
+
+    letter-spacing: 0.1em;
+
+    text-transform: uppercase;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.add-shelf-button:hover {
+    color: #f0caa2;
+
+    background:
+        rgba(54, 29, 23, 0.5);
+}
+
+.add-shelf-button span {
+    margin-right: 8px;
+
+    color: #e1aa70;
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   JOURNAL ZONE
+========================================================= */
+
+.journal-zone {
+    min-width: 0;
+
+    min-height:
+        calc(100vh - 77px);
+
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    padding:
+        163px
+        33px
+        30px;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 73% 18%,
+            rgba(247, 190, 145, 0.13),
+            transparent 26%
+        ),
+        linear-gradient(
+            180deg,
+            #bc8176 0%,
+            #a96863 55%,
+            #945a55 100%
+        );
+}
+
+
+/* =========================================================
+   WINDOW
+========================================================= */
+
+.moon-window {
+    position: absolute;
+
+    top: 21px;
+    right: 31px;
+
+    width: min(
+        59%,
+        380px
+    );
+
+    height: 205px;
+
+    overflow: hidden;
+
+    border:
+        10px solid #693d32;
+
+    border-bottom-width: 14px;
+
+    border-radius:
+        50% 50% 7px 7px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #3f3852 0%,
+            #54465b 48%,
+            #986965 100%
+        );
+
+    box-shadow:
+        inset
+        0 0
+        0 3px #40251f,
+        0 11px
+        21px rgba(44, 23, 24, 0.25);
+
+    z-index: 1;
+}
+
+.moon-window__moon {
+    position: absolute;
+
+    right: 43px;
+    top: 18px;
+
+    color: #ffe2a3;
+
+    font-size: 58px;
+
+    transform: rotate(-11deg);
+
+    filter:
+        drop-shadow(
+            0 0
+            9px rgba(255, 219, 153, 0.3)
+        );
+}
+
+.moon-window__stars span {
+    position: absolute;
+
+    color: #f6cfa0;
+
+    font-size: 13px;
+}
+
+.moon-window__stars span:nth-child(1) {
+    left: 42px;
+    top: 37px;
+}
+
+.moon-window__stars span:nth-child(2) {
+    left: 93px;
+    top: 24px;
+
+    font-size: 9px;
+}
+
+.moon-window__stars span:nth-child(3) {
+    left: 121px;
+    top: 61px;
+}
+
+.moon-window__stars span:nth-child(4) {
+    left: 70px;
+    top: 74px;
+}
+
+.moon-window__hills {
+    position: absolute;
+
+    left: -10%;
+    right: -10%;
+    bottom: -34px;
+
+    height: 96px;
+
+    border-radius:
+        50% 50% 0 0;
+
+    background: #38453f;
+
+    box-shadow:
+        0 -28px
+        0 rgba(60, 74, 62, 0.55);
+}
+
+.moon-window__bar {
+    position: absolute;
+
+    background: #6c4034;
+
+    box-shadow:
+        0 0
+        0 2px #3a211d;
+}
+
+.moon-window__bar--vertical {
+    left: 50%;
+    top: 0;
+
+    width: 8px;
+    height: 100%;
+}
+
+.moon-window__bar--horizontal {
+    left: 0;
+    top: 55%;
+
+    width: 100%;
+    height: 8px;
+}
+
+
+/* =========================================================
+   JOURNAL WALL DECOR
+========================================================= */
+
+.journal-wall-decor {
+    position: absolute;
+
+    top: 46px;
+    left: 38px;
+
+    width: 210px;
+    height: 105px;
+
+    z-index: 4;
+
+    border-bottom:
+        9px solid #684032;
+
+    filter:
+        drop-shadow(
+            0 7px
+            5px rgba(53, 26, 27, 0.18)
+        );
+}
+
+.journal-wall-book-stack {
+    position: absolute;
+
+    left: 0;
+    bottom: 9px;
+
+    width: 95px;
+}
+
+.journal-wall-book-stack span {
+    display: block;
+
+    height: 17px;
+
+    margin-top: 2px;
+
+    border:
+        1px solid #58362f;
+
+    border-radius:
+        2px 5px 5px 2px;
+}
+
+.journal-wall-book-stack span:nth-child(1) {
+    width: 75px;
+
+    margin-left: 13px;
+
+    background: #775267;
+}
+
+.journal-wall-book-stack span:nth-child(2) {
+    width: 91px;
+
+    background: #4d6553;
+}
+
+.journal-wall-book-stack span:nth-child(3) {
+    width: 81px;
+
+    margin-left: 7px;
+
+    background: #a96955;
+}
+
+.journal-wall-candle {
+    position: absolute;
+
+    left: 103px;
+    bottom: 7px;
+
+    width: 27px;
+    height: 64px;
+}
+
+.journal-wall-candle__body {
+    position: absolute;
+
+    bottom: 0;
+    left: 3px;
+
+    width: 22px;
+    height: 46px;
+
+    border-radius:
+        5px 5px 3px 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #c8ad8b,
+            #ecd4b0,
+            #baa080
+        );
+}
+
+.journal-wall-candle__flame {
+    position: absolute;
+
+    top: 0;
+    left: 10px;
+
+    width: 9px;
+    height: 18px;
+
+    border-radius:
+        80%
+        20%
+        70%
+        35%;
+
+    background: #ffd176;
+
+    filter:
+        drop-shadow(
+            0 0
+            6px #e48636
+        );
+
+    animation:
+        candleFlicker
+        1.5s alternate infinite;
+}
+
+.journal-wall-mushroom {
+    position: absolute;
+
+    right: 10px;
+    bottom: 9px;
+
+    width: 48px;
+    height: 57px;
+}
+
+.journal-wall-mushroom__stem {
+    position: absolute;
+
+    left: 17px;
+    bottom: 0;
+
+    width: 15px;
+    height: 36px;
+
+    border-radius: 6px;
+
+    background: #d4bea1;
+}
+
+.journal-wall-mushroom__cap {
+    position: absolute;
+
+    top: 4px;
+    left: 3px;
+
+    width: 43px;
+    height: 26px;
+
+    border-radius:
+        50% 50% 35% 35%;
+
+    background:
+        linear-gradient(
+            180deg,
+            #a65d52,
+            #85463f
+        );
+}
+
+
+/* =========================================================
+   OPEN JOURNAL
+========================================================= */
+
+.journal-book {
+    width: min(
+        760px,
+        100%
+    );
+
+    min-height: 448px;
+
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    position: relative;
+
+    z-index: 14;
+
+    filter:
+        drop-shadow(
+            0 22px
+            25px rgba(52, 24, 26, 0.33)
+        );
+
+    transform-origin: center;
+
+    transition:
+        transform 0.4s ease;
+}
+
+.journal-book.is-changing {
+    animation:
+        journalOpen
+        0.55s ease;
+}
+
+
+/* =========================================================
+   JOURNAL PAGES
+========================================================= */
+
+.journal-page {
+    min-width: 0;
+
+    min-height: 445px;
+
+    position: relative;
+
+    padding:
+        45px
+        34px
+        31px;
+
+    overflow: hidden;
+
+    border:
+        2px solid #704438;
+
+    background:
+        radial-gradient(
+            circle at 25% 10%,
+            rgba(190, 144, 99, 0.075),
+            transparent 21%
+        ),
+        linear-gradient(
+            90deg,
+            #ead8bd,
+            #f3e5cf
+        );
+
+    box-shadow:
+        inset
+        0 0
+        24px rgba(126, 88, 65, 0.14);
+}
+
+.journal-page::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 10px;
+
+    border:
+        1px solid rgba(120, 78, 58, 0.14);
+
+    pointer-events: none;
+}
+
+.journal-page--left {
+    border-radius:
+        18px 5px 5px 18px;
+
+    transform:
+        perspective(850px)
+        rotateY(2.2deg);
+}
+
+.journal-page--right {
+    border-radius:
+        5px 18px 18px 5px;
+
+    transform:
+        perspective(850px)
+        rotateY(-2.2deg);
+}
+
+.journal-spine {
+    position: absolute;
+
+    left: 50%;
+    top: 13px;
+    bottom: 13px;
+
+    width: 17px;
+
+    transform:
+        translateX(-50%);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(92, 54, 44, 0.25),
+            rgba(255, 255, 255, 0.3),
+            rgba(92, 54, 44, 0.3)
+        );
+
+    filter: blur(2px);
+
+    pointer-events: none;
+
+    z-index: 17;
+}
+
+
+/* =========================================================
+   JOURNAL TABS
+========================================================= */
+
+.journal-tabs {
+    position: absolute;
+
+    top: -28px;
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    display: flex;
+
+    gap: 4px;
+
+    z-index: 30;
+}
+
+.journal-tab {
+    padding:
+        9px
+        17px;
+
+    border:
+        1px solid #81534c;
+
+    border-bottom: 0;
+
+    border-radius:
+        8px 8px 0 0;
+
+    color: #684849;
+
+    background: #dcae9b;
+
+    font-size: 9px;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.journal-tab:hover {
+    transform: translateY(-2px);
+}
+
+.journal-tab--active {
+    color: #3a2927;
+
+    background: #ebcdb1;
+}
+
+
+/* =========================================================
+   COVER
+========================================================= */
+
+.journal-cover-wrap {
+    width: min(
+        220px,
+        82%
+    );
+
+    aspect-ratio: 0.67;
+
+    margin:
+        4px
+        auto
+        0;
+
+    position: relative;
+}
+
+.journal-cover-placeholder,
+.journal-cover-image {
+    width: 100%;
+    height: 100%;
+
+    border:
+        8px solid #3c2927;
+
+    border-radius:
+        4px 9px 8px 4px;
+
+    box-shadow:
+        0 8px
+        15px rgba(49, 28, 27, 0.28);
+}
+
+.journal-cover-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding:
+        30px
+        20px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    color: #efcd91;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            180deg,
+            #313341,
+            #263b3b 70%,
+            #452c3c
+        );
+}
+
+.journal-cover-placeholder::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 10px;
+
+    border:
+        1px solid #c49363;
+
+    border-radius:
+        60% 60% 8px 8px;
+
+    opacity: 0.74;
+}
+
+.cover-moon {
+    z-index: 2;
+
+    font-size: 41px;
+}
+
+.journal-cover-placeholder strong {
+    margin-top: 18px;
+
+    z-index: 2;
+
+    font-family: var(--font-reading);
+    font-size: 25px;
+    line-height: 0.95;
+}
+
+.journal-cover-placeholder small {
+    margin-top: 10px;
+
+    z-index: 2;
+
+    font-size: 9px;
+
+    letter-spacing: 0.15em;
+
+    text-transform: uppercase;
+}
+
+.cover-landscape {
+    position: absolute;
+
+    left: -15%;
+    right: -15%;
+    bottom: -13px;
+
+    height: 90px;
+}
+
+.cover-landscape span {
+    position: absolute;
+
+    bottom: 0;
+
+    width: 0;
+    height: 0;
+
+    border-left:
+        58px solid transparent;
+
+    border-right:
+        58px solid transparent;
+
+    border-bottom:
+        105px solid #6a4252;
+}
+
+.cover-landscape span:nth-child(1) {
+    left: 0;
+}
+
+.cover-landscape span:nth-child(2) {
+    left: 28%;
+
+    border-bottom-color: #4b4054;
+}
+
+.cover-landscape span:nth-child(3) {
+    right: 0;
+
+    border-bottom-color: #344746;
+}
+
+.journal-cover-image {
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   PRESSED FLOWER
+========================================================= */
+
+.pressed-flower {
+    position: absolute;
+
+    right: 24px;
+    bottom: 22px;
+
+    width: 62px;
+    height: 88px;
+
+    transform: rotate(12deg);
+
+    opacity: 0.75;
+}
+
+.pressed-flower::before {
+    content: "";
+
+    position: absolute;
+
+    left: 31px;
+    bottom: 0;
+
+    width: 2px;
+    height: 69px;
+
+    background: #6b7356;
+}
+
+.pressed-flower span {
+    position: absolute;
+
+    width: 22px;
+    height: 14px;
+
+    border-radius:
+        70%
+        20%
+        70%
+        20%;
+
+    background: #77815f;
+}
+
+.pressed-flower span:nth-child(1) {
+    left: 10px;
+    top: 34px;
+
+    transform: rotate(26deg);
+}
+
+.pressed-flower span:nth-child(2) {
+    left: 32px;
+    top: 43px;
+
+    transform:
+        scaleX(-1)
+        rotate(25deg);
+}
+
+.pressed-flower span:nth-child(3) {
+    left: 18px;
+    top: 15px;
+
+    border-radius: 50%;
+
+    background: #91697c;
+}
+
+
+/* =========================================================
+   JOURNAL CONTENT
+========================================================= */
+
+.journal-kicker {
+    margin:
+        0
+        0
+        5px;
+
+    color: #956864;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.15em;
+
+    text-transform: uppercase;
+}
+
+.journal-page h2 {
+    margin:
+        8px
+        0
+        0;
+
+    color: #3c292b;
+
+    font-family: var(--font-reading);
+    font-size: 29px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.journal-author {
+    margin:
+        7px
+        0
+        11px;
+
+    color: #765d58;
+
+    font-family: var(--font-reading);
+    font-size: 15px;
+}
+
+.journal-rating {
+    margin-bottom: 15px;
+
+    color: #c37b39;
+
+    font-size: 17px;
+
+    letter-spacing: 2px;
+}
+
+.journal-note {
+    padding:
+        11px
+        14px;
+
+    position: relative;
+
+    border:
+        1px solid rgba(141, 91, 73, 0.17);
+
+    background:
+        rgba(215, 178, 150, 0.22);
+
+    transform: rotate(-0.6deg);
+}
+
+.journal-note__quote {
+    position: absolute;
+
+    left: 7px;
+    top: -6px;
+
+    color: #b18172;
+
+    font-family: var(--font-reading);
+    font-size: 33px;
+}
+
+.journal-note p {
+    margin: 0;
+
+    padding-left: 13px;
+
+    color: #624944;
+
+    font-family: var(--font-hand);
+    font-size: 15px;
+    line-height: 1.25;
+}
+
+.journal-entry {
+    margin-top: 19px;
+}
+
+.journal-entry time {
+    color: #82645e;
+
+    font-family: var(--font-hand);
+    font-size: 12px;
+}
+
+.journal-entry p {
+    margin:
+        6px
+        0
+        0;
+
+    color: #4c3937;
+
+    font-family: var(--font-hand);
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.journal-edit-button {
+    margin-top: 16px;
+
+    padding:
+        8px
+        14px;
+
+    border:
+        1px solid #99665c;
+
+    border-radius: 999px;
+
+    color: #5f3f41;
+
+    background: #e3b9a6;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   JOURNAL CONTROLS
+========================================================= */
+
+.journal-close {
+    position: absolute;
+
+    top: 16px;
+    right: 17px;
+
+    width: 28px;
+    height: 28px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        1px solid rgba(100, 66, 56, 0.22);
+
+    border-radius: 50%;
+
+    color: #5c3c3d;
+
+    background:
+        rgba(237, 214, 185, 0.75);
+}
+
+.journal-close svg {
+    width: 16px;
+    height: 16px;
+}
+
+.journal-arrow {
+    position: absolute;
+
+    top: 48%;
+
+    width: 34px;
+    height: 44px;
+
+    display: grid;
+    place-items: center;
+
+    border: 0;
+
+    border-radius: 999px;
+
+    color: #f2d4bb;
+
+    background:
+        linear-gradient(
+            180deg,
+            #8f5d57,
+            #754943
+        );
+
+    z-index: 18;
+}
+
+.journal-arrow svg {
+    width: 20px;
+    height: 20px;
+}
+
+.journal-arrow--left {
+    left: 12px;
+}
+
+.journal-arrow--right {
+    right: 12px;
+}
+
+
+/* =========================================================
+   LOWER JOURNAL WIDGETS
+========================================================= */
+
+.journal-lower-grid {
+    width: min(
+        700px,
+        92%
+    );
+
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    gap: 13px;
+
+    margin:
+        19px
+        auto
+        0;
+
+    position: relative;
+
+    z-index: 13;
+}
+
+.paper-widget {
+    min-height: 116px;
+
+    position: relative;
+
+    padding:
+        20px
+        18px
+        14px;
+
+    border:
+        2px solid #744b43;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #efdfca,
+            #e5ceb3
+        );
+
+    box-shadow:
+        0 10px
+        18px rgba(53, 25, 26, 0.22);
+}
+
+.paper-widget::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 8px;
+
+    border:
+        1px solid rgba(121, 77, 61, 0.13);
+
+    pointer-events: none;
+}
+
+.paper-widget__label {
+    display: block;
+
+    margin-bottom: 11px;
+
+    color: #75504d;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.13em;
+
+    text-transform: uppercase;
+}
+
+.current-book-mini {
+    display: grid;
+
+    grid-template-columns:
+        45px
+        1fr
+        auto;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.mini-cover {
+    width: 42px;
+    height: 57px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        2px solid #54372f;
+
+    border-radius:
+        2px 5px 5px 2px;
+
+    color: #e4ba74;
+
+    background: #334246;
+}
+
+.current-book-mini strong {
+    display: block;
+
+    color: #493332;
+
+    font-family: var(--font-reading);
+    font-size: 14px;
+}
+
+.current-book-mini small {
+    display: block;
+
+    color: #806862;
+
+    font-size: 8px;
+}
+
+.current-book-mini b {
+    color: #6e514d;
+
+    font-size: 10px;
+}
+
+.mini-progress {
+    width: 100%;
+    height: 5px;
+
+    margin-top: 8px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: #ccb6a0;
+}
+
+.mini-progress span {
+    display: block;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #865c70,
+            #a97983
+        );
+}
+
+.journal-snippet-widget blockquote {
+    margin:
+        5px
+        32px
+        0
+        0;
+
+    color: #624b48;
+
+    font-family: var(--font-hand);
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.journal-snippet-widget button {
+    position: absolute;
+
+    right: 14px;
+    bottom: 14px;
+
+    width: 32px;
+    height: 32px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        1px solid #936259;
+
+    border-radius: 50%;
+
+    color: #694540;
+
+    background: #e4bea7;
+}
+
+.journal-snippet-widget button svg {
+    width: 17px;
+    height: 17px;
+}
+
+
+/* =========================================================
+   COZY CORNER
+========================================================= */
+
+.cozy-corner {
+    width: 295px;
+    height: 162px;
+
+    position: relative;
+
+    margin:
+        19px
+        0
+        -7px
+        auto;
+
+    z-index: 8;
+}
+
+
+/* Better Cat */
+
+.cozy-cat-illustration {
+    position: absolute;
+
+    right: 72px;
+    bottom: 39px;
+
+    width: 145px;
+    height: 78px;
+
+    overflow: visible;
+}
+
+.cozy-cat__body,
+.cozy-cat__head,
+.cozy-cat__ear {
+    fill: #171315;
+}
+
+.cozy-cat__tail {
+    fill: none;
+
+    stroke: #171315;
+    stroke-width: 16;
+
+    stroke-linecap: round;
+
+    transform-origin: 148px 52px;
+
+    animation:
+        catTailSlow
+        4.7s ease-in-out infinite;
+}
+
+.cozy-cat__face {
+    fill: none;
+
+    stroke: #755354;
+    stroke-width: 1.5;
+
+    stroke-linecap: round;
+}
+
+
+/* Cup */
+
+.cozy-cup {
+    position: absolute;
+
+    left: 14px;
+    bottom: 4px;
+
+    width: 62px;
+    height: 53px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        3px solid #3e2929;
+
+    border-radius:
+        6px
+        6px
+        18px
+        18px;
+
+    color: #ecc57d;
+
+    background:
+        linear-gradient(
+            180deg,
+            #744a55,
+            #60404a
+        );
+
+    font-size: 21px;
+}
+
+.cozy-cup::after {
+    content: "";
+
+    position: absolute;
+
+    right: -21px;
+    top: 10px;
+
+    width: 22px;
+    height: 26px;
+
+    border:
+        4px solid #3e2929;
+
+    border-left: 0;
+
+    border-radius:
+        0 50% 50% 0;
+}
+
+.cozy-cup__moon {
+    position: relative;
+
+    top: -1px;
+}
+
+.cozy-cup__steam {
+    position: absolute;
+
+    left: 18px;
+    top: -38px;
+
+    width: 18px;
+    height: 36px;
+
+    border-left:
+        3px solid rgba(240, 220, 196, 0.75);
+
+    border-radius: 50%;
+
+    animation:
+        cupSteam
+        3s ease-in-out infinite;
+}
+
+.cozy-cup__steam--two {
+    left: 36px;
+
+    animation-delay: 1s;
+}
+
+
+/* Books */
+
+.cozy-books {
+    position: absolute;
+
+    right: 0;
+    bottom: 11px;
+
+    width: 116px;
+}
+
+.cozy-books span {
+    display: block;
+
+    height: 23px;
+
+    margin-top: 2px;
+
+    padding:
+        4px
+        7px;
+
+    border:
+        1px solid #3e2621;
+
+    border-radius:
+        2px 5px 5px 2px;
+
+    color: #dab37f;
+
+    background: #583943;
+
+    font-size: 7px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+}
+
+.cozy-books span:nth-child(2) {
+    background: #3c5144;
+}
+
+.cozy-books span:nth-child(3) {
+    background: #855044;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 3000;
+
+    display: grid;
+    place-items: center;
+
+    padding: 20px;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
+}
+
+.modal.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-backdrop {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        rgba(29, 15, 20, 0.74);
+
+    backdrop-filter: blur(5px);
+}
+
+.modal-card {
+    width: min(
+        480px,
+        100%
+    );
+
+    position: relative;
+
+    z-index: 3;
+
+    padding: 37px;
+
+    border:
+        2px solid #70473f;
+
+    border-radius: 14px;
+
+    color: #493235;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f1e1cc,
+            #e2cab0
+        );
+
+    box-shadow: var(--shadow-heavy);
+}
+
+.modal-card h2 {
+    margin:
+        7px
+        0
+        7px;
+
+    font-family: var(--font-reading);
+    font-size: 31px;
+}
+
+.modal-card p {
+    color: #755e59;
+
+    font-size: 11px;
+}
+
+.modal-eyebrow {
+    color: #98665e;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.16em;
+
+    text-transform: uppercase;
+}
+
+.modal-close {
+    position: absolute;
+
+    right: 15px;
+    top: 15px;
+
+    width: 32px;
+    height: 32px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        1px solid rgba(81, 47, 44, 0.2);
+
+    border-radius: 50%;
+
+    color: #5a3c3c;
+
+    background:
+        rgba(255, 255, 255, 0.27);
+}
+
+.modal-close svg {
+    width: 17px;
+    height: 17px;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes logoTailSwish {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(7deg);
+    }
 
 }
 
 
-function openAddBookModal() {
+@keyframes catTailSlow {
 
-    if (!addBookModal) {
-        return;
+    0%,
+    100% {
+        transform: rotate(0deg);
     }
 
-
-    addBookModal.classList.add(
-        "is-open"
-    );
-
-
-    addBookModal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
+    50% {
+        transform: rotate(8deg);
+    }
 
 }
 
 
-function closeAddBookModal() {
+@keyframes svgSteam {
 
-    if (!addBookModal) {
-        return;
+    0% {
+        transform:
+            translateY(4px)
+            scaleX(0.8);
+
+        opacity: 0;
     }
 
+    35% {
+        opacity: 0.7;
+    }
 
-    addBookModal.classList.remove(
-        "is-open"
-    );
+    100% {
+        transform:
+            translateY(-8px)
+            translateX(2px)
+            scaleX(1.08);
+
+        opacity: 0;
+    }
+
+}
 
 
-    addBookModal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
+@keyframes cupSteam {
+
+    0% {
+        transform:
+            translateY(4px)
+            scaleX(0.8);
+
+        opacity: 0;
+    }
+
+    40% {
+        opacity: 0.72;
+    }
+
+    100% {
+        transform:
+            translateY(-10px)
+            translateX(3px)
+            scaleX(1.1);
+
+        opacity: 0;
+    }
+
+}
+
+
+@keyframes candleFlicker {
+
+    from {
+        transform:
+            rotate(7deg)
+            scaleY(0.93);
+    }
+
+    to {
+        transform:
+            rotate(-7deg)
+            scaleY(1.08);
+    }
+
+}
+
+
+@keyframes journalOpen {
+
+    0% {
+        transform:
+            scaleX(0.87)
+            rotate(-1deg);
+
+        opacity: 0.72;
+    }
+
+    65% {
+        transform:
+            scaleX(1.025)
+            rotate(0.3deg);
+    }
+
+    100% {
+        transform:
+            scaleX(1)
+            rotate(0deg);
+
+        opacity: 1;
+    }
+
+}
+
+
+/* =========================================================
+   LARGE TABLET
+========================================================= */
+
+@media (max-width: 1260px) {
+
+    .library-room {
+        grid-template-columns:
+            minmax(530px, 1fr)
+            minmax(425px, 0.9fr);
+    }
+
+    .journal-zone {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    .journal-page {
+        padding-left: 27px;
+        padding-right: 27px;
+    }
+
+    .journal-wall-decor {
+        transform: scale(0.88);
+
+        transform-origin: left top;
+    }
+
+}
+
+
+/* =========================================================
+   STACKED TABLET
+========================================================= */
+
+@media (max-width: 1050px) {
+
+    .library-room {
+        display: block;
+    }
+
+    .bookcase-zone {
+        min-height: 710px;
+    }
+
+    .journal-zone {
+        min-height: 790px;
+    }
+
+    .journal-book {
+        max-width: 730px;
+    }
+
+    .moon-window {
+        width: min(
+            55%,
+            400px
+        );
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE NAV
+========================================================= */
+
+@media (max-width: 820px) {
+
+    .library-sidebar {
+        width: var(--sidebar-width);
+
+        transform:
+            translateX(-100%);
+    }
+
+    .library-sidebar.is-open {
+        transform:
+            translateX(0);
+    }
+
+    .library-sidebar.is-collapsed {
+        width: var(--sidebar-width);
+    }
+
+    .library-stage,
+    body.sidebar-collapsed .library-stage {
+        margin-left: 0;
+    }
+
+    .sidebar-collapse {
+        display: none;
+    }
+
+    .mobile-menu {
+        display: grid;
+        place-items: center;
+    }
+
+    .scene-header {
+        padding:
+            11px
+            16px;
+    }
+
+    .scene-heading {
+        display: none;
+    }
+
+    .scene-tools {
+        width: 100%;
+
+        flex: 1;
+    }
+
+    .library-search {
+        flex: 1;
+
+        width: auto;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .profile-label,
+    .round-tool {
+        display: none;
+    }
+
+    .profile-button {
+        min-width: 43px;
+
+        padding: 5px;
+    }
+
+    .bookcase-zone {
+        padding:
+            102px
+            12px
+            28px;
+    }
+
+    .top-sleeping-cat {
+        left: 15px;
+
+        width: 112px;
+    }
+
+    .bookcase-title {
+        min-width: 155px;
+
+        font-size: 10px;
+    }
+
+    .bookcase-title__ornament {
+        display: none;
+    }
+
+    .add-book-button {
+        display: none;
+    }
+
+    .shelf-interior {
+        padding-left: 15px;
+        padding-right: 15px;
+
+        overflow-x: auto;
+    }
+
+    .shelf-books {
+        min-width: max-content;
+    }
+
+    .book-spine {
+        width: 48px;
+
+        flex:
+            0 0 48px;
+    }
+
+    .journal-zone {
+        padding:
+            152px
+            12px
+            30px;
+    }
+
+    .moon-window {
+        right: 11px;
+
+        width: 74%;
+
+        height: 180px;
+    }
+
+    .journal-wall-decor {
+        left: 10px;
+
+        transform: scale(0.7);
+
+        transform-origin: left top;
+    }
+
+    .journal-book {
+        display: block;
+    }
+
+    .journal-page {
+        min-height: 420px;
+    }
+
+    .journal-page--left {
+        border-radius:
+            16px 16px 4px 4px;
+
+        transform: none;
+    }
+
+    .journal-page--right {
+        border-radius:
+            4px 4px 16px 16px;
+
+        transform: none;
+    }
+
+    .journal-spine {
+        display: none;
+    }
+
+    .journal-tabs {
+        top: -27px;
+    }
+
+    .journal-lower-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cozy-corner {
+        transform: scale(0.86);
+
+        transform-origin: bottom right;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 430px) {
+
+    .scene-header {
+        gap: 8px;
+
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .library-search {
+        height: 41px;
+
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .profile-button {
+        height: 41px;
+    }
+
+    .bookcase-top {
+        height: 101px;
+    }
+
+    .bookcase-zone {
+        padding-top: 98px;
+    }
+
+    .shelf-label {
+        min-width: 140px;
+
+        font-size: 8px;
+    }
+
+    .journal-zone {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .journal-page {
+        padding:
+            42px
+            23px
+            28px;
+    }
 
 }
