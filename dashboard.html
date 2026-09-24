@@ -16,14 +16,12 @@
 
     <title>My Library | Novellow</title>
 
-    <!--
-        Automatic cache busting.
-        You do NOT need to manually change ?v=1, ?v=2, etc.
-    -->
     <script>
         const dashboardStyles = document.createElement("link");
+
         dashboardStyles.rel = "stylesheet";
         dashboardStyles.href = `dashboard.css?v=${Date.now()}`;
+
         document.head.appendChild(dashboardStyles);
     </script>
 </head>
@@ -51,65 +49,195 @@
         id="sidebar"
     >
 
-        <!-- Decorative top vines -->
-
-        <div
-            class="sidebar-vine sidebar-vine--left"
-            aria-hidden="true"
-        ></div>
-
-        <div
-            class="sidebar-vine sidebar-vine--right"
-            aria-hidden="true"
-        ></div>
-
-
         <!-- =================================================
              BRAND
         ================================================== -->
 
         <div class="sidebar-brand">
 
-            <div
+            <a
+                href="dashboard.html"
                 class="brand-illustration"
-                aria-hidden="true"
+                aria-label="Novellow Home"
             >
 
-                <div class="brand-moon">
-                    ☾
-                </div>
+                <svg
+                    class="brand-logo-art"
+                    viewBox="0 0 170 105"
+                    role="img"
+                    aria-label="Sleeping cat on books beside a cup of tea"
+                >
 
-                <div class="brand-cat">
+                    <!-- Moon -->
 
-                    <div class="brand-cat__ear brand-cat__ear--left"></div>
-                    <div class="brand-cat__ear brand-cat__ear--right"></div>
-
-                    <div class="brand-cat__head"></div>
-
-                    <div class="brand-cat__body"></div>
-
-                    <div class="brand-cat__tail"></div>
-
-                </div>
-
-
-                <div class="brand-books">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
+                    <path
+                        class="logo-moon"
+                        d="
+                            M34 12
+                            C21 19 19 37 29 47
+                            C39 57 56 53 63 42
+                            C52 47 40 43 35 34
+                            C30 25 31 18 34 12
+                        "
+                    />
 
 
-                <div class="brand-cup">
+                    <!-- Bottom Book -->
 
-                    <span class="brand-cup__steam brand-cup__steam--one"></span>
-                    <span class="brand-cup__steam brand-cup__steam--two"></span>
+                    <rect
+                        class="logo-book logo-book--bottom"
+                        x="32"
+                        y="75"
+                        width="88"
+                        height="14"
+                        rx="4"
+                    />
 
-                </div>
+                    <line
+                        class="logo-book-line"
+                        x1="41"
+                        y1="81"
+                        x2="111"
+                        y2="81"
+                    />
 
-            </div>
+
+                    <!-- Middle Book -->
+
+                    <rect
+                        class="logo-book logo-book--middle"
+                        x="42"
+                        y="61"
+                        width="83"
+                        height="14"
+                        rx="4"
+                    />
+
+                    <line
+                        class="logo-book-line"
+                        x1="50"
+                        y1="67"
+                        x2="117"
+                        y2="67"
+                    />
+
+
+                    <!-- Top Book -->
+
+                    <rect
+                        class="logo-book logo-book--top"
+                        x="54"
+                        y="48"
+                        width="72"
+                        height="13"
+                        rx="4"
+                    />
+
+                    <line
+                        class="logo-book-line"
+                        x1="61"
+                        y1="54"
+                        x2="117"
+                        y2="54"
+                    />
+
+
+                    <!-- Sleeping Cat -->
+
+                    <g class="logo-cat">
+
+                        <ellipse
+                            class="logo-cat__body"
+                            cx="91"
+                            cy="42"
+                            rx="33"
+                            ry="16"
+                        />
+
+                        <circle
+                            class="logo-cat__head"
+                            cx="66"
+                            cy="38"
+                            r="14"
+                        />
+
+                        <path
+                            class="logo-cat__ear"
+                            d="M56 29 L58 16 L67 28 Z"
+                        />
+
+                        <path
+                            class="logo-cat__ear"
+                            d="M67 27 L76 17 L78 31 Z"
+                        />
+
+                        <path
+                            class="logo-cat__tail"
+                            d="
+                                M118 42
+                                C143 40 146 57 132 62
+                                C123 66 114 61 116 55
+                            "
+                        />
+
+                        <path
+                            class="logo-cat__eye"
+                            d="M61 39 Q64 41 67 39"
+                        />
+
+                        <path
+                            class="logo-cat__eye"
+                            d="M69 39 Q72 41 75 39"
+                        />
+
+                    </g>
+
+
+                    <!-- Cup -->
+
+                    <g class="logo-cup">
+
+                        <path
+                            class="logo-cup__body"
+                            d="
+                                M126 60
+                                H150
+                                V75
+                                Q150 84 138 84
+                                Q126 84 126 75
+                                Z
+                            "
+                        />
+
+                        <path
+                            class="logo-cup__handle"
+                            d="
+                                M150 65
+                                C161 63 163 78 151 78
+                            "
+                        />
+
+                        <path
+                            class="logo-cup__steam"
+                            d="
+                                M134 56
+                                C129 50 139 47 134 40
+                            "
+                        />
+
+                        <path
+                            class="logo-cup__steam logo-cup__steam--two"
+                            d="
+                                M143 56
+                                C138 50 147 47 143 41
+                            "
+                        />
+
+                    </g>
+
+                </svg>
+
+            </a>
 
 
             <a
@@ -127,8 +255,9 @@
         </div>
 
 
+
         <!-- =================================================
-             NAV
+             NAVIGATION
         ================================================== -->
 
         <nav
@@ -136,135 +265,380 @@
             aria-label="Main Navigation"
         >
 
+
+            <!-- Home -->
+
             <a
                 href="dashboard.html"
                 class="sidebar-link sidebar-link--active"
+                aria-current="page"
             >
+
                 <span class="sidebar-link__icon">
-                    ⌂
+
+                    <svg
+                        class="nav-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M4 11.5L12 5l8 6.5"
+                        />
+
+                        <path
+                            d="M6.5 10.5V20h11v-9.5"
+                        />
+
+                        <path
+                            d="M10 20v-5h4v5"
+                        />
+                    </svg>
+
                 </span>
 
                 <span class="sidebar-link__text">
                     Home
                 </span>
+
             </a>
 
+
+
+            <!-- My Books -->
 
             <a
                 href="library.html"
                 class="sidebar-link"
             >
+
                 <span class="sidebar-link__icon">
-                    ▣
+
+                    <svg
+                        class="nav-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="
+                                M4 5.5
+                                C7 4.2 9.5 4.6 12 6
+                                V19
+                                C9.5 17.6 7 17.2 4 18.5
+                                Z
+                            "
+                        />
+
+                        <path
+                            d="
+                                M20 5.5
+                                C17 4.2 14.5 4.6 12 6
+                                V19
+                                C14.5 17.6 17 17.2 20 18.5
+                                Z
+                            "
+                        />
+                    </svg>
+
                 </span>
 
                 <span class="sidebar-link__text">
                     My Books
                 </span>
+
             </a>
 
+
+
+            <!-- Reading Now -->
 
             <a
                 href="currently-reading.html"
                 class="sidebar-link"
             >
+
                 <span class="sidebar-link__icon">
-                    ☾
+
+                    <svg
+                        class="nav-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="
+                                M16.5 4.5
+                                C11 5.5 8.5 11.8 11.5 16.3
+                                C13.2 18.9 16 20 19.2 19.2
+                                C15.3 22 9.5 20.9 6.8 16.6
+                                C3.8 11.8 6.5 5.5 12 4
+                                C13.5 3.6 15 3.8 16.5 4.5
+                                Z
+                            "
+                        />
+                    </svg>
+
                 </span>
 
                 <span class="sidebar-link__text">
                     Reading Now
                 </span>
+
             </a>
 
+
+
+            <!-- To Be Read -->
 
             <a
                 href="to-read.html"
                 class="sidebar-link"
             >
+
                 <span class="sidebar-link__icon">
-                    ♡
+
+                    <svg
+                        class="nav-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="
+                                M12 20
+                                C9 17.3 4 14 4 9.5
+                                C4 6.8 5.8 5 8.2 5
+                                C10 5 11.2 6 12 7.2
+                                C12.8 6 14 5 15.8 5
+                                C18.2 5 20 6.8 20 9.5
+                                C20 14 15 17.3 12 20
+                                Z
+                            "
+                        />
+                    </svg>
+
                 </span>
 
                 <span class="sidebar-link__text">
                     To Be Read
                 </span>
+
             </a>
 
+
+
+            <!-- Community -->
 
             <a
                 href="community.html"
                 class="sidebar-link"
             >
+
                 <span class="sidebar-link__icon">
-                    ♧
+
+                    <svg
+                        class="nav-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <circle
+                            cx="9"
+                            cy="8"
+                            r="3"
+                        />
+
+                        <circle
+                            cx="17"
+                            cy="9"
+                            r="2.5"
+                        />
+
+                        <path
+                            d="
+                                M3.5 19
+                                C4.2 15.8 6 14 9 14
+                                C12 14 13.8 15.8 14.5 19
+                            "
+                        />
+
+                        <path
+                            d="
+                                M14 15
+                                C17.7 14.2 20 16 20.5 19
+                            "
+                        />
+                    </svg>
+
                 </span>
 
                 <span class="sidebar-link__text">
                     Community
                 </span>
+
             </a>
 
+
+
+            <!-- Challenges -->
 
             <a
                 href="challenges.html"
                 class="sidebar-link"
             >
+
                 <span class="sidebar-link__icon">
-                    ✦
+
+                    <svg
+                        class="nav-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="
+                                M12 3
+                                L13.8 8.2
+                                L19 10
+                                L13.8 11.8
+                                L12 17
+                                L10.2 11.8
+                                L5 10
+                                L10.2 8.2
+                                Z
+                            "
+                        />
+                    </svg>
+
                 </span>
 
                 <span class="sidebar-link__text">
                     Challenges
                 </span>
+
             </a>
 
+
+
+            <!-- Journal -->
 
             <a
                 href="journal.html"
                 class="sidebar-link"
             >
+
                 <span class="sidebar-link__icon">
-                    ✎
+
+                    <svg
+                        class="nav-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M5 4h12.5v16H5z"
+                        />
+
+                        <path
+                            d="M8 4v16"
+                        />
+
+                        <path
+                            d="M11 8h4"
+                        />
+
+                        <path
+                            d="M11 11h4"
+                        />
+                    </svg>
+
                 </span>
 
                 <span class="sidebar-link__text">
                     Journal
                 </span>
+
             </a>
 
+
+
+            <!-- Discover -->
 
             <a
                 href="discover.html"
                 class="sidebar-link"
             >
+
                 <span class="sidebar-link__icon">
-                    ◇
+
+                    <svg
+                        class="nav-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="8"
+                        />
+
+                        <path
+                            d="M15.5 8.5l-2 5-5 2 2-5z"
+                        />
+                    </svg>
+
                 </span>
 
                 <span class="sidebar-link__text">
                     Discover
                 </span>
+
             </a>
+
 
 
             <div class="sidebar-divider"></div>
 
 
+
+            <!-- Settings -->
+
             <a
                 href="settings.html"
                 class="sidebar-link"
             >
+
                 <span class="sidebar-link__icon">
-                    ⚙
+
+                    <svg
+                        class="nav-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                        />
+
+                        <path
+                            d="
+                                M12 3v2
+                                M12 19v2
+                                M3 12h2
+                                M19 12h2
+                                M5.6 5.6l1.4 1.4
+                                M17 17l1.4 1.4
+                                M18.4 5.6L17 7
+                                M7 17l-1.4 1.4
+                            "
+                        />
+                    </svg>
+
                 </span>
 
                 <span class="sidebar-link__text">
                     Settings
                 </span>
+
             </a>
 
         </nav>
+
 
 
         <!-- =================================================
@@ -277,9 +651,11 @@
                 class="sidebar-avatar"
                 id="sidebarAvatar"
                 type="button"
+                aria-label="Open profile"
             >
                 N
             </button>
+
 
             <div class="sidebar-user__text">
 
@@ -296,6 +672,7 @@
         </div>
 
 
+
         <!-- =================================================
              COLLAPSE HANDLE
         ================================================== -->
@@ -306,7 +683,17 @@
             type="button"
             aria-label="Collapse sidebar"
         >
-            ‹
+
+            <svg
+                class="collapse-icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path
+                    d="M14.5 6L8.5 12l6 6"
+                />
+            </svg>
+
         </button>
 
     </aside>
@@ -314,7 +701,7 @@
 
 
     <!-- =====================================================
-         APP
+         MAIN APP
     ====================================================== -->
 
     <main
@@ -324,7 +711,7 @@
 
 
         <!-- =================================================
-             SCENE HEADER
+             HEADER
         ================================================== -->
 
         <header class="scene-header">
@@ -333,9 +720,18 @@
                 class="mobile-menu"
                 id="menuButton"
                 type="button"
-                aria-label="Open menu"
+                aria-label="Open navigation"
             >
-                ☰
+
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M4 7h16" />
+                    <path d="M4 12h16" />
+                    <path d="M4 17h16" />
+                </svg>
+
             </button>
 
 
@@ -355,15 +751,30 @@
             </div>
 
 
+
             <div class="scene-tools">
 
                 <label
                     class="library-search"
                     for="librarySearch"
                 >
-                    <span>
-                        ⌕
-                    </span>
+
+                    <svg
+                        class="search-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <circle
+                            cx="10.5"
+                            cy="10.5"
+                            r="5.5"
+                        />
+
+                        <path
+                            d="M15 15l4 4"
+                        />
+                    </svg>
+
 
                     <input
                         id="librarySearch"
@@ -371,17 +782,38 @@
                         placeholder="Search your library..."
                         autocomplete="off"
                     >
+
                 </label>
+
 
 
                 <button
                     class="round-tool"
                     id="themeButton"
                     type="button"
-                    aria-label="Themes"
+                    aria-label="Change theme"
                 >
-                    ☾
+
+                    <svg
+                        class="theme-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="
+                                M16.5 4.5
+                                C11 5.5 8.5 11.8 11.5 16.3
+                                C13.2 18.9 16 20 19.2 19.2
+                                C15.3 22 9.5 20.9 6.8 16.6
+                                C3.8 11.8 6.5 5.5 12 4
+                                C13.5 3.6 15 3.8 16.5 4.5
+                                Z
+                            "
+                        />
+                    </svg>
+
                 </button>
+
 
 
                 <button
@@ -389,6 +821,7 @@
                     id="profileButton"
                     type="button"
                 >
+
                     <span
                         class="profile-avatar"
                         id="profileAvatar"
@@ -399,6 +832,7 @@
                     <span class="profile-label">
                         My Library
                     </span>
+
                 </button>
 
             </div>
@@ -415,21 +849,25 @@
 
 
             <!-- =================================================
-                 BOOKCASE SIDE
+                 BOOKCASE
             ================================================== -->
 
             <section class="bookcase-zone">
 
 
-                <!-- Decorative top -->
+                <!-- =================================================
+                     BOOKCASE HEADER
+                ================================================== -->
 
                 <div class="bookcase-top">
 
+
+                    <!-- Clean decorative corner elements -->
+
                     <div
-                        class="bookcase-vines"
+                        class="bookcase-sparkles bookcase-sparkles--left"
                         aria-hidden="true"
                     >
-                        <span></span>
                         <span></span>
                         <span></span>
                         <span></span>
@@ -437,22 +875,70 @@
 
 
                     <div
-                        class="sleeping-cat"
+                        class="bookcase-sparkles bookcase-sparkles--right"
+                        aria-hidden="true"
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+
+
+                    <!-- Proper sleeping cat silhouette -->
+
+                    <svg
+                        class="top-sleeping-cat"
+                        viewBox="0 0 180 80"
                         aria-hidden="true"
                     >
 
-                        <div class="sleeping-cat__tail"></div>
+                        <ellipse
+                            class="top-cat__body"
+                            cx="92"
+                            cy="46"
+                            rx="52"
+                            ry="23"
+                        />
 
-                        <div class="sleeping-cat__body"></div>
+                        <circle
+                            class="top-cat__head"
+                            cx="49"
+                            cy="42"
+                            r="20"
+                        />
 
-                        <div class="sleeping-cat__head">
+                        <path
+                            class="top-cat__ear"
+                            d="M34 29 L37 11 L49 28 Z"
+                        />
 
-                            <span class="sleeping-cat__ear sleeping-cat__ear--left"></span>
-                            <span class="sleeping-cat__ear sleeping-cat__ear--right"></span>
+                        <path
+                            class="top-cat__ear"
+                            d="M49 27 L61 12 L65 32 Z"
+                        />
 
-                        </div>
+                        <path
+                            class="top-cat__tail"
+                            d="
+                                M137 45
+                                C168 42 171 65 151 71
+                                C139 75 126 69 130 60
+                            "
+                        />
 
-                    </div>
+                        <path
+                            class="top-cat__face"
+                            d="M42 43 Q46 46 50 43"
+                        />
+
+                        <path
+                            class="top-cat__face"
+                            d="M52 43 Q56 46 60 43"
+                        />
+
+                    </svg>
+
 
 
                     <div class="bookcase-title">
@@ -470,6 +956,7 @@
                         </span>
 
                     </div>
+
 
 
                     <button
@@ -510,6 +997,7 @@
                                     --book-accent: #d8ae75;
                                 "
                             >
+
                                 <span class="spine-ornament">
                                     ☾
                                 </span>
@@ -521,7 +1009,9 @@
                                 <span class="spine-detail">
                                     ✦
                                 </span>
+
                             </button>
+
 
 
                             <button
@@ -535,6 +1025,7 @@
                                     --book-accent: #d6b781;
                                 "
                             >
+
                                 <span class="spine-ornament">
                                     ❦
                                 </span>
@@ -546,7 +1037,9 @@
                                 <span class="spine-detail">
                                     ♧
                                 </span>
+
                             </button>
+
 
 
                             <button
@@ -560,6 +1053,7 @@
                                     --book-accent: #4c3b45;
                                 "
                             >
+
                                 <span class="spine-ornament">
                                     ✦
                                 </span>
@@ -571,7 +1065,9 @@
                                 <span class="spine-detail">
                                     ♡
                                 </span>
+
                             </button>
+
 
 
                             <button
@@ -585,6 +1081,7 @@
                                     --book-accent: #e7c8a6;
                                 "
                             >
+
                                 <span class="spine-ornament">
                                     ✿
                                 </span>
@@ -596,7 +1093,9 @@
                                 <span class="spine-detail">
                                     ☾
                                 </span>
+
                             </button>
+
 
 
                             <button
@@ -610,6 +1109,7 @@
                                     --book-accent: #deb876;
                                 "
                             >
+
                                 <span class="spine-ornament">
                                     ☾
                                 </span>
@@ -621,7 +1121,9 @@
                                 <span class="spine-detail">
                                     ✦
                                 </span>
+
                             </button>
+
 
 
                             <button
@@ -635,6 +1137,7 @@
                                     --book-accent: #50392d;
                                 "
                             >
+
                                 <span class="spine-ornament">
                                     ♢
                                 </span>
@@ -646,7 +1149,9 @@
                                 <span class="spine-detail">
                                     ☕
                                 </span>
+
                             </button>
+
 
 
                             <button
@@ -660,6 +1165,7 @@
                                     --book-accent: #d9b06a;
                                 "
                             >
+
                                 <span class="spine-ornament">
                                     ◇
                                 </span>
@@ -671,7 +1177,9 @@
                                 <span class="spine-detail">
                                     ☾
                                 </span>
+
                             </button>
+
 
 
                             <button
@@ -685,6 +1193,7 @@
                                     --book-accent: #5e554c;
                                 "
                             >
+
                                 <span class="spine-ornament">
                                     ❀
                                 </span>
@@ -696,7 +1205,9 @@
                                 <span class="spine-detail">
                                     ✦
                                 </span>
+
                             </button>
+
 
 
                             <button
@@ -710,6 +1221,7 @@
                                     --book-accent: #d79564;
                                 "
                             >
+
                                 <span class="spine-ornament">
                                     ✦
                                 </span>
@@ -721,7 +1233,9 @@
                                 <span class="spine-detail">
                                     ☾
                                 </span>
+
                             </button>
+
 
 
                             <button
@@ -735,6 +1249,7 @@
                                     --book-accent: #44392c;
                                 "
                             >
+
                                 <span class="spine-ornament">
                                     ❦
                                 </span>
@@ -746,26 +1261,27 @@
                                 <span class="spine-detail">
                                     ☕
                                 </span>
+
                             </button>
 
-
                         </div>
 
 
+
+                        <!-- Ghost decoration -->
+
                         <div
-                            class="shelf-decor shelf-decor--ghost"
+                            class="shelf-ghost"
                             aria-hidden="true"
                         >
-                            <span></span>
+
+                            <span class="shelf-ghost__eye"></span>
+                            <span class="shelf-ghost__eye"></span>
+
                         </div>
 
-
-                        <div
-                            class="shelf-decor shelf-decor--mushroom"
-                            aria-hidden="true"
-                        ></div>
-
                     </div>
+
 
 
                     <div class="wood-shelf">
@@ -793,6 +1309,7 @@
                     <div class="shelf-interior">
 
                         <div class="shelf-books">
+
 
                             <button
                                 class="book-spine book-spine--medium"
@@ -964,6 +1481,7 @@
                         </div>
 
 
+
                         <div
                             class="shelf-candle"
                             aria-hidden="true"
@@ -976,6 +1494,7 @@
                         </div>
 
                     </div>
+
 
 
                     <div class="wood-shelf">
@@ -1003,6 +1522,7 @@
                     <div class="shelf-interior">
 
                         <div class="shelf-books">
+
 
                             <button
                                 class="book-spine"
@@ -1126,24 +1646,24 @@
                         </div>
 
 
-                        <div
-                            class="shelf-skull"
-                            aria-hidden="true"
-                        >
-                            ☠
-                        </div>
 
+                        <!-- Small plant instead of ugly ivy -->
 
                         <div
-                            class="mini-plant"
+                            class="shelf-potted-plant"
                             aria-hidden="true"
                         >
-                            <span></span>
-                            <span></span>
-                            <span></span>
+
+                            <span class="plant-leaf plant-leaf--one"></span>
+                            <span class="plant-leaf plant-leaf--two"></span>
+                            <span class="plant-leaf plant-leaf--three"></span>
+
+                            <span class="plant-pot"></span>
+
                         </div>
 
                     </div>
+
 
 
                     <div class="wood-shelf">
@@ -1167,11 +1687,13 @@
                     type="button"
                     id="addShelfButton"
                 >
+
                     <span>
                         +
                     </span>
 
                     Create another shelf
+
                 </button>
 
             </section>
@@ -1188,7 +1710,9 @@
             >
 
 
-                <!-- Decorative arched window -->
+                <!-- =================================================
+                     WINDOW
+                ================================================== -->
 
                 <div
                     class="moon-window"
@@ -1200,37 +1724,58 @@
                     </div>
 
                     <div class="moon-window__stars">
-                        ✦ · ✧ · ✦
+                        <span>✦</span>
+                        <span>✧</span>
+                        <span>✦</span>
+                        <span>·</span>
                     </div>
 
                     <div class="moon-window__hills"></div>
 
                     <div class="moon-window__bar moon-window__bar--vertical"></div>
+
                     <div class="moon-window__bar moon-window__bar--horizontal"></div>
 
                 </div>
 
 
 
-                <!-- Frames -->
+                <!-- =================================================
+                     SMALL DECORATIVE LEDGE
+                     Replaces the picture frames.
+                ================================================== -->
 
                 <div
-                    class="wall-frame wall-frame--ghost"
+                    class="journal-wall-decor"
                     aria-hidden="true"
                 >
-                    <span>
-                        ♡
-                    </span>
-                </div>
+
+                    <div class="journal-wall-book-stack">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
 
 
-                <div
-                    class="wall-frame wall-frame--moon"
-                    aria-hidden="true"
-                >
-                    <span>
-                        ☾
-                    </span>
+                    <div class="journal-wall-candle">
+
+                        <span class="journal-wall-candle__flame"></span>
+
+                        <span class="journal-wall-candle__body"></span>
+
+                    </div>
+
+
+                    <div class="journal-wall-mushroom">
+
+                        <span class="journal-wall-mushroom__cap"></span>
+
+                        <span class="journal-wall-mushroom__stem"></span>
+
+                    </div>
+
                 </div>
 
 
@@ -1274,17 +1819,25 @@
 
 
 
-                    <!-- Left page -->
+                    <!-- Left Page -->
 
                     <article class="journal-page journal-page--left">
 
                         <button
                             class="journal-arrow journal-arrow--left"
                             type="button"
-                            aria-label="Previous page"
+                            aria-label="Previous journal page"
                         >
-                            ‹
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M14.5 6L8.5 12l6 6" />
+                            </svg>
+
                         </button>
+
 
 
                         <div class="journal-cover-wrap">
@@ -1306,6 +1859,7 @@
                                     Elara Finch
                                 </small>
 
+
                                 <div class="cover-landscape">
 
                                     <span></span>
@@ -1315,6 +1869,7 @@
                                 </div>
 
                             </div>
+
 
 
                             <img
@@ -1328,7 +1883,11 @@
                         </div>
 
 
-                        <div class="pressed-flower">
+
+                        <div
+                            class="pressed-flower"
+                            aria-hidden="true"
+                        >
 
                             <span></span>
                             <span></span>
@@ -1340,7 +1899,7 @@
 
 
 
-                    <!-- Right page -->
+                    <!-- Right Page -->
 
                     <article class="journal-page journal-page--right">
 
@@ -1349,7 +1908,15 @@
                             type="button"
                             aria-label="Close journal"
                         >
-                            ×
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M7 7l10 10" />
+                                <path d="M17 7L7 17" />
+                            </svg>
+
                         </button>
 
 
@@ -1371,7 +1938,10 @@
                         </p>
 
 
-                        <div class="journal-rating">
+                        <div
+                            class="journal-rating"
+                            aria-label="4 out of 5 stars"
+                        >
                             ★ ★ ★ ★ ☆
                         </div>
 
@@ -1398,9 +1968,9 @@
 
                             <p>
                                 This book feels like coming home.
-                                The world is lush and alive, and
-                                I keep wanting to stay inside it
-                                just a little longer.
+                                The world is lush and alive, and I
+                                keep wanting to stay inside it just
+                                a little longer.
                             </p>
 
                         </div>
@@ -1418,9 +1988,16 @@
                         <button
                             class="journal-arrow journal-arrow--right"
                             type="button"
-                            aria-label="Next page"
+                            aria-label="Next journal page"
                         >
-                            ›
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M9.5 6l6 6-6 6" />
+                            </svg>
+
                         </button>
 
                     </article>
@@ -1433,7 +2010,7 @@
 
 
                 <!-- =================================================
-                     BELOW JOURNAL
+                     LOWER WIDGETS
                 ================================================== -->
 
                 <div class="journal-lower-grid">
@@ -1452,6 +2029,7 @@
                                 ☾
                             </div>
 
+
                             <div>
 
                                 <strong>
@@ -1462,6 +2040,7 @@
                                     Elara Finch
                                 </small>
 
+
                                 <div class="mini-progress">
 
                                     <span style="width: 48%;"></span>
@@ -1469,6 +2048,7 @@
                                 </div>
 
                             </div>
+
 
                             <b>
                                 48%
@@ -1493,8 +2073,19 @@
                         </blockquote>
 
 
-                        <button type="button">
-                            →
+                        <button
+                            type="button"
+                            aria-label="Open journal snippets"
+                        >
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M6 12h12" />
+                                <path d="M14 8l4 4-4 4" />
+                            </svg>
+
                         </button>
 
                     </article>
@@ -1504,15 +2095,93 @@
 
 
                 <!-- =================================================
-                     COZY TABLE
+                     COZY CORNER
                 ================================================== -->
 
-                <div
-                    class="cozy-corner"
-                    aria-hidden="true"
-                >
+                <div class="cozy-corner">
 
-                    <div class="cozy-books">
+
+                    <!-- Better sleeping cat -->
+
+                    <svg
+                        class="cozy-cat-illustration"
+                        viewBox="0 0 190 90"
+                        aria-hidden="true"
+                    >
+
+                        <ellipse
+                            class="cozy-cat__body"
+                            cx="101"
+                            cy="52"
+                            rx="57"
+                            ry="25"
+                        />
+
+                        <circle
+                            class="cozy-cat__head"
+                            cx="54"
+                            cy="48"
+                            r="22"
+                        />
+
+                        <path
+                            class="cozy-cat__ear"
+                            d="M38 34L40 15L53 33Z"
+                        />
+
+                        <path
+                            class="cozy-cat__ear"
+                            d="M53 32L67 16L70 37Z"
+                        />
+
+                        <path
+                            class="cozy-cat__tail"
+                            d="
+                                M151 50
+                                C184 43 190 68 166 76
+                                C150 82 136 74 142 65
+                            "
+                        />
+
+                        <path
+                            class="cozy-cat__face"
+                            d="M46 49Q51 53 56 49"
+                        />
+
+                        <path
+                            class="cozy-cat__face"
+                            d="M57 49Q62 53 67 49"
+                        />
+
+                    </svg>
+
+
+
+                    <!-- Cup -->
+
+                    <div
+                        class="cozy-cup"
+                        aria-hidden="true"
+                    >
+
+                        <span class="cozy-cup__steam"></span>
+
+                        <span class="cozy-cup__steam cozy-cup__steam--two"></span>
+
+                        <span class="cozy-cup__moon">
+                            ☾
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- Book Stack -->
+
+                    <div
+                        class="cozy-books"
+                        aria-hidden="true"
+                    >
 
                         <span>
                             Good Books
@@ -1528,23 +2197,6 @@
 
                     </div>
 
-
-                    <div class="cozy-cup">
-
-                        <span class="cozy-cup__steam"></span>
-                        <span class="cozy-cup__steam cozy-cup__steam--two"></span>
-
-                        ☾
-
-                    </div>
-
-
-                    <div class="cozy-cat">
-
-                        <span class="cozy-cat__tail"></span>
-
-                    </div>
-
                 </div>
 
             </section>
@@ -1556,8 +2208,7 @@
 
 
     <!-- =====================================================
-         MINIMAL ADD BOOK MODAL
-         We'll redesign the actual form later.
+         ADD BOOK MODAL
     ====================================================== -->
 
     <div
@@ -1571,27 +2222,41 @@
             data-close-modal
         ></div>
 
+
         <section
             class="modal-card"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="addBookModalTitle"
         >
 
             <button
                 class="modal-close"
                 type="button"
                 data-close-modal
+                aria-label="Close Add Book"
             >
-                ×
+
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M7 7l10 10" />
+                    <path d="M17 7L7 17" />
+                </svg>
+
             </button>
+
 
             <span class="modal-eyebrow">
                 Your Library
             </span>
 
-            <h2>
+
+            <h2 id="addBookModalTitle">
                 Add a Book
             </h2>
+
 
             <p>
                 We'll build the complete book editor after
@@ -1603,13 +2268,16 @@
     </div>
 
 
+
     <!-- =====================================================
          SCRIPT
     ====================================================== -->
 
     <script>
         const dashboardScript = document.createElement("script");
+
         dashboardScript.src = `dashboard.js?v=${Date.now()}`;
+
         document.body.appendChild(dashboardScript);
     </script>
 
