@@ -15,10 +15,14 @@
 
     <title>My Library | Novellow</title>
 
-    <link
-        rel="stylesheet"
-        href="dashboard.css"
-    >
+   <script>
+    const dashboardStyles = document.createElement("link");
+
+    dashboardStyles.rel = "stylesheet";
+    dashboardStyles.href = `dashboard.css?v=${Date.now()}`;
+
+    document.head.appendChild(dashboardStyles);
+</script>
 </head>
 
 <body>
