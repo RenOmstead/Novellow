@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Novellow — your personal virtual library, reading journal, and book collection."
+    >
+
+    <title>My Library | Novellow</title>
+
+    <link
+        rel="stylesheet"
+        href="dashboard.css"
+    >
+</head>
+
+<body>
+
+    <!-- =====================================================
+         MOBILE OVERLAY
+    ====================================================== -->
+
+    <div
+        class="mobile-overlay"
+        id="mobileOverlay"
+        aria-hidden="true"
+    ></div>
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+        <div class="sidebar__top">
+
+            <a
+                href="dashboard.html"
+                class="brand"
+                aria-label="Novellow Home"
+            >
+                <span class="brand__mark">
+                    N
+                </span>
+
+                <div class="brand__text">
+                    <span class="brand__name">
+                        Novellow
+                    </span>
+
+                    <span class="brand__tagline">
+                        Your reading life.
+                    </span>
+                </div>
+            </a>
+
+
+            <button
+                class="sidebar__close"
+                id="sidebarClose"
+                type="button"
+                aria-label="Close navigation"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <nav
+            class="sidebar__nav"
+            aria-label="Main Navigation"
+        >
+
+            <a
+                href="dashboard.html"
+                class="nav-link nav-link--active"
+                aria-current="page"
+            >
+                <span class="nav-link__icon">
+                    ✦
+                </span>
+
+                <span>
+                    Library Home
+                </span>
+            </a>
+
+
+            <a
+                href="library.html"
+                class="nav-link"
+            >
+                <span class="nav-link__icon">
+                    ▤
+                </span>
+
+                <span>
+                    My Library
+                </span>
+            </a>
+
+
+            <a
+                href="currently-reading.html"
+                class="nav-link"
+            >
+                <span class="nav-link__icon">
+                    ◫
+                </span>
+
+                <span>
+                    Currently Reading
+                </span>
+            </a>
+
+
+            <a
+                href="journal.html"
+                class="nav-link"
+            >
+                <span class="nav-link__icon">
+                    ✎
+                </span>
+
+                <span>
+                    Reading Journal
+                </span>
+            </a>
+
+
+            <a
+                href="quotes.html"
+                class="nav-link"
+            >
+                <span class="nav-link__icon">
+                    “
+                </span>
+
+                <span>
+                    Quotes
+                </span>
+            </a>
+
+
+            <a
+                href="stats.html"
+                class="nav-link"
+            >
+                <span class="nav-link__icon">
+                    ◇
+                </span>
+
+                <span>
+                    Reading Stats
+                </span>
+            </a>
+
+
+            <div class="nav-divider"></div>
+
+
+            <a
+                href="shelves.html"
+                class="nav-link"
+            >
+                <span class="nav-link__icon">
+                    ▱
+                </span>
+
+                <span>
+                    Manage Shelves
+                </span>
+            </a>
+
+
+            <a
+                href="themes.html"
+                class="nav-link"
+            >
+                <span class="nav-link__icon">
+                    ☾
+                </span>
+
+                <span>
+                    Themes
+                </span>
+            </a>
+
+
+            <a
+                href="settings.html"
+                class="nav-link"
+            >
+                <span class="nav-link__icon">
+                    ⚙
+                </span>
+
+                <span>
+                    Settings
+                </span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar__bottom">
+
+            <div class="sidebar-user">
+
+                <button
+                    class="user-avatar"
+                    id="sidebarAvatar"
+                    type="button"
+                    aria-label="Open profile"
+                >
+                    N
+                </button>
+
+
+                <div class="sidebar-user__details">
+
+                    <span
+                        class="sidebar-user__name"
+                        id="sidebarUserName"
+                    >
+                        Reader
+                    </span>
+
+                    <span class="sidebar-user__label">
+                        My Library
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="logout-button"
+                id="logoutButton"
+                type="button"
+            >
+                Sign Out
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN APPLICATION
+    ====================================================== -->
+
+    <div class="app-shell">
+
+
+        <!-- =================================================
+             TOP BAR
+        ================================================== -->
+
+        <header class="topbar">
+
+            <div class="topbar__left">
+
+                <button
+                    class="menu-button"
+                    id="menuButton"
+                    type="button"
+                    aria-label="Open navigation"
+                >
+                    ☰
+                </button>
+
+
+                <div class="topbar__title">
+
+                    <span class="eyebrow">
+                        Private Library
+                    </span>
+
+                    <h1>
+                        My Library
+                    </h1>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar__right">
+
+                <div class="library-search">
+
+                    <label
+                        for="librarySearch"
+                        class="sr-only"
+                    >
+                        Search your library
+                    </label>
+
+                    <input
+                        type="search"
+                        id="librarySearch"
+                        placeholder="Search books, authors, notes..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <button
+                    class="icon-button"
+                    id="themeButton"
+                    type="button"
+                    aria-label="Change library theme"
+                    title="Change Theme"
+                >
+                    ☾
+                </button>
+
+
+                <button
+                    class="profile-button"
+                    id="profileButton"
+                    type="button"
+                    aria-label="Open profile menu"
+                >
+                    <span
+                        class="profile-button__avatar"
+                        id="profileAvatar"
+                    >
+                        N
+                    </span>
+                </button>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             DASHBOARD CONTENT
+        ================================================== -->
+
+        <main class="dashboard">
+
+
+            <!-- =============================================
+                 WELCOME
+            ============================================== -->
+
+            <section class="welcome-section">
+
+                <div class="welcome-section__content">
+
+                    <p class="eyebrow">
+                        Welcome back
+                    </p>
+
+                    <h2>
+                        Good afternoon,
+                        <span id="welcomeName">
+                            Reader
+                        </span>.
+                    </h2>
+
+                    <p class="welcome-section__text">
+                        Your books are waiting exactly where you left them.
+                    </p>
+
+                </div>
+
+
+                <div class="welcome-section__actions">
+
+                    <button
+                        class="button button--primary"
+                        id="addBookButton"
+                        type="button"
+                    >
+                        <span>
+                            +
+                        </span>
+
+                        Add a Book
+                    </button>
+
+
+                    <button
+                        class="button button--secondary"
+                        id="addJournalButton"
+                        type="button"
+                    >
+                        Write in Journal
+                    </button>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =============================================
+                 DASHBOARD GRID
+            ============================================== -->
+
+            <div class="dashboard-grid">
+
+
+                <!-- =========================================
+                     CURRENTLY READING
+                ========================================== -->
+
+                <section
+                    class="dashboard-card currently-reading-card"
+                    aria-labelledby="currentlyReadingTitle"
+                >
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <p class="eyebrow">
+                                On Your Nightstand
+                            </p>
+
+                            <h3 id="currentlyReadingTitle">
+                                Currently Reading
+                            </h3>
+
+                        </div>
+
+
+                        <a
+                            href="currently-reading.html"
+                            class="text-link"
+                        >
+                            View all
+                        </a>
+
+                    </div>
+
+
+                    <div
+                        class="currently-reading"
+                        id="currentlyReadingList"
+                    >
+
+                        <!--
+                            JavaScript will populate currently
+                            reading books here.
+                        -->
+
+
+                        <!-- Temporary Empty State -->
+
+                        <div
+                            class="empty-state"
+                            id="currentlyReadingEmpty"
+                        >
+
+                            <div
+                                class="empty-state__book"
+                                aria-hidden="true"
+                            >
+                                +
+                            </div>
+
+                            <h4>
+                                Nothing on your nightstand yet.
+                            </h4>
+
+                            <p>
+                                Add a book and mark it as currently reading
+                                to begin tracking your progress.
+                            </p>
+
+                            <button
+                                class="text-button"
+                                id="emptyAddBookButton"
+                                type="button"
+                            >
+                                Add your first book →
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =========================================
+                     READING GOAL
+                ========================================== -->
+
+                <section
+                    class="dashboard-card goal-card"
+                    aria-labelledby="goalTitle"
+                >
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <p class="eyebrow">
+                                This Year
+                            </p>
+
+                            <h3 id="goalTitle">
+                                Reading Goal
+                            </h3>
+
+                        </div>
+
+
+                        <button
+                            class="small-button"
+                            id="editGoalButton"
+                            type="button"
+                        >
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="goal-display">
+
+                        <div class="goal-display__numbers">
+
+                            <span
+                                class="goal-display__current"
+                                id="booksReadCount"
+                            >
+                                0
+                            </span>
+
+                            <span class="goal-display__separator">
+                                /
+                            </span>
+
+                            <span
+                                class="goal-display__target"
+                                id="readingGoalTarget"
+                            >
+                                24
+                            </span>
+
+                        </div>
+
+                        <p>
+                            books read
+                        </p>
+
+
+                        <div
+                            class="progress-bar"
+                            role="progressbar"
+                            aria-label="Reading goal progress"
+                            aria-valuemin="0"
+                            aria-valuemax="24"
+                            aria-valuenow="0"
+                        >
+
+                            <div
+                                class="progress-bar__fill"
+                                id="readingGoalProgress"
+                                style="width: 0%;"
+                            ></div>
+
+                        </div>
+
+
+                        <p
+                            class="goal-display__message"
+                            id="readingGoalMessage"
+                        >
+                            Your reading year is ready to begin.
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =========================================
+                     QUICK STATS
+                ========================================== -->
+
+                <section
+                    class="dashboard-card stats-card"
+                    aria-labelledby="statsTitle"
+                >
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <p class="eyebrow">
+                                Your Reading Life
+                            </p>
+
+                            <h3 id="statsTitle">
+                                Library at a Glance
+                            </h3>
+
+                        </div>
+
+
+                        <a
+                            href="stats.html"
+                            class="text-link"
+                        >
+                            More stats
+                        </a>
+
+                    </div>
+
+
+                    <div class="stat-grid">
+
+                        <article class="stat-item">
+
+                            <span
+                                class="stat-item__number"
+                                id="totalBooksStat"
+                            >
+                                0
+                            </span>
+
+                            <span class="stat-item__label">
+                                Books
+                            </span>
+
+                        </article>
+
+
+                        <article class="stat-item">
+
+                            <span
+                                class="stat-item__number"
+                                id="booksFinishedStat"
+                            >
+                                0
+                            </span>
+
+                            <span class="stat-item__label">
+                                Finished
+                            </span>
+
+                        </article>
+
+
+                        <article class="stat-item">
+
+                            <span
+                                class="stat-item__number"
+                                id="currentlyReadingStat"
+                            >
+                                0
+                            </span>
+
+                            <span class="stat-item__label">
+                                Reading
+                            </span>
+
+                        </article>
+
+
+                        <article class="stat-item">
+
+                            <span
+                                class="stat-item__number"
+                                id="journalEntriesStat"
+                            >
+                                0
+                            </span>
+
+                            <span class="stat-item__label">
+                                Journal Entries
+                            </span>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+
+            <!-- =============================================
+                 BOOKSHELF
+            ============================================== -->
+
+            <section
+                class="library-section"
+                aria-labelledby="libraryTitle"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="eyebrow">
+                            Your Collection
+                        </p>
+
+                        <h2 id="libraryTitle">
+                            My Bookshelves
+                        </h2>
+
+                        <p>
+                            Every shelf tells a different part of your story.
+                        </p>
+
+                    </div>
+
+
+                    <div class="section-heading__actions">
+
+                        <button
+                            class="button button--secondary"
+                            id="manageShelvesButton"
+                            type="button"
+                        >
+                            Manage Shelves
+                        </button>
+
+
+                        <button
+                            class="button button--primary"
+                            id="shelfAddBookButton"
+                            type="button"
+                        >
+                            + Add Book
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="bookshelf-container"
+                    id="bookshelfContainer"
+                >
+
+                    <!-- =====================================
+                         SHELF
+                    ====================================== -->
+
+                    <article
+                        class="bookcase"
+                        data-shelf-id="favorites"
+                    >
+
+                        <div class="bookcase__heading">
+
+                            <div>
+
+                                <span class="bookcase__ornament">
+                                    ✦
+                                </span>
+
+                                <h3>
+                                    Favorites
+                                </h3>
+
+                            </div>
+
+
+                            <button
+                                class="shelf-menu-button"
+                                type="button"
+                                aria-label="Shelf options"
+                            >
+                                •••
+                            </button>
+
+                        </div>
+
+
+                        <div class="shelf">
+
+                            <div
+                                class="shelf__books"
+                                id="favoritesShelf"
+                            >
+
+                                <!--
+                                    Books will eventually
+                                    be generated here.
+                                -->
+
+
+                                <button
+                                    class="empty-book-slot"
+                                    type="button"
+                                    data-action="add-book"
+                                >
+                                    <span>
+                                        +
+                                    </span>
+
+                                    <span>
+                                        Add a book
+                                    </span>
+                                </button>
+
+                            </div>
+
+
+                            <div class="shelf__wood"></div>
+
+                        </div>
+
+                    </article>
+
+
+
+                    <!-- =====================================
+                         SECOND SHELF
+                    ====================================== -->
+
+                    <article
+                        class="bookcase"
+                        data-shelf-id="to-read"
+                    >
+
+                        <div class="bookcase__heading">
+
+                            <div>
+
+                                <span class="bookcase__ornament">
+                                    ☾
+                                </span>
+
+                                <h3>
+                                    Want to Read
+                                </h3>
+
+                            </div>
+
+
+                            <button
+                                class="shelf-menu-button"
+                                type="button"
+                                aria-label="Shelf options"
+                            >
+                                •••
+                            </button>
+
+                        </div>
+
+
+                        <div class="shelf">
+
+                            <div
+                                class="shelf__books"
+                                id="wantToReadShelf"
+                            >
+
+                                <button
+                                    class="empty-book-slot"
+                                    type="button"
+                                    data-action="add-book"
+                                >
+                                    <span>
+                                        +
+                                    </span>
+
+                                    <span>
+                                        Add a book
+                                    </span>
+                                </button>
+
+                            </div>
+
+
+                            <div class="shelf__wood"></div>
+
+                        </div>
+
+                    </article>
+
+
+
+                    <!-- =====================================
+                         THIRD SHELF
+                    ====================================== -->
+
+                    <article
+                        class="bookcase"
+                        data-shelf-id="finished"
+                    >
+
+                        <div class="bookcase__heading">
+
+                            <div>
+
+                                <span class="bookcase__ornament">
+                                    ◇
+                                </span>
+
+                                <h3>
+                                    Finished
+                                </h3>
+
+                            </div>
+
+
+                            <button
+                                class="shelf-menu-button"
+                                type="button"
+                                aria-label="Shelf options"
+                            >
+                                •••
+                            </button>
+
+                        </div>
+
+
+                        <div class="shelf">
+
+                            <div
+                                class="shelf__books"
+                                id="finishedShelf"
+                            >
+
+                                <button
+                                    class="empty-book-slot"
+                                    type="button"
+                                    data-action="add-book"
+                                >
+                                    <span>
+                                        +
+                                    </span>
+
+                                    <span>
+                                        Add a book
+                                    </span>
+                                </button>
+
+                            </div>
+
+
+                            <div class="shelf__wood"></div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+                <div class="library-section__footer">
+
+                    <a
+                        href="library.html"
+                        class="button button--secondary"
+                    >
+                        View Full Library
+                    </a>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =============================================
+                 JOURNAL + RECENT ACTIVITY
+            ============================================== -->
+
+            <div class="lower-dashboard-grid">
+
+
+                <!-- =========================================
+                     RECENT JOURNAL
+                ========================================== -->
+
+                <section
+                    class="dashboard-card journal-preview-card"
+                    aria-labelledby="journalPreviewTitle"
+                >
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <p class="eyebrow">
+                                Between the Pages
+                            </p>
+
+                            <h3 id="journalPreviewTitle">
+                                Recent Journal Entries
+                            </h3>
+
+                        </div>
+
+
+                        <a
+                            href="journal.html"
+                            class="text-link"
+                        >
+                            Open journal
+                        </a>
+
+                    </div>
+
+
+                    <div
+                        class="journal-entry-list"
+                        id="recentJournalEntries"
+                    >
+
+                        <div class="empty-state empty-state--small">
+
+                            <h4>
+                                Your journal is waiting.
+                            </h4>
+
+                            <p>
+                                Add notes, questions, quotes, and thoughts
+                                while you read.
+                            </p>
+
+                            <button
+                                class="text-button"
+                                id="emptyJournalButton"
+                                type="button"
+                            >
+                                Write your first entry →
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =========================================
+                     RECENT ACTIVITY
+                ========================================== -->
+
+                <section
+                    class="dashboard-card activity-card"
+                    aria-labelledby="activityTitle"
+                >
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <p class="eyebrow">
+                                Recently
+                            </p>
+
+                            <h3 id="activityTitle">
+                                Library Activity
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="activity-list"
+                        id="activityList"
+                    >
+
+                        <div class="activity-item">
+
+                            <span class="activity-item__marker">
+                                ✦
+                            </span>
+
+                            <div class="activity-item__content">
+
+                                <strong>
+                                    Welcome to Novellow.
+                                </strong>
+
+                                <p>
+                                    Your reading history will appear here
+                                    as you build your library.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+
+            <!-- =============================================
+                 QUOTE AREA
+            ============================================== -->
+
+            <section class="library-quote">
+
+                <span
+                    class="library-quote__mark"
+                    aria-hidden="true"
+                >
+                    “
+                </span>
+
+                <blockquote id="featuredQuote">
+                    A reader lives a thousand lives before he dies.
+                </blockquote>
+
+                <p id="featuredQuoteSource">
+                    — George R. R. Martin
+                </p>
+
+            </section>
+
+        </main>
+
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer class="app-footer">
+
+            <p>
+                Novellow
+                <span aria-hidden="true">
+                    ✦
+                </span>
+                Your reading life, kept between the pages.
+            </p>
+
+            <nav aria-label="Footer Navigation">
+
+                <a href="settings.html">
+                    Settings
+                </a>
+
+                <a href="profile.html">
+                    Profile
+                </a>
+
+                <a href="help.html">
+                    Help
+                </a>
+
+            </nav>
+
+        </footer>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         ADD BOOK MODAL
+         Hidden until opened with JavaScript.
+    ====================================================== -->
+
+    <div
+        class="modal"
+        id="addBookModal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="modal__backdrop"
+            data-close-modal
+        ></div>
+
+
+        <section
+            class="modal__panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="addBookModalTitle"
+        >
+
+            <div class="modal__header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        Add to Your Collection
+                    </p>
+
+                    <h2 id="addBookModalTitle">
+                        Add a Book
+                    </h2>
+
+                </div>
+
+
+                <button
+                    class="modal__close"
+                    type="button"
+                    data-close-modal
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="modal__body">
+
+                <p>
+                    The Novellow 2.0 book form will live here.
+                </p>
+
+                <p class="muted-text">
+                    We will build this after the dashboard layout is finished.
+                </p>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SCRIPTS
+    ====================================================== -->
+
+    <script src="dashboard.js"></script>
+
+</body>
+</html>
