@@ -1,178 +1,488 @@
 /* =========================================================
    NOVELLOW
-   DASHBOARD
+   DASHBOARD INTERACTIONS
 ========================================================= */
 
-@import url("https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,400;0,700;1,400&family=Berkshire+Swash&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Patrick+Hand&display=swap");
+"use strict";
 
 
 /* =========================================================
-   ROOT
+   ELEMENTS
 ========================================================= */
 
-:root {
-    --sidebar-width: 188px;
-    --sidebar-collapsed: 64px;
+const sidebar =
+    document.getElementById("sidebar");
 
-    --ink: #2b1d24;
-    --ink-soft: #655056;
+const sidebarCollapse =
+    document.getElementById("sidebarCollapse");
 
-    --plum-black: #21151b;
-    --plum-deep: #2d1a23;
-    --plum: #583444;
-    --berry: #7f4a59;
+const mobileOverlay =
+    document.getElementById("mobileOverlay");
 
-    --rose-dark: #9d6265;
-    --rose: #c47f82;
-    --dusty-pink: #d79b99;
-    --blush: #e4b7aa;
+const menuButton =
+    document.getElementById("menuButton");
 
-    --pumpkin: #bf744d;
-    --terracotta: #ad674f;
-    --apricot: #da9a6d;
+const addBookButton =
+    document.getElementById("addBookButton");
 
-    --forest: #33483c;
-    --moss: #5c6b51;
-    --sage: #879078;
-    --sage-light: #a6aa8e;
+const addBookModal =
+    document.getElementById("addBookModal");
 
-    --purple: #74617f;
-    --lavender: #9b82a0;
+const journalBook =
+    document.getElementById("journalBook");
 
-    --cream: #f0dfc8;
-    --paper: #f2e2c9;
-    --paper-light: #f7ead7;
-    --paper-dark: #dbc3a5;
+const journalBookTitle =
+    document.getElementById("journalBookTitle");
 
-    --brown-black: #231512;
-    --brown-dark: #352019;
-    --brown: #573327;
-    --wood: #704633;
-    --wood-light: #895a40;
+const journalBookAuthor =
+    document.getElementById("journalBookAuthor");
 
-    --gold: #b98955;
-    --gold-light: #ddb77c;
+const journalCoverTitle =
+    document.getElementById("journalCoverTitle");
 
-    --sidebar-border: rgba(224, 174, 126, 0.22);
+const journalCoverAuthor =
+    document.getElementById("journalCoverAuthor");
 
-    --shadow-soft:
-        0 8px 20px rgba(36, 17, 21, 0.15);
+const journalCoverImage =
+    document.getElementById("journalCoverImage");
 
-    --shadow-medium:
-        0 16px 35px rgba(30, 14, 18, 0.24);
+const journalCoverPlaceholder =
+    document.getElementById("journalCoverPlaceholder");
 
-    --shadow-heavy:
-        0 28px 65px rgba(24, 10, 14, 0.34);
+const librarySearch =
+    document.getElementById("librarySearch");
 
-    --font-logo:
-        "Berkshire Swash",
-        serif;
 
-    --font-display:
-        "Averia Serif Libre",
-        serif;
+/* =========================================================
+   LIBRARY DATA
+   Sample shelves until books come from the database.
+   A shelf item is either a book or a piece of decor.
+========================================================= */
 
-    --font-reading:
-        "Cormorant Garamond",
-        serif;
+const LIBRARY_SHELVES = {
 
-    --font-hand:
-        "Patrick Hand",
-        cursive;
+    fantasy: [
+        { title: "The Hollow Wood", author: "M. Vale", color: "#34503f", accent: "#d8b27a", motif: "sprig", style: "classic", w: 30, h: 122 },
+        { title: "Small Magic", author: "Nora Bell", color: "#dca4a6", accent: "#2b1d22", motif: "cat", style: "classic", w: 44, h: 126 },
+        { title: "Garden of Spells", author: "Rowan Gray", color: "#3b3560", accent: "#ecc68a", motif: "potion", style: "classic", w: 36, h: 128 },
+        { title: "Moth & Moon", author: "L. Bloom", color: "#c86f7e", accent: "#f6e0b6", motif: "fleur", style: "lattice", w: 40, h: 132 },
+        { title: "The Spell House", author: "Hazel Hart", color: "#2f5552", accent: "#e2b76c", motif: "diamond", style: "classic", w: 26, h: 116 },
+        { title: "A Willow of Stars", author: "Elara Finch", color: "#74444f", accent: "#ecc68a", motif: "moon", style: "panel", w: 42, h: 130 },
+        { title: "Crown of Ivy", author: "E. Wren", color: "#6a5486", accent: "#f0cf8a", motif: "leafvine", style: "vine", w: 42, h: 130 },
+        { decor: "candle", h: 64 },
+        { title: "Moonlit Pages", author: "June Avery", color: "#e6d2ac", accent: "#6e4029", motif: "star", style: "classic", w: 24, h: 118 },
+        { title: "Ember & Ash", author: "A. Moore", color: "#a1493f", accent: "#f0cf8a", motif: "flower", style: "panel", w: 32, h: 126 },
+        { title: "The Starling Court", author: "C. Hollow", color: "#2f3552", accent: "#e2b76c", motif: "castle", style: "lattice", w: 36, h: 124 },
+        { title: "Forest Tea", author: "Ivy June", color: "#5f7d45", accent: "#f3ddb2", motif: "mushroom", style: "classic", w: 28, h: 112 },
+        { title: "Velvet Night", author: "Mara Rose", color: "#5b3a52", accent: "#ecc68a", motif: "eye", style: "panel", w: 32, h: 128 },
+        { title: "Rose Grimoire", author: "S. Thorn", color: "#c47f82", accent: "#3b2a2e", motif: "heart", style: "classic", w: 34, h: 118, lean: true }
+    ],
+
+    cozy: [
+        { decor: "teacup", h: 50 },
+        { title: "A Quiet Autumn", author: "P. Maple", color: "#b0654e", accent: "#f3ddb2", motif: "sprig", style: "classic", w: 34, h: 124 },
+        { title: "Tea at Midnight", author: "Mara Rose", color: "#6a405b", accent: "#ecc68a", motif: "moon", style: "panel", w: 38, h: 130 },
+        { title: "Soft Places", author: "A. Fern", color: "#9fa883", accent: "#3f3328", motif: "flower", style: "classic", w: 30, h: 116 },
+        { title: "The Pink Cottage", author: "Elsie Moon", color: "#d98f9c", accent: "#fbe7d0", motif: "heart", style: "lattice", w: 40, h: 128 },
+        { title: "Little Familiar", author: "R. Moss", color: "#2e4a40", accent: "#e2b76c", motif: "cat", style: "classic", w: 32, h: 122 },
+        { title: "Rainy Day Reader", author: "Faye Bell", color: "#5d607c", accent: "#f0d6b6", motif: "star", style: "classic", w: 28, h: 118 },
+        { title: "Coffee & Chapters", author: "Cora Lane", color: "#8c5746", accent: "#f3ddb2", motif: "candle", style: "panel", w: 36, h: 126 },
+        { title: "Honey & Hearth", author: "B. Hale", color: "#c69a4a", accent: "#4a2f1e", motif: "fleur", style: "classic", w: 30, h: 120 },
+        { title: "Sunday Letters", author: "Wren Fox", color: "#7b5d8c", accent: "#f0cf8a", motif: "feather", style: "vine", w: 36, h: 130 },
+        { title: "The Lantern Café", author: "Iris Vane", color: "#a3564f", accent: "#f3ddb2", motif: "diamond", style: "lattice", w: 34, h: 124 },
+        { title: "Wool & Wishes", author: "T. Fenn", color: "#5c6b51", accent: "#f3ddb2", motif: "star", style: "panel", w: 30, h: 120 },
+        { decor: "lantern", h: 78 },
+        { title: "Kind Hours", author: "M. Pell", color: "#e2cfa6", accent: "#6a405b", motif: "butterfly", style: "classic", w: 26, h: 114 }
+    ],
+
+    mystery: [
+        { title: "Murder at Dusk", author: "M. Crow", color: "#283d38", accent: "#d9a45f", motif: "moon", style: "classic", w: 36, h: 128 },
+        { title: "Curious Crimes", author: "A. Black", color: "#4d3434", accent: "#d6a66c", motif: "skull", style: "panel", w: 32, h: 120 },
+        { decor: "skull", h: 42 },
+        { title: "The Black Bird", author: "E. Hollis", color: "#dcc9a4", accent: "#1f1b22", motif: "crow", style: "classic", w: 40, h: 130 },
+        { title: "A House in Fog", author: "Nell Gray", color: "#5e5870", accent: "#e8cfae", motif: "castle", style: "lattice", w: 34, h: 124 },
+        { title: "The Last Lantern", author: "C. Hollow", color: "#754a38", accent: "#e8b66a", motif: "candle", style: "classic", w: 30, h: 118 },
+        { title: "Crime & Curses", author: "V. Stone", color: "#2b2833", accent: "#d9b06a", motif: "eye", style: "panel", w: 38, h: 132 },
+        { decor: "belljar", h: 66 },
+        { title: "The Silent Key", author: "O. Lark", color: "#3f5f4f", accent: "#e8c27c", motif: "key", style: "vine", w: 32, h: 126 },
+        { title: "The Raven Room", author: "D. Ashby", color: "#6e2f3e", accent: "#e8c27c", motif: "diamond", style: "classic", w: 28, h: 116 },
+        { title: "Poison Garden", author: "R. Vesper", color: "#4b5d3a", accent: "#e8c27c", motif: "potion", style: "classic", w: 34, h: 126 },
+        { title: "Midnight Ledger", author: "F. Quill", color: "#39304a", accent: "#d9b06a", motif: "moon", style: "lattice", w: 36, h: 122 },
+        { title: "Bone Orchard", author: "I. Marsh", color: "#a3564f", accent: "#f3ddb2", motif: "skull", style: "classic", w: 26, h: 114 },
+        { decor: "crow", h: 60 }
+    ],
+
+    classics: [
+        { title: "Jane Eyre", author: "Charlotte Brontë", color: "#3a4f3c", accent: "#e2b76c", motif: "flower", style: "panel", w: 36, h: 128 },
+        { title: "Wuthering Heights", author: "Emily Brontë", color: "#5b3a52", accent: "#e8c27c", motif: "sprig", style: "classic", w: 40, h: 132 },
+        { title: "Pride and Prejudice", author: "Jane Austen", color: "#d4a4a4", accent: "#4a2f36", motif: "heart", style: "lattice", w: 38, h: 126 },
+        { title: "Frankenstein", author: "Mary Shelley", color: "#2f3552", accent: "#d9b06a", motif: "star", style: "classic", w: 30, h: 122 },
+        { decor: "bust", h: 74 },
+        { title: "Little Women", author: "Louisa May Alcott", color: "#b0654e", accent: "#f3ddb2", motif: "feather", style: "classic", w: 34, h: 120 },
+        { title: "Dracula", author: "Bram Stoker", color: "#4a2230", accent: "#e2b76c", motif: "castle", style: "panel", w: 36, h: 130 },
+        { title: "The Secret Garden", author: "Frances Hodgson Burnett", color: "#6d8a5a", accent: "#f6e6c4", motif: "leafvine", style: "vine", w: 34, h: 126 },
+        { title: "Emma", author: "Jane Austen", color: "#e6d2ac", accent: "#7a4a30", motif: "butterfly", style: "classic", w: 26, h: 114 },
+        { title: "Persuasion", author: "Jane Austen", color: "#6a5486", accent: "#f0cf8a", motif: "fleur", style: "lattice", w: 30, h: 122 },
+        { title: "Great Expectations", author: "Charles Dickens", color: "#2f5552", accent: "#e2b76c", motif: "key", style: "classic", w: 34, h: 126 },
+        { title: "Anne of Green Gables", author: "L. M. Montgomery", color: "#c86f7e", accent: "#fbe7d0", motif: "flower", style: "panel", w: 32, h: 120 },
+        { decor: "plant", h: 76 }
+    ]
+
+};
+
+
+/*
+    Decor drawings and their viewBox proportions.
+*/
+
+const SHELF_DECOR = {
+    candle: "0 0 40 90",
+    lantern: "0 0 50 92",
+    teacup: "0 0 56 58",
+    skull: "0 0 52 48",
+    belljar: "0 0 50 72",
+    crow: "0 0 64 66",
+    bust: "0 0 48 76",
+    plant: "0 0 60 78",
+    potion: "0 0 40 64"
+};
+
+
+/*
+    Spine motif proportions, used to size each drawing.
+*/
+
+const SPINE_MOTIFS = {
+    moon: "0 0 20 20",
+    star: "0 0 20 20",
+    cat: "0 0 20 28",
+    potion: "0 0 20 26",
+    sprig: "0 0 20 40",
+    flower: "0 0 20 20",
+    key: "0 0 16 40",
+    skull: "0 0 20 20",
+    crow: "0 0 24 22",
+    mushroom: "0 0 20 20",
+    heart: "0 0 20 20",
+    butterfly: "0 0 24 20",
+    castle: "0 0 24 26",
+    candle: "0 0 14 28",
+    feather: "0 0 16 34",
+    eye: "0 0 24 16",
+    fleur: "0 0 20 26",
+    diamond: "0 0 20 28",
+    leafvine: "0 0 16 60"
+};
+
+
+const SVG_NS =
+    "http://www.w3.org/2000/svg";
+
+
+/* =========================================================
+   RENDER SHELVES
+========================================================= */
+
+function renderLibrary() {
+
+    document
+        .querySelectorAll(".shelf-books[data-shelf]")
+        .forEach((shelf) => {
+
+            const items =
+                LIBRARY_SHELVES[shelf.dataset.shelf] || [];
+
+            shelf.replaceChildren(
+                ...items.map((item) =>
+                    item.decor
+                        ? createDecor(item)
+                        : createSpine(item)
+                )
+            );
+
+        });
+
+}
+
+
+function createSvgUse(symbolId, viewBox, className) {
+
+    const svg =
+        document.createElementNS(SVG_NS, "svg");
+
+    svg.setAttribute("viewBox", viewBox);
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("class", className);
+
+    const use =
+        document.createElementNS(SVG_NS, "use");
+
+    use.setAttribute("href", `#${symbolId}`);
+
+    svg.appendChild(use);
+
+    return svg;
+
+}
+
+
+function createDecor(item) {
+
+    const decor =
+        createSvgUse(
+            `decor-${item.decor}`,
+            SHELF_DECOR[item.decor],
+            "shelf-decor"
+        );
+
+    decor.style.setProperty(
+        "--h",
+        `${item.h}px`
+    );
+
+    return decor;
+
+}
+
+
+function createMotif(name, size = "") {
+
+    return createSvgUse(
+        `motif-${name}`,
+        SPINE_MOTIFS[name],
+        `spine-motif ${size}`.trim()
+    );
+
+}
+
+
+function createSpine(book) {
+
+    const spine =
+        document.createElement("button");
+
+    spine.type = "button";
+
+    spine.className =
+        `book-spine spine--${book.style}`;
+
+    if (book.lean) {
+        spine.classList.add("book-spine--lean");
+    }
+
+    spine.dataset.bookTitle = book.title;
+    spine.dataset.bookAuthor = book.author;
+
+    if (book.cover) {
+        spine.dataset.cover = book.cover;
+    }
+
+    spine.setAttribute(
+        "aria-label",
+        `${book.title} by ${book.author}`
+    );
+
+    spine.style.setProperty("--book-color", book.color);
+    spine.style.setProperty("--book-accent", book.accent);
+    spine.style.setProperty("--w", `${book.w}px`);
+    spine.style.setProperty("--h", `${book.h}px`);
+
+
+    const topBand =
+        document.createElement("span");
+
+    topBand.className =
+        "spine-band spine-band--dotted";
+
+    const bottomBand =
+        topBand.cloneNode();
+
+
+    const core =
+        document.createElement("span");
+
+    core.className = "spine-core";
+
+
+    if (book.style === "vine") {
+
+        core.appendChild(
+            createMotif(book.motif, "spine-motif--tall")
+        );
+
+        spine.append(topBand, core, bottomBand);
+
+    }
+
+    else if (book.style === "classic") {
+
+        spine.append(
+            topBand,
+            createMotif("star", "spine-motif--small"),
+            createMotif(book.motif),
+            createMotif("star", "spine-motif--small"),
+            bottomBand
+        );
+
+    }
+
+    else {
+
+        core.appendChild(
+            createMotif(book.motif)
+        );
+
+        spine.append(topBand, core, bottomBand);
+
+    }
+
+
+    const tag =
+        document.createElement("span");
+
+    tag.className = "spine-tag";
+
+    tag.setAttribute("aria-hidden", "true");
+
+    tag.textContent = book.title;
+
+    const byline =
+        document.createElement("small");
+
+    byline.textContent = book.author;
+
+    tag.appendChild(byline);
+
+    spine.appendChild(tag);
+
+    return spine;
+
 }
 
 
 /* =========================================================
-   RESET
+   IVY
+   Leaves are grown along each .ivy-stem path so vines
+   look hand-placed but stay light in the markup.
 ========================================================= */
 
-* {
-    box-sizing: border-box;
-}
+const IVY_LEAF =
+    "M0 0C-2-2-6-2-8-4C-6-6-7-9-9-11C-5-11-3-10-2-9C-2-12-1-15 0-17C1-15 2-12 2-9C3-10 5-11 9-11C7-9 6-6 8-4C6-2 2-2 0 0Z";
 
-html {
-    min-height: 100%;
-}
+const IVY_VEINS =
+    "M0 0V-14M0-5L-6-9M0-5L6-9";
 
-body {
-    min-height: 100vh;
+const IVY_COLORS = [
+    "#3e5a36",
+    "#4f6b3c",
+    "#5f7d45",
+    "#6f8b4e",
+    "#7f9c56"
+];
 
-    margin: 0;
 
-    background: #b87971;
+function seededRandom(seed) {
 
-    color: var(--ink);
+    let value = seed;
 
-    font-family: var(--font-display);
+    return () => {
 
-    overflow-x: hidden;
-}
+        value =
+            (value * 16807) % 2147483647;
 
-button,
-input {
-    font: inherit;
-}
+        return (value - 1) / 2147483646;
 
-button {
-    cursor: pointer;
-}
+    };
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-svg {
-    display: block;
 }
 
 
-/* =========================================================
-   GENERAL SVG ICON STYLE
-========================================================= */
+function growIvy() {
 
-.search-icon,
-.theme-icon,
-.collapse-icon,
-.mobile-menu svg,
-.journal-arrow svg,
-.journal-close svg,
-.modal-close svg,
-.journal-snippet-widget button svg {
-    fill: none;
+    document
+        .querySelectorAll("svg.ivy")
+        .forEach((ivy) => {
 
-    stroke: currentColor;
-    stroke-width: 1.75;
+            const random =
+                seededRandom(
+                    Number(ivy.dataset.seed) || 7
+                );
 
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
+            const spacing =
+                Number(ivy.dataset.density) || 14;
 
+            const leafSize =
+                Number(ivy.dataset.leafSize) || 0.75;
 
-/* =========================================================
-   MOBILE OVERLAY
-========================================================= */
+            const leaves =
+                document.createElementNS(SVG_NS, "g");
 
-.mobile-overlay {
-    position: fixed;
+            ivy
+                .querySelectorAll(".ivy-stem")
+                .forEach((stem) => {
 
-    inset: 0;
+                    const length =
+                        stem.getTotalLength();
 
-    z-index: 900;
+                    let side = 1;
 
-    background: rgba(25, 13, 19, 0.72);
+                    for (
+                        let distance = 4;
+                        distance < length - 2;
+                        distance += spacing * (0.75 + random() * 0.5)
+                    ) {
 
-    opacity: 0;
-    visibility: hidden;
+                        const point =
+                            stem.getPointAtLength(distance);
 
-    transition:
-        opacity 0.25s ease,
-        visibility 0.25s ease;
-}
+                        const ahead =
+                            stem.getPointAtLength(
+                                Math.min(length, distance + 1)
+                            );
 
-.mobile-overlay.is-active {
-    opacity: 1;
-    visibility: visible;
+                        const heading =
+                            Math.atan2(
+                                ahead.y - point.y,
+                                ahead.x - point.x
+                            ) * 180 / Math.PI;
+
+                        const angle =
+                            heading +
+                            side * (55 + random() * 45);
+
+                        const scale =
+                            leafSize * (0.7 + random() * 0.55);
+
+                        const color =
+                            IVY_COLORS[
+                                Math.floor(random() * IVY_COLORS.length)
+                            ];
+
+                        const leaf =
+                            document.createElementNS(SVG_NS, "g");
+
+                        leaf.setAttribute(
+                            "transform",
+                            `translate(${point.x.toFixed(1)} ${point.y.toFixed(1)}) rotate(${(angle + 90).toFixed(1)}) scale(${scale.toFixed(2)})`
+                        );
+
+                        leaf.innerHTML =
+                            `<path d="M0 0V-3" stroke="#4a5a2c" stroke-width="1.4" />` +
+                            `<path d="${IVY_LEAF}" transform="translate(0 -2)" fill="${color}" stroke="#22301c" stroke-width="0.9" stroke-linejoin="round" />` +
+                            `<path d="${IVY_VEINS}" transform="translate(0 -2)" fill="none" stroke="#a9bf7a" stroke-width="0.6" stroke-opacity="0.55" />`;
+
+                        leaves.appendChild(leaf);
+
+                        side *= -1;
+
+                    }
+
+                });
+
+            ivy.appendChild(leaves);
+
+        });
+
 }
 
 
@@ -180,2720 +490,167 @@ svg {
    SIDEBAR
 ========================================================= */
 
-.library-sidebar {
-    position: fixed;
+function setupSidebar() {
 
-    top: 0;
-    left: 0;
+    if (sidebarCollapse) {
 
-    width: var(--sidebar-width);
-    height: 100vh;
-
-    display: flex;
-    flex-direction: column;
-
-    z-index: 1000;
-
-    color: var(--cream);
-
-    background:
-        radial-gradient(
-            circle at 50% 4%,
-            rgba(131, 77, 95, 0.2),
-            transparent 23%
-        ),
-        linear-gradient(
-            180deg,
-            #25171e 0%,
-            #21151a 52%,
-            #1a1115 100%
+        sidebarCollapse.addEventListener(
+            "click",
+            toggleSidebarCollapse
         );
 
-    border-right:
-        1px solid var(--sidebar-border);
+    }
 
-    box-shadow:
-        7px 0 24px rgba(29, 14, 18, 0.24);
 
-    transition:
-        width 0.35s ease,
-        transform 0.35s ease;
-}
+    if (menuButton) {
 
-
-/* =========================================================
-   SIDEBAR BRAND
-========================================================= */
-
-.sidebar-brand {
-    min-height: 194px;
-
-    padding:
-        14px
-        10px
-        12px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    position: relative;
-
-    transition:
-        min-height 0.35s ease;
-}
-
-
-/* =========================================================
-   LOGO ART
-========================================================= */
-
-.brand-illustration {
-    width: 142px;
-    height: 87px;
-
-    display: block;
-
-    position: relative;
-
-    margin-bottom: -2px;
-
-    transition:
-        width 0.3s ease,
-        opacity 0.3s ease,
-        transform 0.3s ease;
-}
-
-.brand-logo-art {
-    width: 100%;
-    height: 100%;
-
-    overflow: visible;
-}
-
-
-/* Moon */
-
-.logo-moon {
-    fill: #f3cb79;
-
-    filter:
-        drop-shadow(
-            0 0
-            4px rgba(243, 203, 121, 0.2)
-        );
-}
-
-
-/* Books */
-
-.logo-book {
-    stroke: #d3a06d;
-    stroke-width: 1.3;
-}
-
-.logo-book--bottom {
-    fill: #8f5361;
-}
-
-.logo-book--middle {
-    fill: #5e704f;
-}
-
-.logo-book--top {
-    fill: #b46f65;
-}
-
-.logo-book-line {
-    stroke: rgba(242, 208, 158, 0.58);
-    stroke-width: 1;
-}
-
-
-/* Cat */
-
-.logo-cat__body,
-.logo-cat__head,
-.logo-cat__ear {
-    fill: #121013;
-}
-
-.logo-cat__tail {
-    fill: none;
-
-    stroke: #121013;
-    stroke-width: 11;
-
-    stroke-linecap: round;
-
-    transform-origin: 116px 42px;
-
-    animation:
-        logoTailSwish
-        4.8s ease-in-out infinite;
-}
-
-.logo-cat__eye {
-    fill: none;
-
-    stroke: #b68876;
-    stroke-width: 1.2;
-
-    stroke-linecap: round;
-}
-
-
-/* Cup */
-
-.logo-cup__body {
-    fill: #9b5a63;
-
-    stroke: #d9a169;
-    stroke-width: 1.5;
-}
-
-.logo-cup__handle {
-    fill: none;
-
-    stroke: #d9a169;
-    stroke-width: 2.2;
-
-    stroke-linecap: round;
-}
-
-.logo-cup__steam {
-    fill: none;
-
-    stroke: rgba(242, 222, 196, 0.74);
-    stroke-width: 1.8;
-
-    stroke-linecap: round;
-
-    animation:
-        svgSteam
-        2.8s ease-in-out infinite;
-}
-
-.logo-cup__steam--two {
-    animation-delay: 1.1s;
-}
-
-
-/* =========================================================
-   WORDMARK
-========================================================= */
-
-.brand-wordmark {
-    margin-top: -2px;
-
-    color: #f5dec0;
-
-    font-family: var(--font-logo);
-    font-size: 38px;
-    line-height: 1;
-
-    text-shadow:
-        0 2px 0 #72434b,
-        0 5px 10px rgba(0, 0, 0, 0.38);
-
-    transition:
-        opacity 0.2s ease;
-}
-
-.brand-tagline {
-    margin:
-        9px
-        0
-        0;
-
-    color: #cf9f7e;
-
-    font-size: 8px;
-    font-weight: 700;
-
-    letter-spacing: 0.27em;
-
-    text-transform: uppercase;
-
-    transition:
-        opacity 0.2s ease;
-}
-
-
-/* =========================================================
-   SIDEBAR NAVIGATION
-========================================================= */
-
-.sidebar-nav {
-    flex: 1;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 4px;
-
-    padding:
-        8px
-        12px
-        16px;
-
-    overflow-y: auto;
-}
-
-.sidebar-nav::-webkit-scrollbar {
-    width: 4px;
-}
-
-.sidebar-nav::-webkit-scrollbar-thumb {
-    background: rgba(223, 177, 126, 0.18);
-
-    border-radius: 999px;
-}
-
-.sidebar-link {
-    min-height: 44px;
-
-    display: flex;
-    align-items: center;
-
-    gap: 12px;
-
-    padding:
-        9px
-        11px;
-
-    border-radius: 13px;
-
-    color: rgba(244, 222, 205, 0.82);
-
-    font-size: 12px;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.sidebar-link:hover {
-    color: #ffe9d1;
-
-    background:
-        rgba(202, 128, 134, 0.12);
-
-    transform: translateX(2px);
-}
-
-.sidebar-link--active {
-    color: #342027;
-
-    background:
-        linear-gradient(
-            135deg,
-            #db9896,
-            #c77e83
+        menuButton.addEventListener(
+            "click",
+            openMobileSidebar
         );
 
-    box-shadow:
-        0 6px 15px rgba(11, 4, 7, 0.23),
-        inset
-        0 1px
-        rgba(255, 255, 255, 0.3);
-}
-
-.sidebar-link__icon {
-    width: 34px;
-    height: 34px;
-
-    flex:
-        0 0 34px;
-
-    display: grid;
-    place-items: center;
-}
+    }
 
 
-/* =========================================================
-   ILLUSTRATED ICON ART
-========================================================= */
+    if (mobileOverlay) {
 
-.art-sprite {
-    position: absolute;
-
-    width: 0;
-    height: 0;
-
-    overflow: hidden;
-}
-
-.nav-art {
-    width: 34px;
-    height: 34px;
-
-    overflow: visible;
-
-    stroke: #2a1a1f;
-    stroke-width: 1.4;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-
-    filter:
-        drop-shadow(
-            0 3px
-            4px rgba(8, 3, 5, 0.35)
+        mobileOverlay.addEventListener(
+            "click",
+            closeMobileSidebar
         );
 
-    transform-origin:
-        center bottom;
+    }
 
-    transition:
-        transform 0.35s cubic-bezier(.2, .8, .2, 1),
-        filter 0.25s ease;
-}
 
-.sidebar-link:hover .nav-art {
-    transform:
-        translateY(-2px)
-        rotate(-5deg)
-        scale(1.08);
-
-    filter:
-        drop-shadow(
-            0 0
-            6px rgba(243, 203, 121, 0.3)
-        )
-        drop-shadow(
-            0 4px
-            4px rgba(8, 3, 5, 0.35)
+    const savedSidebarState =
+        localStorage.getItem(
+            "novellowSidebarCollapsed"
         );
-}
 
-.sidebar-link--active .nav-art {
-    transform: scale(1.06);
 
-    filter:
-        drop-shadow(
-            0 3px
-            3px rgba(74, 32, 42, 0.35)
+    if (savedSidebarState === "true") {
+
+        sidebar?.classList.add(
+            "is-collapsed"
         );
-}
 
-@media (prefers-reduced-motion: reduce) {
+        document.body.classList.add(
+            "sidebar-collapsed"
+        );
 
-    .nav-art {
-        transition: none;
     }
 
 }
 
-.sidebar-link__text {
-    white-space: nowrap;
 
-    transition:
-        opacity 0.2s ease;
-}
+function toggleSidebarCollapse() {
 
-.sidebar-divider {
-    height: 1px;
-
-    margin:
-        7px
-        9px;
-
-    background:
-        rgba(255, 255, 255, 0.075);
-}
+    if (!sidebar) {
+        return;
+    }
 
 
-/* =========================================================
-   USER PROFILE
-========================================================= */
-
-.sidebar-user {
-    min-height: 70px;
-
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
-
-    padding:
-        11px
-        13px;
-
-    border-top:
-        1px solid rgba(255, 255, 255, 0.07);
-}
-
-.sidebar-avatar {
-    width: 39px;
-    height: 39px;
-
-    flex:
-        0 0 39px;
-
-    display: grid;
-    place-items: center;
-
-    border:
-        1px solid #c98d78;
-
-    border-radius: 50%;
-
-    color: #f2ddc8;
-
-    background:
-        linear-gradient(
-            145deg,
-            #784759,
-            #593343
+    const collapsed =
+        sidebar.classList.toggle(
+            "is-collapsed"
         );
 
-    font-family: var(--font-reading);
-    font-size: 17px;
 
-    box-shadow:
-        0 4px 10px rgba(0, 0, 0, 0.22);
-}
-
-.sidebar-user__text {
-    min-width: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    transition:
-        opacity 0.2s ease;
-}
-
-.sidebar-user__text strong {
-    color: #f4e0ca;
-
-    font-size: 11px;
-}
-
-.sidebar-user__text span {
-    margin-top: 2px;
-
-    color: rgba(243, 220, 201, 0.5);
-
-    font-size: 8px;
-}
-
-
-/* =========================================================
-   SIDEBAR COLLAPSE
-========================================================= */
-
-.sidebar-collapse {
-    position: absolute;
-
-    right: -18px;
-    top: 47%;
-
-    width: 36px;
-    height: 60px;
-
-    display: grid;
-    place-items: center;
-
-    border:
-        1px solid #9a615c;
-
-    border-radius:
-        0
-        14px
-        14px
-        0;
-
-    color: #f1cdb8;
-
-    background:
-        linear-gradient(
-            180deg,
-            #583440,
-            #39222b
-        );
-
-    box-shadow:
-        6px 4px 12px rgba(31, 14, 18, 0.25);
-
-    z-index: 10;
-}
-
-.collapse-icon {
-    width: 23px;
-    height: 23px;
-
-    transition:
-        transform 0.35s ease;
-}
-
-.library-sidebar.is-collapsed .collapse-icon {
-    transform:
-        rotate(180deg);
-}
-
-
-/* =========================================================
-   COLLAPSED SIDEBAR
-========================================================= */
-
-.library-sidebar.is-collapsed {
-    width: var(--sidebar-collapsed);
-}
-
-.library-sidebar.is-collapsed .sidebar-brand {
-    min-height: 88px;
-
-    padding-top: 14px;
-}
-
-.library-sidebar.is-collapsed .brand-illustration {
-    width: 51px;
-    height: 51px;
-
-    overflow: hidden;
-
-    transform: scale(0.78);
-}
-
-.library-sidebar.is-collapsed .brand-wordmark,
-.library-sidebar.is-collapsed .brand-tagline,
-.library-sidebar.is-collapsed .sidebar-link__text,
-.library-sidebar.is-collapsed .sidebar-user__text {
-    width: 0;
-
-    opacity: 0;
-
-    pointer-events: none;
-}
-
-.library-sidebar.is-collapsed .sidebar-nav {
-    padding-left: 9px;
-    padding-right: 9px;
-}
-
-.library-sidebar.is-collapsed .sidebar-link {
-    justify-content: center;
-
-    padding-left: 0;
-    padding-right: 0;
-}
-
-.library-sidebar.is-collapsed .sidebar-link__icon {
-    flex:
-        0 0 auto;
-
-    width: auto;
-}
-
-.library-sidebar.is-collapsed .sidebar-user {
-    justify-content: center;
-
-    padding-left: 0;
-    padding-right: 0;
-}
-
-
-/* =========================================================
-   MAIN STAGE
-========================================================= */
-
-.library-stage {
-    min-height: 100vh;
-
-    margin-left:
-        var(--sidebar-width);
-
-    background: #b97870;
-
-    transition:
-        margin-left 0.35s ease;
-}
-
-body.sidebar-collapsed .library-stage {
-    margin-left:
-        var(--sidebar-collapsed);
-}
-
-
-/* =========================================================
-   TOP HEADER
-========================================================= */
-
-.scene-header {
-    min-height: 77px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 24px;
-
-    padding:
-        13px
-        27px;
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 90;
-
-    background:
-        rgba(243, 218, 196, 0.95);
-
-    border-bottom:
-        1px solid rgba(93, 49, 52, 0.14);
-
-    backdrop-filter: blur(10px);
-}
-
-.mobile-menu {
-    display: none;
-
-    width: 39px;
-    height: 39px;
-
-    border: 0;
-
-    color: #57333f;
-
-    background: transparent;
-}
-
-.mobile-menu svg {
-    width: 24px;
-    height: 24px;
-}
-
-.scene-heading {
-    min-width: 210px;
-}
-
-.scene-heading > span {
-    color: #8f5c53;
-
-    font-size: 8px;
-    font-weight: 700;
-
-    letter-spacing: 0.22em;
-
-    text-transform: uppercase;
-}
-
-.scene-heading h1 {
-    margin:
-        4px
-        0
-        0;
-
-    color: #3c2730;
-
-    font-family: var(--font-reading);
-    font-size: 25px;
-    font-weight: 600;
-}
-
-
-/* =========================================================
-   HEADER TOOLS
-========================================================= */
-
-.scene-tools {
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
-}
-
-.library-search {
-    width: clamp(
-        260px,
-        30vw,
-        470px
+    document.body.classList.toggle(
+        "sidebar-collapsed",
+        collapsed
     );
 
-    height: 45px;
 
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
-
-    padding:
-        0
-        16px;
-
-    border:
-        1px solid rgba(89, 48, 53, 0.2);
-
-    border-radius: 999px;
-
-    background:
-        rgba(252, 239, 222, 0.91);
-
-    box-shadow:
-        0 5px 14px rgba(65, 32, 36, 0.07);
-}
-
-.search-icon {
-    width: 18px;
-    height: 18px;
-
-    flex:
-        0 0 18px;
-
-    color: #7b5357;
-}
-
-.library-search input {
-    width: 100%;
-
-    padding: 0;
-
-    border: 0;
-    outline: 0;
-
-    color: #543b3f;
-
-    background: transparent;
-
-    font-family: var(--font-display);
-    font-size: 11px;
-}
-
-.library-search input::placeholder {
-    color: #97807c;
-}
-
-.round-tool {
-    width: 44px;
-    height: 44px;
-
-    display: grid;
-    place-items: center;
-
-    border:
-        1px solid rgba(89, 48, 53, 0.19);
-
-    border-radius: 50%;
-
-    color: #573845;
-
-    background:
-        rgba(252, 239, 222, 0.9);
-
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
-}
-
-.round-tool:hover {
-    transform: translateY(-2px);
-
-    background: #fff0dd;
-}
-
-.theme-icon {
-    width: 22px;
-    height: 22px;
-}
-
-.profile-button {
-    min-width: 120px;
-    height: 44px;
-
-    display: flex;
-    align-items: center;
-
-    gap: 9px;
-
-    padding:
-        5px
-        13px
-        5px
-        6px;
-
-    border:
-        1px solid rgba(89, 48, 53, 0.18);
-
-    border-radius: 999px;
-
-    color: #4e3039;
-
-    background:
-        rgba(252, 239, 222, 0.9);
-}
-
-.profile-avatar {
-    width: 32px;
-    height: 32px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 50%;
-
-    color: #eed6c3;
-
-    background:
-        linear-gradient(
-            145deg,
-            #744657,
-            #573543
-        );
-
-    font-family: var(--font-reading);
-    font-size: 15px;
-}
-
-.profile-label {
-    font-size: 9px;
-}
-
-
-/* =========================================================
-   LIBRARY ROOM
-========================================================= */
-
-.library-room {
-    min-height:
-        calc(100vh - 77px);
-
-    display: grid;
-
-    grid-template-columns:
-        minmax(575px, 1.07fr)
-        minmax(470px, 0.93fr);
-
-    position: relative;
-
-    overflow: hidden;
-}
-
-
-/* =========================================================
-   BOOKCASE ZONE
-========================================================= */
-
-.bookcase-zone {
-    min-width: 0;
-
-    position: relative;
-
-    padding:
-        105px
-        29px
-        35px;
-
-    background:
-        radial-gradient(
-            ellipse at 50% 0%,
-            rgba(235, 164, 108, 0.14),
-            transparent 29%
-        ),
-        linear-gradient(
-            90deg,
-            #3c211b 0%,
-            #563127 45%,
-            #3f231c 100%
-        );
-
-    border-right:
-        5px solid #2f1a15;
-
-    box-shadow:
-        inset
-        -14px
-        0
-        24px rgba(17, 7, 6, 0.18);
-}
-
-
-/* =========================================================
-   BOOKCASE TOP
-========================================================= */
-
-.bookcase-top {
-    position: absolute;
-
-    top: 0;
-    left: 0;
-    right: 0;
-
-    height: 108px;
-
-    border-bottom:
-        8px solid #301b16;
-
-    background:
-        linear-gradient(
-            180deg,
-            #67402f 0%,
-            #513025 72%,
-            #3d241d 100%
-        );
-
-    box-shadow:
-        inset
-        0 -12px
-        20px rgba(23, 10, 8, 0.22),
-        0 11px
-        16px rgba(20, 8, 7, 0.24);
-}
-
-.bookcase-top::before {
-    content: "";
-
-    position: absolute;
-
-    left: 24px;
-    right: 24px;
-    bottom: 12px;
-
-    height: 22px;
-
-    border:
-        2px solid rgba(191, 135, 81, 0.42);
-
-    border-radius:
-        70% 70% 14px 14px;
-
-    opacity: 0.48;
-}
-
-
-/* =========================================================
-   BOOKCASE SPARKLES
-========================================================= */
-
-.bookcase-sparkles {
-    position: absolute;
-
-    top: 14px;
-
-    width: 75px;
-    height: 45px;
-
-    pointer-events: none;
-}
-
-.bookcase-sparkles--left {
-    left: 24px;
-}
-
-.bookcase-sparkles--right {
-    right: 24px;
-}
-
-.bookcase-sparkles span {
-    position: absolute;
-
-    width: 7px;
-    height: 7px;
-
-    transform: rotate(45deg);
-
-    background: #d9aa6e;
-
-    opacity: 0.7;
-
-    box-shadow:
-        0 0
-        4px rgba(218, 174, 111, 0.2);
-}
-
-.bookcase-sparkles span:nth-child(1) {
-    left: 8px;
-    top: 8px;
-
-    width: 5px;
-    height: 5px;
-}
-
-.bookcase-sparkles span:nth-child(2) {
-    left: 33px;
-    top: 24px;
-}
-
-.bookcase-sparkles span:nth-child(3) {
-    right: 3px;
-    top: 6px;
-
-    width: 4px;
-    height: 4px;
-}
-
-
-/* =========================================================
-   TOP SLEEPING CAT
-========================================================= */
-
-.top-sleeping-cat {
-    position: absolute;
-
-    left: 34px;
-    bottom: 35px;
-
-    width: 145px;
-    height: 70px;
-
-    z-index: 5;
-
-    overflow: visible;
-}
-
-.top-cat__body,
-.top-cat__head,
-.top-cat__ear {
-    fill: #171315;
-}
-
-.top-cat__tail {
-    fill: none;
-
-    stroke: #171315;
-    stroke-width: 15;
-
-    stroke-linecap: round;
-
-    transform-origin: 136px 45px;
-
-    animation:
-        catTailSlow
-        5.5s ease-in-out infinite;
-}
-
-.top-cat__face {
-    fill: none;
-
-    stroke: #7f5a58;
-    stroke-width: 1.3;
-
-    stroke-linecap: round;
-}
-
-
-/* =========================================================
-   BOOKCASE TITLE
-========================================================= */
-
-.bookcase-title {
-    position: absolute;
-
-    left: 50%;
-    bottom: 13px;
-
-    transform: translateX(-50%);
-
-    min-width: 225px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 10px;
-
-    padding:
-        7px
-        19px;
-
-    border:
-        2px solid #4d2e23;
-
-    border-radius: 8px;
-
-    color: #43281f;
-
-    background:
-        linear-gradient(
-            180deg,
-            #dfb27e,
-            #c98c61
-        );
-
-    box-shadow:
-        inset
-        0 1px
-        rgba(255, 255, 255, 0.38),
-        0 4px
-        8px rgba(20, 8, 5, 0.25);
-
-    font-family: var(--font-display);
-    font-size: 14px;
-
-    letter-spacing: 0.08em;
-
-    text-transform: uppercase;
-
-    z-index: 7;
-}
-
-.bookcase-title__ornament {
-    color: #81523d;
-
-    font-size: 9px;
-}
-
-
-/* =========================================================
-   ADD BOOK BUTTON
-========================================================= */
-
-.add-book-button {
-    position: absolute;
-
-    right: 27px;
-    bottom: 13px;
-
-    padding:
-        8px
-        14px;
-
-    border:
-        1px solid #704332;
-
-    border-radius: 999px;
-
-    color: #482d24;
-
-    background:
-        linear-gradient(
-            180deg,
-            #dba274,
-            #c88560
-        );
-
-    font-size: 9px;
-
-    box-shadow:
-        0 4px
-        9px rgba(25, 9, 7, 0.23);
-
-    z-index: 8;
-
-    transition:
-        transform 0.2s ease,
-        filter 0.2s ease;
-}
-
-.add-book-button:hover {
-    transform: translateY(-2px);
-
-    filter: brightness(1.07);
-}
-
-
-/* =========================================================
-   SHELF SECTIONS
-========================================================= */
-
-.shelf-section {
-    position: relative;
-
-    margin-bottom: 9px;
-
-    border-left:
-        8px solid #321c17;
-
-    border-right:
-        8px solid #321c17;
-
-    background: #291713;
-}
-
-.shelf-interior {
-    min-height: 186px;
-
-    position: relative;
-
-    display: flex;
-    align-items: flex-end;
-
-    padding:
-        27px
-        25px
-        9px;
-
-    overflow: hidden;
-
-    background:
-        radial-gradient(
-            ellipse at 50% 0%,
-            rgba(220, 148, 88, 0.085),
-            transparent 60%
-        ),
-        linear-gradient(
-            180deg,
-            #291713,
-            #392019
-        );
-
-    box-shadow:
-        inset
-        0 17px
-        22px rgba(0, 0, 0, 0.24);
-}
-
-.shelf-books {
-    min-width: 0;
-
-    display: flex;
-    align-items: flex-end;
-
-    gap: 5px;
-
-    position: relative;
-
-    z-index: 4;
-}
-
-
-/* =========================================================
-   BOOK SPINES
-========================================================= */
-
-.book-spine {
-    --book-color: #714858;
-    --book-accent: #d2ab75;
-
-    width: clamp(
-        44px,
-        4vw,
-        59px
+    localStorage.setItem(
+        "novellowSidebarCollapsed",
+        String(collapsed)
     );
 
-    height: 140px;
-
-    flex:
-        0 1 59px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-
-    padding:
-        10px
-        5px;
-
-    position: relative;
-
-    border:
-        1px solid rgba(37, 19, 18, 0.72);
-
-    border-radius:
-        4px
-        7px
-        5px
-        4px;
-
-    color: var(--book-accent);
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0, 0, 0, 0.22),
-            transparent 14%,
-            rgba(255, 255, 255, 0.05) 52%,
-            rgba(0, 0, 0, 0.14)
-        ),
-        var(--book-color);
-
-    box-shadow:
-        inset
-        3px
-        0
-        0 rgba(255, 255, 255, 0.06),
-        inset
-        -3px
-        0
-        0 rgba(0, 0, 0, 0.13),
-        2px
-        5px
-        6px rgba(0, 0, 0, 0.28);
-
-    transform-origin:
-        center bottom;
-
-    transition:
-        transform 0.35s cubic-bezier(.2, .8, .2, 1),
-        filter 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-.book-spine::before,
-.book-spine::after {
-    content: "";
-
-    position: absolute;
-
-    left: 6px;
-    right: 6px;
-
-    height: 1px;
-
-    background: var(--book-accent);
-
-    opacity: 0.48;
-}
-
-.book-spine::before {
-    top: 25px;
-}
-
-.book-spine::after {
-    bottom: 23px;
-}
-
-.book-spine:hover {
-    transform:
-        translateY(-12px)
-        rotate(-1deg);
-
-    filter:
-        brightness(1.09);
-
-    box-shadow:
-        4px
-        13px
-        13px rgba(0, 0, 0, 0.32);
-}
-
-.book-spine.is-selected {
-    transform:
-        translateY(-28px)
-        rotate(-3deg)
-        scale(1.045);
-
-    z-index: 15;
-
-    filter:
-        brightness(1.07);
-
-    box-shadow:
-        0 0
-        0 2px rgba(226, 181, 115, 0.2),
-        7px
-        17px
-        18px rgba(0, 0, 0, 0.34);
-}
-
-.book-spine--short {
-    height: 119px;
-}
-
-.book-spine--medium {
-    height: 130px;
-}
-
-.book-spine--tall {
-    height: 153px;
-}
-
-.spine-title {
-    max-height: 93px;
-
-    overflow: hidden;
-
-    color: var(--book-accent);
-
-    writing-mode: vertical-rl;
-
-    transform: rotate(180deg);
-
-    font-family: var(--font-reading);
-    font-size: 11px;
-    font-weight: 700;
-
-    letter-spacing: 0.035em;
-}
-
-.spine-ornament,
-.spine-detail {
-    font-size: 10px;
 }
 
 
-/* =========================================================
-   GHOST
-========================================================= */
+function openMobileSidebar() {
 
-.shelf-ghost {
-    position: absolute;
-
-    right: 12px;
-    bottom: 12px;
-
-    width: 37px;
-    height: 49px;
-
-    border-radius:
-        50% 50% 17px 17px;
-
-    background: #e9dac5;
-
-    box-shadow:
-        0 5px
-        8px rgba(0, 0, 0, 0.24);
-
-    z-index: 7;
-}
-
-.shelf-ghost::before,
-.shelf-ghost::after {
-    content: "";
-
-    position: absolute;
-
-    bottom: -5px;
-
-    width: 16px;
-    height: 13px;
-
-    border-radius: 50%;
-
-    background: #e9dac5;
-}
-
-.shelf-ghost::before {
-    left: 0;
-}
-
-.shelf-ghost::after {
-    right: 0;
-}
-
-.shelf-ghost__eye {
-    position: absolute;
-
-    top: 19px;
-
-    width: 4px;
-    height: 5px;
-
-    border-radius: 50%;
-
-    background: #47383a;
-}
-
-.shelf-ghost__eye:nth-child(1) {
-    left: 10px;
-}
-
-.shelf-ghost__eye:nth-child(2) {
-    right: 10px;
-}
-
-
-/* =========================================================
-   CANDLE
-========================================================= */
-
-.shelf-candle {
-    position: absolute;
-
-    right: 14px;
-    bottom: 7px;
-
-    width: 30px;
-    height: 60px;
-
-    z-index: 6;
-}
-
-.shelf-candle__wax {
-    position: absolute;
-
-    left: 3px;
-    bottom: 0;
-
-    width: 24px;
-    height: 44px;
-
-    border-radius:
-        6px 6px 3px 3px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #cdb392,
-            #f0dab6 47%,
-            #c3a587
-        );
-
-    box-shadow:
-        0 5px
-        10px rgba(0, 0, 0, 0.31);
-}
-
-.shelf-candle__flame {
-    position: absolute;
-
-    left: 10px;
-    top: 0;
-
-    width: 10px;
-    height: 18px;
-
-    border-radius:
-        80%
-        20%
-        70%
-        35%;
-
-    background: #ffd377;
-
-    filter:
-        drop-shadow(
-            0 0
-            7px #e18c3b
-        );
-
-    animation:
-        candleFlicker
-        1.7s infinite alternate;
-}
-
-
-/* =========================================================
-   POTTED PLANT
-========================================================= */
-
-.shelf-potted-plant {
-    position: absolute;
-
-    right: 12px;
-    bottom: 6px;
-
-    width: 51px;
-    height: 69px;
-
-    z-index: 6;
-}
-
-.plant-pot {
-    position: absolute;
-
-    left: 10px;
-    bottom: 0;
-
-    width: 32px;
-    height: 25px;
-
-    border-radius:
-        4px
-        4px
-        11px
-        11px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #a96750,
-            #c38162,
-            #925641
-        );
-}
-
-.plant-leaf {
-    position: absolute;
-
-    bottom: 22px;
-
-    width: 18px;
-    height: 37px;
-
-    border-radius:
-        80%
-        20%
-        80%
-        20%;
-
-    background:
-        linear-gradient(
-            180deg,
-            #748062,
-            #526047
-        );
-
-    transform-origin:
-        bottom center;
-}
-
-.plant-leaf--one {
-    left: 5px;
-
-    transform: rotate(-37deg);
-}
-
-.plant-leaf--two {
-    left: 18px;
-
-    height: 43px;
-
-    transform: rotate(-6deg);
-}
-
-.plant-leaf--three {
-    right: 2px;
-
-    transform:
-        rotate(39deg)
-        scaleX(-1);
-}
-
-
-/* =========================================================
-   WOOD SHELF
-========================================================= */
-
-.wood-shelf {
-    height: 28px;
-
-    position: relative;
-
-    border-top:
-        2px solid #88583f;
-
-    border-bottom:
-        5px solid #2a1713;
-
-    background:
-        linear-gradient(
-            180deg,
-            #87573f 0%,
-            #5e382b 55%,
-            #3d241d 100%
-        );
-
-    box-shadow:
-        0 8px
-        12px rgba(0, 0, 0, 0.32);
-}
-
-.wood-shelf::before {
-    content: "";
-
-    position: absolute;
-
-    left: 15px;
-    right: 15px;
-    top: 5px;
-
-    height: 1px;
-
-    background:
-        rgba(217, 158, 109, 0.2);
-}
-
-.shelf-label {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    min-width: 170px;
-
-    padding:
-        3px
-        14px;
-
-    border:
-        1px solid #60392b;
-
-    border-radius: 4px;
-
-    color: #4c3027;
-
-    background:
-        linear-gradient(
-            180deg,
-            #dfa878,
-            #c78961
-        );
-
-    font-size: 9px;
-
-    letter-spacing: 0.05em;
-
-    text-align: center;
-    text-transform: uppercase;
-
-    box-shadow:
-        0 2px
-        5px rgba(0, 0, 0, 0.25);
-}
-
-
-/* =========================================================
-   ADD SHELF
-========================================================= */
-
-.add-shelf-button {
-    width: 100%;
-
-    margin-top: 18px;
-
-    padding:
-        13px
-        18px;
-
-    border:
-        1px dashed rgba(221, 169, 118, 0.4);
-
-    border-radius: 10px;
-
-    color: #d8af89;
-
-    background:
-        rgba(29, 15, 13, 0.29);
-
-    font-size: 9px;
-    font-weight: 700;
-
-    letter-spacing: 0.1em;
-
-    text-transform: uppercase;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease;
-}
-
-.add-shelf-button:hover {
-    color: #f0caa2;
-
-    background:
-        rgba(54, 29, 23, 0.5);
-}
-
-.add-shelf-button span {
-    margin-right: 8px;
-
-    color: #e1aa70;
-
-    font-size: 15px;
-}
-
-
-/* =========================================================
-   JOURNAL ZONE
-========================================================= */
-
-.journal-zone {
-    min-width: 0;
-
-    min-height:
-        calc(100vh - 77px);
-
-    position: relative;
-
-    display: flex;
-    flex-direction: column;
-
-    padding:
-        163px
-        33px
-        30px;
-
-    overflow: hidden;
-
-    background:
-        radial-gradient(
-            circle at 73% 18%,
-            rgba(247, 190, 145, 0.13),
-            transparent 26%
-        ),
-        linear-gradient(
-            180deg,
-            #bc8176 0%,
-            #a96863 55%,
-            #945a55 100%
-        );
-}
-
-
-/* =========================================================
-   WINDOW
-========================================================= */
-
-.moon-window {
-    position: absolute;
-
-    top: 21px;
-    right: 31px;
-
-    width: min(
-        59%,
-        380px
+    sidebar?.classList.add(
+        "is-open"
     );
 
-    height: 205px;
 
-    overflow: hidden;
-
-    border:
-        10px solid #693d32;
-
-    border-bottom-width: 14px;
-
-    border-radius:
-        50% 50% 7px 7px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #3f3852 0%,
-            #54465b 48%,
-            #986965 100%
-        );
-
-    box-shadow:
-        inset
-        0 0
-        0 3px #40251f,
-        0 11px
-        21px rgba(44, 23, 24, 0.25);
-
-    z-index: 1;
-}
-
-.moon-window__moon {
-    position: absolute;
-
-    right: 43px;
-    top: 18px;
-
-    color: #ffe2a3;
-
-    font-size: 58px;
-
-    transform: rotate(-11deg);
-
-    filter:
-        drop-shadow(
-            0 0
-            9px rgba(255, 219, 153, 0.3)
-        );
-}
-
-.moon-window__stars span {
-    position: absolute;
-
-    color: #f6cfa0;
-
-    font-size: 13px;
-}
-
-.moon-window__stars span:nth-child(1) {
-    left: 42px;
-    top: 37px;
-}
-
-.moon-window__stars span:nth-child(2) {
-    left: 93px;
-    top: 24px;
-
-    font-size: 9px;
-}
-
-.moon-window__stars span:nth-child(3) {
-    left: 121px;
-    top: 61px;
-}
-
-.moon-window__stars span:nth-child(4) {
-    left: 70px;
-    top: 74px;
-}
-
-.moon-window__hills {
-    position: absolute;
-
-    left: -10%;
-    right: -10%;
-    bottom: -34px;
-
-    height: 96px;
-
-    border-radius:
-        50% 50% 0 0;
-
-    background: #38453f;
-
-    box-shadow:
-        0 -28px
-        0 rgba(60, 74, 62, 0.55);
-}
-
-.moon-window__bar {
-    position: absolute;
-
-    background: #6c4034;
-
-    box-shadow:
-        0 0
-        0 2px #3a211d;
-}
-
-.moon-window__bar--vertical {
-    left: 50%;
-    top: 0;
-
-    width: 8px;
-    height: 100%;
-}
-
-.moon-window__bar--horizontal {
-    left: 0;
-    top: 55%;
-
-    width: 100%;
-    height: 8px;
-}
-
-
-/* =========================================================
-   JOURNAL WALL DECOR
-========================================================= */
-
-.journal-wall-decor {
-    position: absolute;
-
-    top: 46px;
-    left: 38px;
-
-    width: 210px;
-    height: 105px;
-
-    z-index: 4;
-
-    border-bottom:
-        9px solid #684032;
-
-    filter:
-        drop-shadow(
-            0 7px
-            5px rgba(53, 26, 27, 0.18)
-        );
-}
-
-.journal-wall-book-stack {
-    position: absolute;
-
-    left: 0;
-    bottom: 9px;
-
-    width: 95px;
-}
-
-.journal-wall-book-stack span {
-    display: block;
-
-    height: 17px;
-
-    margin-top: 2px;
-
-    border:
-        1px solid #58362f;
-
-    border-radius:
-        2px 5px 5px 2px;
-}
-
-.journal-wall-book-stack span:nth-child(1) {
-    width: 75px;
-
-    margin-left: 13px;
-
-    background: #775267;
-}
-
-.journal-wall-book-stack span:nth-child(2) {
-    width: 91px;
-
-    background: #4d6553;
-}
-
-.journal-wall-book-stack span:nth-child(3) {
-    width: 81px;
-
-    margin-left: 7px;
-
-    background: #a96955;
-}
-
-.journal-wall-candle {
-    position: absolute;
-
-    left: 103px;
-    bottom: 7px;
-
-    width: 27px;
-    height: 64px;
-}
-
-.journal-wall-candle__body {
-    position: absolute;
-
-    bottom: 0;
-    left: 3px;
-
-    width: 22px;
-    height: 46px;
-
-    border-radius:
-        5px 5px 3px 3px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #c8ad8b,
-            #ecd4b0,
-            #baa080
-        );
-}
-
-.journal-wall-candle__flame {
-    position: absolute;
-
-    top: 0;
-    left: 10px;
-
-    width: 9px;
-    height: 18px;
-
-    border-radius:
-        80%
-        20%
-        70%
-        35%;
-
-    background: #ffd176;
-
-    filter:
-        drop-shadow(
-            0 0
-            6px #e48636
-        );
-
-    animation:
-        candleFlicker
-        1.5s alternate infinite;
-}
-
-.journal-wall-mushroom {
-    position: absolute;
-
-    right: 10px;
-    bottom: 9px;
-
-    width: 48px;
-    height: 57px;
-}
-
-.journal-wall-mushroom__stem {
-    position: absolute;
-
-    left: 17px;
-    bottom: 0;
-
-    width: 15px;
-    height: 36px;
-
-    border-radius: 6px;
-
-    background: #d4bea1;
-}
-
-.journal-wall-mushroom__cap {
-    position: absolute;
-
-    top: 4px;
-    left: 3px;
-
-    width: 43px;
-    height: 26px;
-
-    border-radius:
-        50% 50% 35% 35%;
-
-    background:
-        linear-gradient(
-            180deg,
-            #a65d52,
-            #85463f
-        );
-}
-
-
-/* =========================================================
-   OPEN JOURNAL
-========================================================= */
-
-.journal-book {
-    width: min(
-        760px,
-        100%
+    mobileOverlay?.classList.add(
+        "is-active"
     );
 
-    min-height: 448px;
 
-    margin: 0 auto;
-
-    display: grid;
-
-    grid-template-columns:
-        1fr
-        1fr;
-
-    position: relative;
-
-    z-index: 14;
-
-    filter:
-        drop-shadow(
-            0 22px
-            25px rgba(52, 24, 26, 0.33)
-        );
-
-    transform-origin: center;
-
-    transition:
-        transform 0.4s ease;
-}
-
-.journal-book.is-changing {
-    animation:
-        journalOpen
-        0.55s ease;
-}
-
-
-/* =========================================================
-   JOURNAL PAGES
-========================================================= */
-
-.journal-page {
-    min-width: 0;
-
-    min-height: 445px;
-
-    position: relative;
-
-    padding:
-        45px
-        34px
-        31px;
-
-    overflow: hidden;
-
-    border:
-        2px solid #704438;
-
-    background:
-        radial-gradient(
-            circle at 25% 10%,
-            rgba(190, 144, 99, 0.075),
-            transparent 21%
-        ),
-        linear-gradient(
-            90deg,
-            #ead8bd,
-            #f3e5cf
-        );
-
-    box-shadow:
-        inset
-        0 0
-        24px rgba(126, 88, 65, 0.14);
-}
-
-.journal-page::before {
-    content: "";
-
-    position: absolute;
-
-    inset: 10px;
-
-    border:
-        1px solid rgba(120, 78, 58, 0.14);
-
-    pointer-events: none;
-}
-
-.journal-page--left {
-    border-radius:
-        18px 5px 5px 18px;
-
-    transform:
-        perspective(850px)
-        rotateY(2.2deg);
-}
-
-.journal-page--right {
-    border-radius:
-        5px 18px 18px 5px;
-
-    transform:
-        perspective(850px)
-        rotateY(-2.2deg);
-}
-
-.journal-spine {
-    position: absolute;
-
-    left: 50%;
-    top: 13px;
-    bottom: 13px;
-
-    width: 17px;
-
-    transform:
-        translateX(-50%);
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(92, 54, 44, 0.25),
-            rgba(255, 255, 255, 0.3),
-            rgba(92, 54, 44, 0.3)
-        );
-
-    filter: blur(2px);
-
-    pointer-events: none;
-
-    z-index: 17;
-}
-
-
-/* =========================================================
-   JOURNAL TABS
-========================================================= */
-
-.journal-tabs {
-    position: absolute;
-
-    top: -28px;
-    left: 50%;
-
-    transform:
-        translateX(-50%);
-
-    display: flex;
-
-    gap: 4px;
-
-    z-index: 30;
-}
-
-.journal-tab {
-    padding:
-        9px
-        17px;
-
-    border:
-        1px solid #81534c;
-
-    border-bottom: 0;
-
-    border-radius:
-        8px 8px 0 0;
-
-    color: #684849;
-
-    background: #dcae9b;
-
-    font-size: 9px;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-.journal-tab:hover {
-    transform: translateY(-2px);
-}
-
-.journal-tab--active {
-    color: #3a2927;
-
-    background: #ebcdb1;
-}
-
-
-/* =========================================================
-   COVER
-========================================================= */
-
-.journal-cover-wrap {
-    width: min(
-        220px,
-        82%
+    mobileOverlay?.setAttribute(
+        "aria-hidden",
+        "false"
     );
 
-    aspect-ratio: 0.67;
-
-    margin:
-        4px
-        auto
-        0;
-
-    position: relative;
 }
 
-.journal-cover-placeholder,
-.journal-cover-image {
-    width: 100%;
-    height: 100%;
 
-    border:
-        8px solid #3c2927;
+function closeMobileSidebar() {
 
-    border-radius:
-        4px 9px 8px 4px;
+    sidebar?.classList.remove(
+        "is-open"
+    );
 
-    box-shadow:
-        0 8px
-        15px rgba(49, 28, 27, 0.28);
+
+    mobileOverlay?.classList.remove(
+        "is-active"
+    );
+
+
+    mobileOverlay?.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
 }
 
-.journal-cover-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 
-    padding:
-        30px
-        20px;
+/* =========================================================
+   BOOK INTERACTION
+========================================================= */
 
-    position: relative;
+function setupBookInteractions() {
 
-    overflow: hidden;
-
-    color: #efcd91;
-
-    text-align: center;
-
-    background:
-        linear-gradient(
-            180deg,
-            #313341,
-            #263b3b 70%,
-            #452c3c
+    const books =
+        document.querySelectorAll(
+            ".book-spine"
         );
-}
 
-.journal-cover-placeholder::before {
-    content: "";
 
-    position: absolute;
+    books.forEach((book) => {
 
-    inset: 10px;
+        book.addEventListener(
+            "click",
+            () => {
 
-    border:
-        1px solid #c49363;
+                selectBook(book);
 
-    border-radius:
-        60% 60% 8px 8px;
+            }
+        );
 
-    opacity: 0.74;
-}
+    });
 
-.cover-moon {
-    z-index: 2;
 
-    font-size: 41px;
-}
+    /*
+        Start with the book currently being read
+        pulled from the shelf.
+    */
 
-.journal-cover-placeholder strong {
-    margin-top: 18px;
+    const currentBook =
+        [...books].find((book) =>
+            book.dataset.bookTitle === "A Willow of Stars"
+        ) || books[0];
 
-    z-index: 2;
+    selectBook(
+        currentBook,
+        { quiet: true }
+    );
 
-    font-family: var(--font-reading);
-    font-size: 25px;
-    line-height: 0.95;
-}
-
-.journal-cover-placeholder small {
-    margin-top: 10px;
-
-    z-index: 2;
-
-    font-size: 9px;
-
-    letter-spacing: 0.15em;
-
-    text-transform: uppercase;
-}
-
-.cover-landscape {
-    position: absolute;
-
-    left: -15%;
-    right: -15%;
-    bottom: -13px;
-
-    height: 90px;
-}
-
-.cover-landscape span {
-    position: absolute;
-
-    bottom: 0;
-
-    width: 0;
-    height: 0;
-
-    border-left:
-        58px solid transparent;
-
-    border-right:
-        58px solid transparent;
-
-    border-bottom:
-        105px solid #6a4252;
-}
-
-.cover-landscape span:nth-child(1) {
-    left: 0;
-}
-
-.cover-landscape span:nth-child(2) {
-    left: 28%;
-
-    border-bottom-color: #4b4054;
-}
-
-.cover-landscape span:nth-child(3) {
-    right: 0;
-
-    border-bottom-color: #344746;
-}
-
-.journal-cover-image {
-    object-fit: cover;
-}
-
-
-/* =========================================================
-   PRESSED FLOWER
-========================================================= */
-
-.pressed-flower {
-    position: absolute;
-
-    right: 24px;
-    bottom: 22px;
-
-    width: 62px;
-    height: 88px;
-
-    transform: rotate(12deg);
-
-    opacity: 0.75;
-}
-
-.pressed-flower::before {
-    content: "";
-
-    position: absolute;
-
-    left: 31px;
-    bottom: 0;
-
-    width: 2px;
-    height: 69px;
-
-    background: #6b7356;
-}
-
-.pressed-flower span {
-    position: absolute;
-
-    width: 22px;
-    height: 14px;
-
-    border-radius:
-        70%
-        20%
-        70%
-        20%;
-
-    background: #77815f;
-}
-
-.pressed-flower span:nth-child(1) {
-    left: 10px;
-    top: 34px;
-
-    transform: rotate(26deg);
-}
-
-.pressed-flower span:nth-child(2) {
-    left: 32px;
-    top: 43px;
-
-    transform:
-        scaleX(-1)
-        rotate(25deg);
-}
-
-.pressed-flower span:nth-child(3) {
-    left: 18px;
-    top: 15px;
-
-    border-radius: 50%;
-
-    background: #91697c;
-}
-
-
-/* =========================================================
-   JOURNAL CONTENT
-========================================================= */
-
-.journal-kicker {
-    margin:
-        0
-        0
-        5px;
-
-    color: #956864;
-
-    font-size: 8px;
-    font-weight: 700;
-
-    letter-spacing: 0.15em;
-
-    text-transform: uppercase;
-}
-
-.journal-page h2 {
-    margin:
-        8px
-        0
-        0;
-
-    color: #3c292b;
-
-    font-family: var(--font-reading);
-    font-size: 29px;
-    font-weight: 700;
-    line-height: 1;
-}
-
-.journal-author {
-    margin:
-        7px
-        0
-        11px;
-
-    color: #765d58;
-
-    font-family: var(--font-reading);
-    font-size: 15px;
-}
-
-.journal-rating {
-    margin-bottom: 15px;
-
-    color: #c37b39;
-
-    font-size: 17px;
-
-    letter-spacing: 2px;
-}
-
-.journal-note {
-    padding:
-        11px
-        14px;
-
-    position: relative;
-
-    border:
-        1px solid rgba(141, 91, 73, 0.17);
-
-    background:
-        rgba(215, 178, 150, 0.22);
-
-    transform: rotate(-0.6deg);
-}
-
-.journal-note__quote {
-    position: absolute;
-
-    left: 7px;
-    top: -6px;
-
-    color: #b18172;
-
-    font-family: var(--font-reading);
-    font-size: 33px;
-}
-
-.journal-note p {
-    margin: 0;
-
-    padding-left: 13px;
-
-    color: #624944;
-
-    font-family: var(--font-hand);
-    font-size: 15px;
-    line-height: 1.25;
-}
-
-.journal-entry {
-    margin-top: 19px;
-}
-
-.journal-entry time {
-    color: #82645e;
-
-    font-family: var(--font-hand);
-    font-size: 12px;
-}
-
-.journal-entry p {
-    margin:
-        6px
-        0
-        0;
-
-    color: #4c3937;
-
-    font-family: var(--font-hand);
-    font-size: 16px;
-    line-height: 1.35;
-}
-
-.journal-edit-button {
-    margin-top: 16px;
-
-    padding:
-        8px
-        14px;
-
-    border:
-        1px solid #99665c;
-
-    border-radius: 999px;
-
-    color: #5f3f41;
-
-    background: #e3b9a6;
-
-    font-size: 9px;
 }
 
 
@@ -2901,1035 +658,455 @@ body.sidebar-collapsed .library-stage {
    JOURNAL CONTROLS
 ========================================================= */
 
-.journal-close {
-    position: absolute;
+function setupJournalControls() {
 
-    top: 16px;
-    right: 17px;
-
-    width: 28px;
-    height: 28px;
-
-    display: grid;
-    place-items: center;
-
-    border:
-        1px solid rgba(100, 66, 56, 0.22);
-
-    border-radius: 50%;
-
-    color: #5c3c3d;
-
-    background:
-        rgba(237, 214, 185, 0.75);
-}
-
-.journal-close svg {
-    width: 16px;
-    height: 16px;
-}
-
-.journal-arrow {
-    position: absolute;
-
-    top: 48%;
-
-    width: 34px;
-    height: 44px;
-
-    display: grid;
-    place-items: center;
-
-    border: 0;
-
-    border-radius: 999px;
-
-    color: #f2d4bb;
-
-    background:
-        linear-gradient(
-            180deg,
-            #8f5d57,
-            #754943
+    document
+        .querySelector(".journal-arrow--left")
+        ?.addEventListener(
+            "click",
+            () => stepBook(-1)
         );
 
-    z-index: 18;
+
+    document
+        .querySelector(".journal-arrow--right")
+        ?.addEventListener(
+            "click",
+            () => stepBook(1)
+        );
+
+
+    const tabs =
+        document.querySelectorAll(".journal-tab");
+
+    tabs.forEach((tab) => {
+
+        tab.addEventListener(
+            "click",
+            () => {
+
+                tabs.forEach((item) => {
+
+                    const active =
+                        item === tab;
+
+                    item.classList.toggle(
+                        "journal-tab--active",
+                        active
+                    );
+
+                    item.setAttribute(
+                        "aria-selected",
+                        String(active)
+                    );
+
+                });
+
+            }
+        );
+
+    });
+
 }
 
-.journal-arrow svg {
-    width: 20px;
-    height: 20px;
+
+function stepBook(direction) {
+
+    const books =
+        [...document.querySelectorAll(".book-spine")]
+            .filter((book) => book.style.display !== "none");
+
+    if (!books.length) {
+        return;
+    }
+
+
+    const current =
+        books.findIndex((book) =>
+            book.classList.contains("is-selected")
+        );
+
+    const next =
+        (current + direction + books.length) % books.length;
+
+    selectBook(books[next]);
+
 }
 
-.journal-arrow--left {
-    left: 12px;
-}
 
-.journal-arrow--right {
-    right: 12px;
-}
+function selectBook(book, options = {}) {
+
+    if (!book) {
+        return;
+    }
 
 
-/* =========================================================
-   LOWER JOURNAL WIDGETS
-========================================================= */
+    /*
+        Pull selected book from shelf.
+    */
 
-.journal-lower-grid {
-    width: min(
-        700px,
-        92%
+    document
+        .querySelectorAll(".book-spine")
+        .forEach((item) => {
+
+            item.classList.remove(
+                "is-selected"
+            );
+
+        });
+
+
+    book.classList.add(
+        "is-selected"
     );
 
-    display: grid;
 
-    grid-template-columns:
-        1fr
-        1fr;
+    /*
+        Read book information.
+    */
 
-    gap: 13px;
+    const title =
+        book.dataset.bookTitle ||
+        "Untitled";
 
-    margin:
-        19px
-        auto
-        0;
+    const author =
+        book.dataset.bookAuthor ||
+        "Unknown Author";
 
-    position: relative;
+    const cover =
+        book.dataset.cover || "";
 
-    z-index: 13;
-}
 
-.paper-widget {
-    min-height: 116px;
+    /*
+        Update open journal.
+    */
 
-    position: relative;
+    if (journalBookTitle) {
+        journalBookTitle.textContent =
+            title;
+    }
 
-    padding:
-        20px
-        18px
-        14px;
 
-    border:
-        2px solid #744b43;
+    if (journalBookAuthor) {
 
-    border-radius: 10px;
+        journalBookAuthor.textContent =
+            `by ${author}`;
 
-    background:
-        linear-gradient(
-            180deg,
-            #efdfca,
-            #e5ceb3
-        );
+    }
 
-    box-shadow:
-        0 10px
-        18px rgba(53, 25, 26, 0.22);
-}
 
-.paper-widget::before {
-    content: "";
+    if (journalCoverTitle) {
+        journalCoverTitle.textContent =
+            title;
+    }
 
-    position: absolute;
 
-    inset: 8px;
+    if (journalCoverAuthor) {
+        journalCoverAuthor.textContent =
+            author;
+    }
 
-    border:
-        1px solid rgba(121, 77, 61, 0.13);
 
-    pointer-events: none;
-}
+    /*
+        Real cover images will eventually
+        come from the database.
+    */
 
-.paper-widget__label {
-    display: block;
+    if (cover && journalCoverImage) {
 
-    margin-bottom: 11px;
+        journalCoverImage.src =
+            cover;
 
-    color: #75504d;
+        journalCoverImage.alt =
+            `${title} book cover`;
 
-    font-size: 8px;
-    font-weight: 700;
+        journalCoverImage.hidden =
+            false;
 
-    letter-spacing: 0.13em;
 
-    text-transform: uppercase;
-}
+        if (journalCoverPlaceholder) {
 
-.current-book-mini {
-    display: grid;
+            journalCoverPlaceholder.hidden =
+                true;
 
-    grid-template-columns:
-        45px
-        1fr
-        auto;
+        }
 
-    align-items: center;
+    }
 
-    gap: 10px;
-}
+    else {
 
-.mini-cover {
-    width: 42px;
-    height: 57px;
+        if (journalCoverImage) {
 
-    display: grid;
-    place-items: center;
+            journalCoverImage.hidden =
+                true;
 
-    border:
-        2px solid #54372f;
+        }
 
-    border-radius:
-        2px 5px 5px 2px;
 
-    color: #e4ba74;
+        if (journalCoverPlaceholder) {
 
-    background: #334246;
-}
+            journalCoverPlaceholder.hidden =
+                false;
 
-.current-book-mini strong {
-    display: block;
+        }
 
-    color: #493332;
+    }
 
-    font-family: var(--font-reading);
-    font-size: 14px;
-}
 
-.current-book-mini small {
-    display: block;
+    /*
+        Tint the illustrated cover with the book's color.
+    */
 
-    color: #806862;
-
-    font-size: 8px;
-}
-
-.current-book-mini b {
-    color: #6e514d;
-
-    font-size: 10px;
-}
-
-.mini-progress {
-    width: 100%;
-    height: 5px;
-
-    margin-top: 8px;
-
-    overflow: hidden;
-
-    border-radius: 999px;
-
-    background: #ccb6a0;
-}
-
-.mini-progress span {
-    display: block;
-
-    height: 100%;
-
-    border-radius: inherit;
-
-    background:
-        linear-gradient(
-            90deg,
-            #865c70,
-            #a97983
-        );
-}
-
-.journal-snippet-widget blockquote {
-    margin:
-        5px
-        32px
-        0
-        0;
-
-    color: #624b48;
-
-    font-family: var(--font-hand);
-    font-size: 16px;
-    line-height: 1.2;
-}
-
-.journal-snippet-widget button {
-    position: absolute;
-
-    right: 14px;
-    bottom: 14px;
-
-    width: 32px;
-    height: 32px;
-
-    display: grid;
-    place-items: center;
-
-    border:
-        1px solid #936259;
-
-    border-radius: 50%;
-
-    color: #694540;
-
-    background: #e4bea7;
-}
-
-.journal-snippet-widget button svg {
-    width: 17px;
-    height: 17px;
-}
-
-
-/* =========================================================
-   COZY CORNER
-========================================================= */
-
-.cozy-corner {
-    width: 295px;
-    height: 162px;
-
-    position: relative;
-
-    margin:
-        19px
-        0
-        -7px
-        auto;
-
-    z-index: 8;
-}
-
-
-/* Better Cat */
-
-.cozy-cat-illustration {
-    position: absolute;
-
-    right: 72px;
-    bottom: 39px;
-
-    width: 145px;
-    height: 78px;
-
-    overflow: visible;
-}
-
-.cozy-cat__body,
-.cozy-cat__head,
-.cozy-cat__ear {
-    fill: #171315;
-}
-
-.cozy-cat__tail {
-    fill: none;
-
-    stroke: #171315;
-    stroke-width: 16;
-
-    stroke-linecap: round;
-
-    transform-origin: 148px 52px;
-
-    animation:
-        catTailSlow
-        4.7s ease-in-out infinite;
-}
-
-.cozy-cat__face {
-    fill: none;
-
-    stroke: #755354;
-    stroke-width: 1.5;
-
-    stroke-linecap: round;
-}
-
-
-/* Cup */
-
-.cozy-cup {
-    position: absolute;
-
-    left: 14px;
-    bottom: 4px;
-
-    width: 62px;
-    height: 53px;
-
-    display: grid;
-    place-items: center;
-
-    border:
-        3px solid #3e2929;
-
-    border-radius:
-        6px
-        6px
-        18px
-        18px;
-
-    color: #ecc57d;
-
-    background:
-        linear-gradient(
-            180deg,
-            #744a55,
-            #60404a
-        );
-
-    font-size: 21px;
-}
-
-.cozy-cup::after {
-    content: "";
-
-    position: absolute;
-
-    right: -21px;
-    top: 10px;
-
-    width: 22px;
-    height: 26px;
-
-    border:
-        4px solid #3e2929;
-
-    border-left: 0;
-
-    border-radius:
-        0 50% 50% 0;
-}
-
-.cozy-cup__moon {
-    position: relative;
-
-    top: -1px;
-}
-
-.cozy-cup__steam {
-    position: absolute;
-
-    left: 18px;
-    top: -38px;
-
-    width: 18px;
-    height: 36px;
-
-    border-left:
-        3px solid rgba(240, 220, 196, 0.75);
-
-    border-radius: 50%;
-
-    animation:
-        cupSteam
-        3s ease-in-out infinite;
-}
-
-.cozy-cup__steam--two {
-    left: 36px;
-
-    animation-delay: 1s;
-}
-
-
-/* Books */
-
-.cozy-books {
-    position: absolute;
-
-    right: 0;
-    bottom: 11px;
-
-    width: 116px;
-}
-
-.cozy-books span {
-    display: block;
-
-    height: 23px;
-
-    margin-top: 2px;
-
-    padding:
-        4px
-        7px;
-
-    border:
-        1px solid #3e2621;
-
-    border-radius:
-        2px 5px 5px 2px;
-
-    color: #dab37f;
-
-    background: #583943;
-
-    font-size: 7px;
-
-    text-align: center;
-
-    text-transform: uppercase;
-}
-
-.cozy-books span:nth-child(2) {
-    background: #3c5144;
-}
-
-.cozy-books span:nth-child(3) {
-    background: #855044;
-}
-
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-.modal {
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 3000;
-
-    display: grid;
-    place-items: center;
-
-    padding: 20px;
-
-    opacity: 0;
-    visibility: hidden;
-
-    transition:
-        opacity 0.2s ease,
-        visibility 0.2s ease;
-}
-
-.modal.is-open {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-backdrop {
-    position: absolute;
-
-    inset: 0;
-
-    background:
-        rgba(29, 15, 20, 0.74);
-
-    backdrop-filter: blur(5px);
-}
-
-.modal-card {
-    width: min(
-        480px,
-        100%
+    journalCoverPlaceholder?.style.setProperty(
+        "--cover-sky",
+        book.style.getPropertyValue("--book-color")
     );
 
-    position: relative;
 
-    z-index: 3;
+    if (options.quiet) {
+        return;
+    }
 
-    padding: 37px;
 
-    border:
-        2px solid #70473f;
+    /*
+        Animate journal opening.
+    */
 
-    border-radius: 14px;
+    animateJournal();
 
-    color: #493235;
 
-    background:
-        linear-gradient(
-            180deg,
-            #f1e1cc,
-            #e2cab0
+    /*
+        On smaller screens, bring the journal
+        into view after selecting a book.
+    */
+
+    if (window.innerWidth < 1180) {
+
+        journalBook?.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+    }
+
+}
+
+
+function animateJournal() {
+
+    if (!journalBook) {
+        return;
+    }
+
+
+    journalBook.classList.remove(
+        "is-changing"
+    );
+
+
+    void journalBook.offsetWidth;
+
+
+    journalBook.classList.add(
+        "is-changing"
+    );
+
+
+    window.setTimeout(
+        () => {
+
+            journalBook.classList.remove(
+                "is-changing"
+            );
+
+        },
+        600
+    );
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function setupSearch() {
+
+    if (!librarySearch) {
+        return;
+    }
+
+
+    librarySearch.addEventListener(
+        "input",
+        handleSearch
+    );
+
+}
+
+
+function handleSearch(event) {
+
+    const query =
+        event.target.value
+            .trim()
+            .toLowerCase();
+
+
+    const books =
+        document.querySelectorAll(
+            ".book-spine"
         );
 
-    box-shadow: var(--shadow-heavy);
-}
 
-.modal-card h2 {
-    margin:
-        7px
-        0
-        7px;
+    books.forEach((book) => {
 
-    font-family: var(--font-reading);
-    font-size: 31px;
-}
+        const title =
+            book.dataset.bookTitle
+                ?.toLowerCase() || "";
 
-.modal-card p {
-    color: #755e59;
-
-    font-size: 11px;
-}
-
-.modal-eyebrow {
-    color: #98665e;
-
-    font-size: 8px;
-    font-weight: 700;
-
-    letter-spacing: 0.16em;
-
-    text-transform: uppercase;
-}
-
-.modal-close {
-    position: absolute;
-
-    right: 15px;
-    top: 15px;
-
-    width: 32px;
-    height: 32px;
-
-    display: grid;
-    place-items: center;
-
-    border:
-        1px solid rgba(81, 47, 44, 0.2);
-
-    border-radius: 50%;
-
-    color: #5a3c3c;
-
-    background:
-        rgba(255, 255, 255, 0.27);
-}
-
-.modal-close svg {
-    width: 17px;
-    height: 17px;
-}
+        const author =
+            book.dataset.bookAuthor
+                ?.toLowerCase() || "";
 
 
-/* =========================================================
-   ANIMATIONS
-========================================================= */
-
-@keyframes logoTailSwish {
-
-    0%,
-    100% {
-        transform: rotate(0deg);
-    }
-
-    50% {
-        transform: rotate(7deg);
-    }
-
-}
+        const matches =
+            title.includes(query) ||
+            author.includes(query);
 
 
-@keyframes catTailSlow {
+        book.style.display =
+            matches
+                ? ""
+                : "none";
 
-    0%,
-    100% {
-        transform: rotate(0deg);
-    }
-
-    50% {
-        transform: rotate(8deg);
-    }
-
-}
-
-
-@keyframes svgSteam {
-
-    0% {
-        transform:
-            translateY(4px)
-            scaleX(0.8);
-
-        opacity: 0;
-    }
-
-    35% {
-        opacity: 0.7;
-    }
-
-    100% {
-        transform:
-            translateY(-8px)
-            translateX(2px)
-            scaleX(1.08);
-
-        opacity: 0;
-    }
-
-}
-
-
-@keyframes cupSteam {
-
-    0% {
-        transform:
-            translateY(4px)
-            scaleX(0.8);
-
-        opacity: 0;
-    }
-
-    40% {
-        opacity: 0.72;
-    }
-
-    100% {
-        transform:
-            translateY(-10px)
-            translateX(3px)
-            scaleX(1.1);
-
-        opacity: 0;
-    }
-
-}
-
-
-@keyframes candleFlicker {
-
-    from {
-        transform:
-            rotate(7deg)
-            scaleY(0.93);
-    }
-
-    to {
-        transform:
-            rotate(-7deg)
-            scaleY(1.08);
-    }
-
-}
-
-
-@keyframes journalOpen {
-
-    0% {
-        transform:
-            scaleX(0.87)
-            rotate(-1deg);
-
-        opacity: 0.72;
-    }
-
-    65% {
-        transform:
-            scaleX(1.025)
-            rotate(0.3deg);
-    }
-
-    100% {
-        transform:
-            scaleX(1)
-            rotate(0deg);
-
-        opacity: 1;
-    }
+    });
 
 }
 
 
 /* =========================================================
-   LARGE TABLET
+   ADD BOOK MODAL
 ========================================================= */
 
-@media (max-width: 1260px) {
+function setupModal() {
 
-    .library-room {
-        grid-template-columns:
-            minmax(530px, 1fr)
-            minmax(425px, 0.9fr);
-    }
+    if (addBookButton) {
 
-    .journal-zone {
-        padding-left: 22px;
-        padding-right: 22px;
-    }
-
-    .journal-page {
-        padding-left: 27px;
-        padding-right: 27px;
-    }
-
-    .journal-wall-decor {
-        transform: scale(0.88);
-
-        transform-origin: left top;
-    }
-
-}
-
-
-/* =========================================================
-   STACKED TABLET
-========================================================= */
-
-@media (max-width: 1050px) {
-
-    .library-room {
-        display: block;
-    }
-
-    .bookcase-zone {
-        min-height: 710px;
-    }
-
-    .journal-zone {
-        min-height: 790px;
-    }
-
-    .journal-book {
-        max-width: 730px;
-    }
-
-    .moon-window {
-        width: min(
-            55%,
-            400px
+        addBookButton.addEventListener(
+            "click",
+            openAddBookModal
         );
+
     }
+
+
+    document
+        .querySelectorAll(
+            "[data-close-modal]"
+        )
+        .forEach((button) => {
+
+            button.addEventListener(
+                "click",
+                closeAddBookModal
+            );
+
+        });
+
+
+    document.addEventListener(
+        "keydown",
+        (event) => {
+
+            if (event.key === "Escape") {
+
+                closeAddBookModal();
+                closeMobileSidebar();
+
+            }
+
+        }
+    );
+
+}
+
+
+function openAddBookModal() {
+
+    if (!addBookModal) {
+        return;
+    }
+
+
+    addBookModal.classList.add(
+        "is-open"
+    );
+
+
+    addBookModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+}
+
+
+function closeAddBookModal() {
+
+    if (!addBookModal) {
+        return;
+    }
+
+
+    addBookModal.classList.remove(
+        "is-open"
+    );
+
+
+    addBookModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
 
 }
 
 
 /* =========================================================
-   MOBILE NAV
+   INITIALIZE
 ========================================================= */
 
-@media (max-width: 820px) {
+/*
+    dashboard.js is injected after the page parses, so
+    DOMContentLoaded may already have fired by now.
+    This runs last so every constant above is defined.
+*/
 
-    .library-sidebar {
-        width: var(--sidebar-width);
+function initDashboard() {
 
-        transform:
-            translateX(-100%);
-    }
+    renderLibrary();
+    growIvy();
 
-    .library-sidebar.is-open {
-        transform:
-            translateX(0);
-    }
-
-    .library-sidebar.is-collapsed {
-        width: var(--sidebar-width);
-    }
-
-    .library-stage,
-    body.sidebar-collapsed .library-stage {
-        margin-left: 0;
-    }
-
-    .sidebar-collapse {
-        display: none;
-    }
-
-    .mobile-menu {
-        display: grid;
-        place-items: center;
-    }
-
-    .scene-header {
-        padding:
-            11px
-            16px;
-    }
-
-    .scene-heading {
-        display: none;
-    }
-
-    .scene-tools {
-        width: 100%;
-
-        flex: 1;
-    }
-
-    .library-search {
-        flex: 1;
-
-        width: auto;
-    }
+    setupSidebar();
+    setupBookInteractions();
+    setupJournalControls();
+    setupModal();
+    setupSearch();
 
 }
 
 
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
+if (document.readyState === "loading") {
 
-@media (max-width: 650px) {
-
-    .profile-label,
-    .round-tool {
-        display: none;
-    }
-
-    .profile-button {
-        min-width: 43px;
-
-        padding: 5px;
-    }
-
-    .bookcase-zone {
-        padding:
-            102px
-            12px
-            28px;
-    }
-
-    .top-sleeping-cat {
-        left: 15px;
-
-        width: 112px;
-    }
-
-    .bookcase-title {
-        min-width: 155px;
-
-        font-size: 10px;
-    }
-
-    .bookcase-title__ornament {
-        display: none;
-    }
-
-    .add-book-button {
-        display: none;
-    }
-
-    .shelf-interior {
-        padding-left: 15px;
-        padding-right: 15px;
-
-        overflow-x: auto;
-    }
-
-    .shelf-books {
-        min-width: max-content;
-    }
-
-    .book-spine {
-        width: 48px;
-
-        flex:
-            0 0 48px;
-    }
-
-    .journal-zone {
-        padding:
-            152px
-            12px
-            30px;
-    }
-
-    .moon-window {
-        right: 11px;
-
-        width: 74%;
-
-        height: 180px;
-    }
-
-    .journal-wall-decor {
-        left: 10px;
-
-        transform: scale(0.7);
-
-        transform-origin: left top;
-    }
-
-    .journal-book {
-        display: block;
-    }
-
-    .journal-page {
-        min-height: 420px;
-    }
-
-    .journal-page--left {
-        border-radius:
-            16px 16px 4px 4px;
-
-        transform: none;
-    }
-
-    .journal-page--right {
-        border-radius:
-            4px 4px 16px 16px;
-
-        transform: none;
-    }
-
-    .journal-spine {
-        display: none;
-    }
-
-    .journal-tabs {
-        top: -27px;
-    }
-
-    .journal-lower-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .cozy-corner {
-        transform: scale(0.86);
-
-        transform-origin: bottom right;
-    }
+    document.addEventListener(
+        "DOMContentLoaded",
+        initDashboard
+    );
 
 }
 
+else {
 
-/* =========================================================
-   VERY SMALL MOBILE
-========================================================= */
-
-@media (max-width: 430px) {
-
-    .scene-header {
-        gap: 8px;
-
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    .library-search {
-        height: 41px;
-
-        padding-left: 12px;
-        padding-right: 12px;
-    }
-
-    .profile-button {
-        height: 41px;
-    }
-
-    .bookcase-top {
-        height: 101px;
-    }
-
-    .bookcase-zone {
-        padding-top: 98px;
-    }
-
-    .shelf-label {
-        min-width: 140px;
-
-        font-size: 8px;
-    }
-
-    .journal-zone {
-        padding-left: 8px;
-        padding-right: 8px;
-    }
-
-    .journal-page {
-        padding:
-            42px
-            23px
-            28px;
-    }
+    initDashboard();
 
 }
