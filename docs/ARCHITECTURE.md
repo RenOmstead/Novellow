@@ -1,7 +1,8 @@
-# Novellow — Audit and Build Plan
+# Novellow — Architecture
 
-This is the plan to review before the full application is built.
-The SQL it describes is real and ready to run: see `sql/`.
+How Novellow is built. It started as the audit and plan below; the app
+has since been built to it. To connect Supabase and publish, see
+[SETUP.md](SETUP.md).
 
 ---
 
@@ -77,14 +78,14 @@ be migrated from a database because none exists yet.
 
 ---
 
-## 2. Proposed file architecture
+## 2. File architecture
 
 A static site with no build step to run locally. It is plain HTML, CSS and
 JavaScript modules, and GitHub Pages serves it as-is.
 
 ```
 /
-├── index.html              Entrance: sign in / create account
+├── index.html              Entrance: sign in / create account / reset password
 ├── dashboard.html          Home: the bookcase + open journal (main experience)
 ├── library.html            My Books: full library, search, filter, sort
 │                           (To Be Read = library.html?status=want_to_read)
@@ -93,64 +94,73 @@ JavaScript modules, and GitHub Pages serves it as-is.
 ├── quotes.html             All saved quotes across the library
 ├── vocabulary.html         The wordbook across the library
 ├── stats.html              Reading statistics and goal
-├── challenges.html         Annual goal + user-created challenges
-├── discover.html           Foundation: genres, inspiration, book lookup
+├── challenges.html         Annual goal + reader-made challenges
+├── discover.html           Open Library search, TBR pick, prompts
 ├── community.html          Foundation: future public libraries / clubs
-├── settings.html           Account, reading, appearance, data
-├── 404.html                In-world "this page wandered off"
+├── settings.html           Account, sign-ins, reading, appearance, data
+├── 404.html                "This page wandered off" (self-contained)
 │
-├── assets/
-│   ├── illustrations/
-│   │   ├── sprite.svg      Every shared drawing as a <symbol>
-│   │   └── scenes/         Larger one-off scenes (window, lamp, armchair)
-│   └── themes/             Per-theme art (later phases)
+├── assets/illustrations/
+│   ├── sprite.svg          Every drawing as a <symbol> (icons, decor, scenes)
+│   └── favicon.svg
 │
 ├── css/
-│   ├── tokens.css          Colours, fonts, spacing — the design system
-│   ├── base.css            Reset, typography, focus states, utilities
-│   ├── app-shell.css       Sidebar, header, drawers, toasts, dialogs
-│   ├── room.css            Wall, window, lamp, floor, decor, ivy
+│   ├── tokens.css          Colours, fonts, spacing — Novellow Original
+│   ├── base.css            Reset, buttons, fields, dialogs, toasts, loaders
+│   ├── auth.css            Entrance page
+│   ├── app-shell.css       Sidebar, header, search, popovers
+│   ├── room.css            Wall, window, lamp, desk notes, cozy corner
 │   ├── bookcase.css        Crown, shelf rows, plaques, empty shelves
 │   ├── books.css           Spines, covers, pull-out and opening animation
 │   ├── journal.css         The open journal and its sections
-│   ├── forms.css           Book editor, bookplate forms, inputs
-│   ├── auth.css            Entrance page
-│   ├── pages.css           Library, reading, quotes, words, stats, settings
-│   └── themes.css          Theme overrides ([data-theme="…"])
+│   ├── forms.css           Book editor drawer
+│   ├── pages.css           Library, reading, quotes, words, stats, settings…
+│   ├── ambience.css        Candle glow, dust, fog, fireflies, rain, oddities
+│   ├── decorations.css     Placed decorations and the "Arrange the room" bar
+│   └── themes.css          The five other rooms ([data-theme="…"])
 │
 ├── js/
-│   ├── config.js           THE one place for Supabase URL/key, version, constants
+│   ├── config.js           THE one place for Supabase URL/key and constants
 │   ├── core/
 │   │   ├── supabase.js     Creates the single Supabase client
-│   │   ├── auth.js         Sign up/in/out, session guard, friendly errors
-│   │   ├── store.js        Every database query lives here (single source of truth)
-│   │   ├── storage.js      Cover upload/resize, signed URLs
-│   │   ├── ui.js           Toasts, confirm dialogs, loading and empty states
-│   │   └── helpers.js      Escaping, dates, formatting
+│   │   ├── auth.js         Sign up/in/out, session guard, sign-in log
+│   │   ├── store.js        Every database query (single source of truth)
+│   │   ├── covers.js       Cover resize/upload, signed URLs
+│   │   ├── errors.js       Friendly messages for auth and data errors
+│   │   ├── rating.js       Half-star rating widget
+│   │   ├── art.js          Loads the illustration sprite
+│   │   ├── ui.js           Toasts, dialogs, loading and empty states
+│   │   └── helpers.js      Safe HTML templates, dates, formatting
 │   ├── shell/
-│   │   ├── app-shell.js    Injects sprite, builds sidebar/header, guards pages
-│   │   └── themes.js       Theme registry + applying settings
+│   │   ├── app-shell.js    Guards pages, builds sidebar and header
+│   │   └── themes.js       Theme registry + applying appearance settings
 │   ├── books/
-│   │   ├── spine.js        Spine renderer (shelf + editor live preview)
-│   │   ├── bookcase.js     Shelves → rows of ≈10 → spines; pull-out
+│   │   ├── spine-options.js Fonts, styles, sizes and palettes for spines
+│   │   ├── spine.js        Spine renderer + title fitting
+│   │   ├── cover.js        Uploaded or illustrated covers
+│   │   ├── bookcase.js     Shelves → rows of ≈10 → spines; drag to reorder
+│   │   ├── book-reveal.js  Pull-out, turn and open animation
 │   │   ├── book-editor.js  Add/Edit Book drawer with live spine preview
 │   │   └── shelf-editor.js Add/rename/reorder/delete shelves
 │   ├── journal/
-│   │   ├── journal.js      The open-book component (dashboard + journal page)
-│   │   └── sections/       overview, notes, quotes, words, thoughts,
-│   │                       characters, themes, questions, review, chapters
+│   │   ├── sections.js     The nine journal sections and their fields
+│   │   └── journal.js      The open-book component (dashboard + journal page)
 │   ├── room/
-│   │   ├── ivy.js          Ivy growth
-│   │   ├── ambience.js     Candle glow, dust, rain, oddities
-│   │   └── decorations.js  Draggable decor, saved positions
-│   └── pages/              One small entry file per HTML page
+│   │   ├── ivy.js          Ivy growth (recoloured per theme)
+│   │   ├── crown.js        Themed decor on top of the bookcase
+│   │   ├── ambience.js     Dust, fog, fireflies, rain, oddities
+│   │   └── decorations.js  Draggable decorations saved per theme
+│   ├── data/transfer.js    Export / import the whole library as JSON
+│   └── pages/              One entry file per HTML page (entrance.js = index)
 │
 ├── sql/
 │   ├── schema.sql          Tables, relationships, triggers, indexes
 │   ├── policies.sql        Row Level Security
-│   └── storage.sql         Cover bucket and its policies
+│   ├── storage.sql         Cover bucket and its policies
+│   └── tests/              RLS isolation test (for a local Postgres)
 │
 ├── docs/ARCHITECTURE.md    This document
+├── docs/SETUP.md           Connecting Supabase and publishing
 └── .github/workflows/pages.yml   Deploy + automatic cache busting
 ```
 
