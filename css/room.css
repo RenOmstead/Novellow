@@ -9,6 +9,9 @@
 
 
 .library-room {
+    /* Vines and the crown may reach past the edge; never scroll to them. */
+    overflow-x: clip;
+
     min-height: calc(100vh - var(--header-height));
 
     display: grid;
