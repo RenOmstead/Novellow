@@ -27,6 +27,8 @@ import { html, raw, render, $, $all, initials, debounce, truncate } from "../cor
 import { friendlyDataError } from "../core/errors.js?v=__VERSION__";
 import { art, toastError, loader } from "../core/ui.js?v=__VERSION__";
 import { growIvy, recolorIvy } from "../room/ivy.js?v=__VERSION__";
+import { startSoundscape, getSoundState } from "../sound/soundscape.js?v=__VERSION__";
+import { mountMixer } from "../sound/mixer.js?v=__VERSION__";
 import { THEMES, getTheme, applyAppearance, applyCachedAppearance } from "./themes.js?v=__VERSION__";
 
 
@@ -186,6 +188,8 @@ function buildShell(page, eyebrow) {
     wireSidebar();
     wireSearch();
     wirePopovers();
+    wireSound();
+    measureHeader();
 
     document.addEventListener("novellow:user-updated", async () => {
 
@@ -302,6 +306,19 @@ function headerMarkup(eyebrow) {
 
                 <div class="popover-anchor">
 
+                    <button class="icon-button sound-button" type="button" data-popover="soundPopover" aria-expanded="false" aria-label="Room sounds">
+                        <svg aria-hidden="true"><use href="#ui-sound-off"></use></svg>
+                    </button>
+
+                    <div class="popover paper mixer" id="soundPopover" hidden>
+                        <p class="popover-heading">Sounds of the room</p>
+                        <div data-sound-mixer></div>
+                    </div>
+
+                </div>
+
+                <div class="popover-anchor">
+
                     <button class="icon-button" type="button" data-popover="themePopover" aria-expanded="false" aria-label="Change the room's theme">
                         <svg aria-hidden="true"><use href="#ui-moon"></use></svg>
                     </button>
@@ -368,6 +385,28 @@ function refreshNames() {
 /* =========================================================
    SIDEBAR
 ========================================================= */
+
+/*
+    The top bar's real height (it wraps onto two lines on some
+    screens), so the reading room can fill exactly the rest of
+    the window.
+*/
+
+function measureHeader() {
+
+    const header =
+        document.querySelector(".scene-header");
+
+    if (!header || !("ResizeObserver" in window)) {
+        return;
+    }
+
+    new ResizeObserver(() => {
+        document.documentElement.style.setProperty("--header-h", `${Math.ceil(header.offsetHeight)}px`);
+    }).observe(header);
+
+}
+
 
 function wireSidebar() {
 
@@ -443,6 +482,39 @@ function wireSidebar() {
 
 
 /* =========================================================
+   SOUND
+   The header button shows whether sound is on; its menu
+   holds the mixer (js/sound/mixer.js).
+========================================================= */
+
+function wireSound() {
+
+    const button =
+        $(".sound-button");
+
+    const show = () => {
+
+        const { on } =
+            getSoundState();
+
+        button.querySelector("use").setAttribute("href", on ? "#ui-sound" : "#ui-sound-off");
+        button.setAttribute("aria-label", on ? "Room sounds (on)" : "Room sounds (off)");
+        button.classList.toggle("is-on", on);
+
+    };
+
+    mountMixer($("[data-sound-mixer]"));
+
+    startSoundscape();
+
+    show();
+
+    document.addEventListener("novellow:sound", show);
+
+}
+
+
+/* =========================================================
    POPOVERS (theme picker, profile menu)
 ========================================================= */
 
@@ -487,7 +559,7 @@ function wirePopovers() {
             }
 
             if (opening) {
-                popover.querySelector("a, button")?.focus();
+                popover.querySelector("a, button, input")?.focus();
             }
 
         });

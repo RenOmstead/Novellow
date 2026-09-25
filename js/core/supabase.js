@@ -9,8 +9,26 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 import {
     SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
+    SUPABASE_PUBLISHABLE_KEY,
+    SITE_LABEL
 } from "../config.js?v=__VERSION__";
+
+
+// A test copy wears a ribbon (css/base.css) so it is never
+// mistaken for the real library.
+if (SITE_LABEL) {
+    document.documentElement.dataset.siteLabel = SITE_LABEL;
+}
+
+
+/*
+    A test copy keeps its sign-in under its own project's name,
+    so it never overwrites the real site's session on the same
+    address. The real site keeps its original name.
+*/
+
+const projectRef =
+    (SUPABASE_URL.match(/^https:\/\/([a-z0-9]+)\./) || [])[1] || "local";
 
 
 export const isConfigured =
@@ -32,7 +50,7 @@ export const supabase =
                 // when it is opened on a different device.
                 flowType: "implicit",
 
-                storageKey: "novellow-auth"
+                storageKey: SITE_LABEL ? `novellow-auth-${projectRef}` : "novellow-auth"
             }
         }
     );

@@ -43,6 +43,17 @@
 ========================================================= */
 
 [data-theme="haunted"] {
+    --curtain: #4a4466;
+    --curtain-fold: #2e2a44;
+    --rug-edge: #1f1b29;
+    --rug-border: #4a4466;
+    --rug-field: #2e2a3a;
+    --rug-flower: #8e86a8;
+    /* Ghostly green candle flames and cobwebs on the chandelier. */
+    --flame: #9df27a;
+    --chandelier-cobweb: inline;
+    --chandelier-drops: none;
+    --lamp-glow: rgba(170, 240, 150, 0.22);
     --font-heading: "IM Fell English", "Cormorant Garamond", Georgia, serif;
 
     --color-ink: #22202a;
@@ -106,6 +117,21 @@
     --field-border-focus: #8e86a8;
 }
 
+/* The haunted room's own things: a full moon in the window.
+   (Cobwebs are decorations the reader places.) */
+
+[data-theme="haunted"] {
+    --crescent-display: none;
+    --full-moon-display: inline;
+}
+
+.crown-piece--cauldron {
+    width: 74px;
+    height: auto;
+
+    overflow: visible;
+}
+
 /* Portraits and frames fade a little, as if seen through mist. */
 [data-theme="haunted"] .wall-art > svg:not(.ivy) {
     filter: saturate(0.6) drop-shadow(0 0 12px rgba(200, 210, 255, 0.14));
@@ -118,6 +144,16 @@
 ========================================================= */
 
 [data-theme="rainy"] {
+    --throw-base: #e8d6b8;
+    --throw-band: #8a3444;
+    --throw-line: #2f4a3f;
+    --curtain: #3e6b58;
+    --curtain-fold: #1c382c;
+    --rug-edge: #1c2a24;
+    --rug-border: #3e6b58;
+    --rug-field: #2f3a36;
+    --rug-flower: #a8b8a0;
+    --shade: #2f4a3f;
     --font-heading: "Playfair Display", "Fraunces", Georgia, serif;
 
     --color-ink: #1e2622;
@@ -194,6 +230,12 @@
 ========================================================= */
 
 [data-theme="forest"] {
+    --throw-base: #c9a94a;
+    --throw-band: #5f7d45;
+    --throw-line: #f5eab0;
+    --curtain: #6a4a80;
+    --curtain-fold: #48305a;
+    --lamp-glow: rgba(250, 240, 140, 0.3);
     --font-heading: "Almendra", "Fraunces", Georgia, serif;
 
     --color-ink: #232a1c;
@@ -264,6 +306,17 @@
 ========================================================= */
 
 [data-theme="cafe"] {
+    --throw-base: #4a7a82;
+    --throw-band: #2e4a52;
+    --throw-line: #f1dcb6;
+    --curtain: #b5643f;
+    --curtain-fold: #7a3e20;
+    --rug-edge: #2a1c15;
+    --rug-border: #a8704a;
+    --rug-field: #6a4430;
+    --rug-flower: #e0a860;
+    --shade: #b5643f;
+    --lamp-glow: rgba(255, 190, 110, 0.38);
     --font-heading: "Averia Serif Libre", "Fraunces", Georgia, serif;
 
     --color-ink: #2a1c15;
@@ -334,6 +387,15 @@
 ========================================================= */
 
 [data-theme="gothic"] {
+    --throw-base: #3a3440;
+    --throw-band: #1f1b24;
+    --throw-line: #c9954f;
+    --curtain: #7a2038;
+    --curtain-fold: #3a0c18;
+    --rug-edge: #13070b;
+    --rug-border: #6a1a2a;
+    --rug-field: #3a1622;
+    --rug-flower: #c46a7e;
     --font-heading: "Grenze Gotisch", "Cinzel", Georgia, serif;
 
     --color-ink: #24121a;
@@ -404,3 +466,122 @@
 
     letter-spacing: 0.01em;
 }
+
+
+/* On phones the crown is narrower: the haunted room keeps
+   its cauldron and lets the candle go instead. */
+@media (max-width: 820px) {
+
+    [data-theme="haunted"] .crown-slot--stack {
+        display: block;
+    }
+
+    [data-theme="haunted"] .crown-slot--candle {
+        display: none;
+    }
+
+}
+
+
+/* =========================================================
+   THE LIBRARY CAT
+   One drawing (scene-cat) coloured by these tokens; chosen in
+   Settings and set on <html data-cat="…">.
+========================================================= */
+
+[data-cat="orange"] {
+    --cat-fur: #e08a3c;
+    --cat-line: #7a3e14;
+    --cat-shine: #f6bc78;
+    --cat-ear: #f2a7a0;
+    --cat-eye: #5a2e14;
+    --cat-whisker: #fff2e0;
+    --cat-stripe: #c26a24;
+    --cat-stripes: inline;
+}
+
+[data-cat="tabby"] {
+    --cat-fur: #9a8872;
+    --cat-line: #3a3028;
+    --cat-shine: #c4b49c;
+    --cat-ear: #d9a0a0;
+    --cat-eye: #2a2220;
+    --cat-whisker: #f4ece0;
+    --cat-stripe: #4a3e32;
+    --cat-stripes: inline;
+}
+
+[data-cat="calico"] {
+    --cat-fur: #f6efe4;
+    --cat-line: #6a5a4a;
+    --cat-shine: #fffaf2;
+    --cat-ear: #f2b8b0;
+    --cat-eye: #3a2e28;
+    --cat-whisker: #8a7a6a;
+    --cat-patch-a: #e08a3c;
+    --cat-patch-b: #2e2628;
+    --cat-patches: inline;
+}
+
+[data-cat="fluffy"] {
+    --cat-fur: #8e939c;
+    --cat-line: #3a3e46;
+    --cat-shine: #c2c8d2;
+    --cat-ear: #e8b4b8;
+    --cat-eye: #2a2e36;
+    --cat-whisker: #f4f4f2;
+    --cat-white: #f6f6f3;
+    --cat-white-show: inline;
+    --cat-fluff: inline;
+}
+
+[data-cat="white"] {
+    --cat-fur: #f7f4ef;
+    --cat-line: #8a8078;
+    --cat-shine: #ffffff;
+    --cat-ear: #f2bcc0;
+    --cat-eye: #6a5e58;
+    --cat-whisker: #b0a8a0;
+}
+
+[data-cat="tuxedo"] {
+    --cat-white: #f6f3ee;
+    --cat-white-show: inline;
+}
+
+
+/* =========================================================
+   THE CHINA: the mug on the side table and the café's tea
+   set (Settings; <html data-china="…" data-teaset="…">).
+========================================================= */
+
+[data-china="rose"] { --china: #e9a7b4; }
+[data-china="sage"] { --china: #a9bf8a; }
+[data-china="blue"] { --china: #9fb4d6; }
+[data-china="cream"] { --china: #f3e6cc; }
+[data-china="plum"] { --china: #8a5a7a; }
+[data-china="charcoal"] { --china: #4a4450; }
+
+[data-teaset="floral"] { --teaset-floral: inline; --teaset-filigree: none; }
+[data-teaset="dots"] { --teaset-dots: inline; --teaset-filigree: none; }
+[data-teaset="stripes"] { --teaset-stripes: inline; --teaset-filigree: none; }
+
+
+/* =========================================================
+   THE WINDOW: its shape and its wood (Settings;
+   <html data-window="…" data-wood="…">). The sill matches.
+========================================================= */
+
+[data-window="square"] { --window-arched: none; --window-square: inline; }
+[data-window="gothic"] { --window-arched: none; --window-gothic: inline; }
+
+[data-wood="walnut"] { --frame-dark: #3a2116; --frame-wood: #6e4029; --frame-light: #9a6440; --frame-line: #2a160e; --frame-shine: #c9905e; }
+[data-wood="oak"] { --frame-dark: #6e4a2a; --frame-wood: #a8773f; --frame-light: #c9995a; --frame-line: #3e2a14; --frame-shine: #e2bd84; }
+[data-wood="mahogany"] { --frame-dark: #3a1410; --frame-wood: #7a2e22; --frame-light: #a0463a; --frame-line: #24100c; --frame-shine: #c9705e; }
+[data-wood="ebony"] { --frame-dark: #121014; --frame-wood: #2a2628; --frame-light: #45403f; --frame-line: #050405; --frame-shine: #6a6260; }
+[data-wood="white"] { --frame-dark: #b8b2a8; --frame-wood: #efe9df; --frame-light: #fbf8f2; --frame-line: #8a8278; --frame-shine: #ffffff; }
+[data-wood="sage"] { --frame-dark: #5a6a52; --frame-wood: #8fa383; --frame-light: #aebfa2; --frame-line: #3a4634; --frame-shine: #c9d8bc; }
+
+/* Café curtains: a straight valance on a square window, a
+   swag that covers the arch on arched and gothic ones. */
+[data-window="square"] { --valance-straight: inline; --valance-swag: none; }

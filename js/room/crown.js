@@ -55,6 +55,10 @@ const PIECES = {
 
     bat: () => use("decor-bat", "0 0 84 46", "crown-piece crown-piece--bat"),
 
+    cauldron: () => use("decor-cauldron", "0 0 140 140", "crown-piece crown-piece--cauldron"),
+
+    belljar: () => use("decor-belljar", "0 0 50 72", "crown-piece crown-piece--belljar"),
+
     stack: () => html`
         <div class="crown-piece crown-piece--stack">
             ${use("decor-teacup", "0 0 56 58", "stack-top")}

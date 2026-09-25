@@ -563,7 +563,11 @@ body.sidebar-collapsed .app-stage {
 .greeting {
     display: grid;
 
+    flex: none;
+
     gap: 2px;
+
+    white-space: nowrap;
 
     padding: 8px 18px 8px 16px;
 
@@ -609,6 +613,9 @@ body.sidebar-collapsed .app-stage {
     position: relative;
 
     width: clamp(220px, 28vw, 380px);
+    min-width: 180px;
+
+    flex: 0 1 auto;
 }
 
 .library-search {
@@ -775,6 +782,104 @@ body.sidebar-collapsed .app-stage {
     padding: 10px;
 
     z-index: 80;
+}
+
+/* ---------------------------------------------------------
+   SOUND MIXER (header menu and Settings)
+--------------------------------------------------------- */
+
+.sound-button.is-on {
+    box-shadow:
+        0 6px 14px rgba(40, 16, 12, 0.25),
+        0 0 0 3px rgba(240, 207, 138, 0.55);
+}
+
+.popover.mixer {
+    width: min(340px, calc(100vw - 24px));
+
+    padding: 12px 14px 14px;
+}
+
+.mixer .toggle {
+    min-height: 40px;
+}
+
+.mixer__body {
+    display: grid;
+
+    gap: 10px;
+
+    margin-top: 8px;
+}
+
+.mixer__body[hidden] {
+    display: none;
+}
+
+.mixer__match {
+    font-size: 15px;
+}
+
+.mixer__sounds {
+    display: grid;
+
+    gap: 4px;
+
+    padding-top: 8px;
+
+    border-top: 1px solid rgba(120, 80, 60, 0.25);
+}
+
+.mixer__group {
+    margin: 0 0 2px;
+
+    color: var(--color-plum);
+
+    font-family: var(--font-engraved);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+}
+
+.popover.mixer {
+    max-height: min(78vh, 640px);
+
+    overflow-y: auto;
+}
+
+.mixer__slider {
+    display: grid;
+
+    grid-template-columns: 8.5em 1fr;
+    align-items: center;
+
+    gap: 10px;
+
+    font-size: 15px;
+}
+
+.mixer__slider small {
+    display: block;
+
+    color: var(--color-ink-faint);
+
+    font-size: 12px;
+    font-style: italic;
+}
+
+.mixer__slider.is-unavailable {
+    opacity: 0.6;
+}
+
+.mixer__slider--main {
+    font-weight: 700;
+}
+
+.mixer__slider input[type="range"] {
+    width: 100%;
+
+    accent-color: var(--color-plum-light);
+
+    cursor: pointer;
 }
 
 .popover-divider {
@@ -1071,6 +1176,19 @@ body.sidebar-collapsed .app-stage {
         left: 0;
 
         width: 100%;
+    }
+
+    /* The sound menu is wider than the space left of its
+       button, so it opens across the screen instead. */
+    .popover.mixer {
+        position: fixed;
+
+        top: 66px;
+        left: 12px;
+        right: 12px;
+
+        width: auto;
+        max-height: calc(100dvh - 86px);
     }
 
 }
