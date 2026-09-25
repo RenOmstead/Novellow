@@ -179,10 +179,11 @@ html:not(.candle-glow) {
 .window-weather {
     position: absolute;
 
-    top: 0;
-    left: 7%;
+    /* Exactly over the window (css/room.css). */
+    left: var(--window-left);
+    bottom: var(--window-bottom);
 
-    width: min(66%, 460px);
+    width: var(--window-width);
 
     aspect-ratio: 440 / 330;
 
@@ -195,10 +196,19 @@ html:not(.candle-glow) {
     display: none;
 }
 
-.ambient-rain .window-weather__rain,
-.ambient-rain .window-weather__drop,
+/* The rain itself falls inside the window drawing (behind
+   its glazing bars); only lightning and shooting stars are
+   drawn over the glass here. */
+.ambient-rain {
+    --window-rain: inline;
+}
+
 .window-weather .shooting-star {
     display: block;
+}
+
+[data-window="square"] .window-weather {
+    clip-path: inset(14% 9% 0 9%);
 }
 
 .window-weather__rain {
@@ -280,6 +290,69 @@ html:not(.candle-glow) {
     100% { opacity: 0; translate: 120px 54px; }
 }
 
+
+/* ---------------------------------------------------------
+   THE HAUNTED ROOM'S GHOSTS
+   Drift across (translate), bob (transform) and fade in and
+   out (opacity), each on its own slow clock.
+--------------------------------------------------------- */
+
+.ghost-layer {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 30;
+
+    overflow: hidden;
+
+    pointer-events: none;
+}
+
+.floating-ghost {
+    position: absolute;
+
+    left: 0;
+
+    height: auto;
+
+    overflow: visible;
+
+    filter: drop-shadow(0 0 12px rgba(210, 220, 255, 0.35));
+
+    animation-name: ghostCross, ghostBob, ghostFade;
+    animation-timing-function: linear, ease-in-out, ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: normal, alternate, alternate;
+}
+
+.floating-ghost--leftward {
+    animation-direction: reverse, alternate, alternate;
+}
+
+@keyframes ghostCross {
+    from { translate: -12vw 0; }
+    to { translate: 108vw 0; }
+}
+
+@keyframes ghostBob {
+    from { transform: translateY(-10px) rotate(-4deg); }
+    to { transform: translateY(12px) rotate(4deg); }
+}
+
+@keyframes ghostFade {
+    0% { opacity: 0.1; }
+    40% { opacity: 0.6; }
+    100% { opacity: 0.35; }
+}
+
+.reduce-motion .floating-ghost {
+    animation: none;
+
+    opacity: 0.5;
+
+    translate: calc(var(--still-x, 0) * 1vw) 0;
+}
 
 /* ---------------------------------------------------------
    ODDITIES
@@ -395,12 +468,6 @@ html:not(.candle-glow) {
 
 @media (max-width: 1180px) {
 
-    .window-weather {
-        top: 20px;
-        left: 12%;
-
-        width: min(56%, 460px);
-    }
 
 }
 
@@ -418,7 +485,7 @@ html:not(.candle-glow) {
    STILLNESS
 --------------------------------------------------------- */
 
-.reduce-motion .ambience > :not(.fog-bank),
+.reduce-motion .ambience > :not(.fog-bank):not(.floating-ghost),
 .reduce-motion .window-weather__rain,
 .reduce-motion .window-weather__drop {
     display: none !important;
@@ -431,7 +498,15 @@ html:not(.candle-glow) {
 
 @media (prefers-reduced-motion: reduce) {
 
-    .ambience > :not(.fog-bank),
+    .floating-ghost {
+        animation: none;
+
+        opacity: 0.5;
+
+        translate: calc(var(--still-x, 0) * 1vw) 0;
+    }
+
+    .ambience > :not(.fog-bank):not(.floating-ghost),
     .window-weather__rain,
     .window-weather__drop {
         display: none !important;
