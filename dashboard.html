@@ -109,7 +109,6 @@
                         <path class="ivy-stem" d="M40 0C60 50 36 100 56 160C72 210 44 260 62 320C78 380 50 430 66 500C72 540 62 570 66 600" />
                     </svg>
 
-
                     <!-- The carved crown and the decorations on top -->
 
                     <div class="bookcase-top">
@@ -250,56 +249,58 @@
                         <use href="#scene-window" />
                     </svg>
 
-                    <svg class="tiffany-lamp" viewBox="0 0 210 250">
-                        <use href="#scene-lamp" />
+                    <!-- Curtains (Settings chooses which, or none) -->
+
+                    <svg class="window-curtains window-curtains--drapes" viewBox="-20 -40 480 380">
+                        <use href="#curtain-drapes" x="-20" y="-40" />
                     </svg>
 
-                    <svg class="wall-frame wall-frame--moth" viewBox="0 0 80 100">
-                        <use href="#frame-moth" />
+                    <svg class="window-curtains window-curtains--lace" viewBox="-20 -40 480 380">
+                        <use href="#curtain-lace" x="-20" y="-40" />
                     </svg>
 
-                    <svg class="wall-frame wall-frame--charm" viewBox="0 0 40 52">
-                        <use href="#decor-starcharm" />
+                    <svg class="window-curtains window-curtains--cafe" viewBox="-20 -40 480 380">
+                        <use href="#curtain-cafe" x="-20" y="-40" />
                     </svg>
 
-                    <svg class="wall-frame wall-frame--castle" viewBox="0 0 130 100">
-                        <use href="#frame-castle" />
+                    <svg class="window-sill" viewBox="0 0 480 40">
+                        <use href="#window-sill" />
                     </svg>
 
-                    <svg class="sill-candle sill-candle--left" viewBox="0 0 40 90">
-                        <use href="#decor-candle" />
-                    </svg>
 
-                    <svg class="sill-candle sill-candle--right" viewBox="0 0 40 90">
-                        <use href="#decor-candle" />
-                    </svg>
-
-                    <svg class="sill-plant" viewBox="0 0 60 78">
-                        <use href="#decor-plant" />
-                    </svg>
-
-                    <svg
-                        class="ivy ivy--window"
-                        viewBox="0 0 520 200"
-                        data-seed="31"
-                        data-density="20"
-                        data-leaf-size="0.7"
-                    >
-                        <path class="ivy-stem" d="M0 20C80 6 150 30 230 14C300 0 380 16 520 8" />
-                        <path class="ivy-stem" d="M150 22C160 60 140 100 156 150" />
-                        <path class="ivy-stem" d="M330 10C344 50 326 90 340 130" />
-                    </svg>
 
                 </div>
 
 
-                <!-- The open book, drawn by js/journal/journal.js -->
+                <!-- The open book, drawn by js/journal/journal.js.
+                     It opens in front of the room when a book is
+                     taken off the shelf, and goes back when closed. -->
+
+                <!-- The ceiling lamp; each theme hangs its own -->
 
                 <div
-                    class="journal"
-                    id="journal"
-                    data-mode="desk"
-                ></div>
+                    class="ceiling-lamp"
+                    aria-hidden="true"
+                >
+                    <span class="ceiling-lamp__glow"></span>
+                    <svg viewBox="0 0 210 250">
+                        <use href="#scene-lamp" />
+                    </svg>
+                </div>
+
+
+                <div
+                    class="journal-stage"
+                    id="journalStage"
+                >
+                    <div
+                        class="journal"
+                        id="journal"
+                        data-mode="desk"
+                        role="dialog"
+                        aria-label="Book journal"
+                    ></div>
+                </div>
 
 
                 <!-- Little paper notes under the journal -->
@@ -310,17 +311,53 @@
                 ></div>
 
 
+                <!-- The corner beside the bookcase: each room has
+                     its own scene (css/room.css shows one). -->
+
                 <div
                     class="cozy-corner"
                     aria-hidden="true"
                 >
-                    <svg class="armchair" viewBox="0 0 260 280">
-                        <use href="#scene-armchair" />
-                    </svg>
 
-                    <svg class="side-table" viewBox="0 0 170 210">
-                        <use href="#scene-side-table" />
-                    </svg>
+                    <!-- A chair, and a side table with something to drink -->
+                    <div class="corner-scene corner-scene--armchair">
+                        <svg class="armchair" viewBox="0 0 260 280">
+                            <use href="#scene-armchair" />
+                        </svg>
+                        <svg class="side-table" viewBox="0 0 120 180">
+                            <use href="#side-table-round" x="0" y="50" width="120" height="130" />
+                            <use class="drink" href="#mug-plain" x="37" y="10" width="46" height="54" />
+                        </svg>
+                    </div>
+
+                    <!-- The café: a chair, and a marble table with the tea set -->
+                    <div class="corner-scene corner-scene--cafe">
+                        <svg class="armchair" viewBox="0 0 260 280">
+                            <use href="#scene-armchair" />
+                        </svg>
+                        <svg class="cafe-table" viewBox="0 0 160 200">
+                            <use href="#cafe-table" x="0" y="70" width="160" height="130" />
+                            <use href="#teaset" x="0" y="0" width="160" height="110" />
+                        </svg>
+                    </div>
+
+                    <!-- The haunted room: the cauldron, and the cat on the floor -->
+                    <div class="corner-scene corner-scene--haunted">
+                        <svg class="corner-floor-cat" viewBox="0 0 220 160">
+                            <use href="#scene-cat" />
+                        </svg>
+                        <svg class="corner-broom" viewBox="0 0 70 210">
+                            <use href="#decor-broom" />
+                        </svg>
+                        <svg class="corner-cauldron" viewBox="0 0 140 140">
+                            <use href="#decor-cauldron" />
+                        </svg>
+                        <svg class="corner-pumpkin" viewBox="0 0 56 42">
+                            <use href="#decor-pumpkin" />
+                        </svg>
+
+                    </div>
+
                 </div>
 
 
@@ -328,8 +365,16 @@
                     class="room-floor"
                     aria-hidden="true"
                 >
-                    <svg class="room-rug" viewBox="0 0 700 180" preserveAspectRatio="none">
+                    <svg class="room-rug room-rug--oval" viewBox="0 0 700 180" preserveAspectRatio="none">
                         <use href="#scene-rug" />
+                    </svg>
+
+                    <svg class="room-rug room-rug--persian" viewBox="0 0 700 180" preserveAspectRatio="none">
+                        <use href="#rug-persian" />
+                    </svg>
+
+                    <svg class="room-rug room-rug--braided" viewBox="0 0 700 180" preserveAspectRatio="none">
+                        <use href="#rug-braided" />
                     </svg>
                 </div>
 

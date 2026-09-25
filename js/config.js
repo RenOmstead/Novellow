@@ -103,3 +103,12 @@ export const COVER_URL_LIFETIME_SECONDS = 60 * 60;
 export const EXPORT_FORMAT = "novellow-library";
 
 export const EXPORT_FORMAT_VERSION = 1;
+
+
+/* ---------------------------------------------------------
+   WHICH COPY OF NOVELLOW THIS IS
+   Leave empty on the real site. Any text here (for example
+   "Test copy") shows as a ribbon on every page.
+--------------------------------------------------------- */
+
+export const SITE_LABEL = "";

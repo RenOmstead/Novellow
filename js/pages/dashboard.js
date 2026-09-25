@@ -29,7 +29,7 @@ import { renderCrown } from "../room/crown.js?v=__VERSION__";
 import { startAmbience } from "../room/ambience.js?v=__VERSION__";
 import { startDecorations } from "../room/decorations.js?v=__VERSION__";
 import { createBookcase } from "../books/bookcase.js?v=__VERSION__";
-import { playReveal } from "../books/book-reveal.js?v=__VERSION__";
+import { playReveal, playReturn } from "../books/book-reveal.js?v=__VERSION__";
 import { coverMarkup } from "../books/cover.js?v=__VERSION__";
 import { createJournal } from "../journal/journal.js?v=__VERSION__";
 
@@ -91,12 +91,38 @@ async function openShelf(shelfId = null) {
    OPENING A BOOK
 ========================================================= */
 
-async function openBook(bookId, spine = null) {
+/*
+    The journal is a book taken off the shelf: it flies out,
+    opens in front of the room, and flies back when closed.
+    While it's out, its place on the shelf stays empty.
+*/
+
+let busy = false;
+
+function journalIsOpen() {
+    return document.body.classList.contains("journal-open");
+}
+
+
+function markLent(bookId) {
+
+    document
+        .querySelectorAll(".book-spine.is-lent")
+        .forEach((spine) => spine.classList.remove("is-lent"));
+
+    if (bookId) {
+        bookcase.spineFor(bookId)?.classList.add("is-lent");
+    }
+
+}
+
+
+async function openBook(bookId, spine = null, { swap = false } = {}) {
 
     const book =
         getBook(bookId);
 
-    if (!book) {
+    if (!book || busy) {
         return;
     }
 
@@ -117,51 +143,99 @@ async function openBook(bookId, spine = null) {
 
     }
 
-    if (book.cover_path) {
-        await coverUrls([book.cover_path]);
+    busy = true;
+
+    try {
+
+        if (book.cover_path) {
+            await coverUrls([book.cover_path]);
+        }
+
+        const wasOpen =
+            journalIsOpen();
+
+        bookcase.select(bookId);
+
+        // Draw the journal first (still invisible) so the cover
+        // knows where to land.
+        await journal.open(bookId);
+
+        document.getElementById("journalStage").scrollTop = 0;
+
+        if (!wasOpen && !swap && spine) {
+
+            await playReveal({
+                spine,
+                book,
+                target: journal.coverTarget()
+            });
+
+        }
+
+        document.body.classList.add("journal-open");
+
+        markLent(bookId);
+
+        setQueryParam("book", bookId);
+
+        if (!wasOpen) {
+            document.querySelector("#journal [data-action=close]")?.focus({ preventScroll: true });
+        }
+
     }
 
-    bookcase.select(bookId);
-
-    const journalElement =
-        document.getElementById("journal");
-
-    // In the stacked tablet layout, bring the journal into view first.
-    if (journalElement.getBoundingClientRect().top > window.innerHeight * 0.6) {
-
-        journalElement.scrollIntoView({
-            behavior: prefersReducedMotion() ? "auto" : "smooth",
-            block: "center"
-        });
-
-        await new Promise((resolve) => window.setTimeout(resolve, 450));
-
+    finally {
+        busy = false;
     }
-
-    if (spine) {
-
-        await playReveal({
-            spine,
-            book,
-            target: journal.coverTarget()
-        });
-
-    }
-
-    await journal.open(bookId);
-
-    setQueryParam("book", bookId);
 
 }
 
 
-function closeBook() {
+async function closeBook() {
 
-    journal.close();
+    if (busy) {
+        return;
+    }
 
-    bookcase.select(null);
+    busy = true;
 
-    setQueryParam("book", null);
+    const bookId =
+        journal.bookId;
+
+    const book =
+        bookId && getBook(bookId);
+
+    const spine =
+        bookId && bookcase.spineFor(bookId);
+
+    const from =
+        journal.coverTarget()?.getBoundingClientRect();
+
+    document.body.classList.remove("journal-open");
+
+    try {
+
+        if (book && spine) {
+            await playReturn({ spine, book, from });
+        }
+
+    }
+
+    finally {
+
+        markLent(null);
+
+        journal.close();
+
+        bookcase.select(null);
+
+        setQueryParam("book", null);
+
+        busy = false;
+
+        spine?.focus({ preventScroll: true });
+
+    }
 
 }
 
@@ -223,7 +297,7 @@ async function renderDeskNotes() {
 
     render(holder, html`
 
-        <article class="paper-note">
+        <article class="paper-note paper-note--reading">
 
             <h2 class="paper-note__label">
                 ${art("motif-star", "paper-note__icon")}
@@ -254,7 +328,7 @@ async function renderDeskNotes() {
         </article>
 
 
-        <article class="paper-note">
+        <article class="paper-note paper-note--snippets">
 
             <h2 class="paper-note__label">
                 ${art("motif-moon", "paper-note__icon")}
@@ -357,6 +431,8 @@ async function start() {
             bookcase.select(journal.bookId);
         }
 
+        markLent(journalIsOpen() ? journal.bookId : null);
+
         renderDeskNotes();
 
     });
@@ -389,7 +465,7 @@ async function start() {
             order[(index + event.detail.step + order.length) % order.length];
 
         if (next) {
-            openBook(next.id, bookcase.spineFor(next.id));
+            openBook(next.id, bookcase.spineFor(next.id), { swap: true });
         }
 
     });
@@ -411,22 +487,27 @@ async function start() {
     const requested =
         queryParam("book");
 
-    const firstBook =
-        (requested && getBook(requested))
-        || getBooks()
-            .filter((book) => book.status === "reading")
-            .sort((a, b) => b.updated_at.localeCompare(a.updated_at))[0];
+    // Clicking the dimmed room around the journal, or Escape,
+    // puts the book back.
+    document.getElementById("journalStage").addEventListener("click", (event) => {
 
-    if (firstBook && !PHONE.matches) {
-
-        if (firstBook.cover_path) {
-            await coverUrls([firstBook.cover_path]);
+        if (event.target.id === "journalStage") {
+            closeBook();
         }
 
-        bookcase.select(firstBook.id);
+    });
 
-        await journal.open(firstBook.id);
+    document.addEventListener("keydown", (event) => {
 
+        if (event.key === "Escape" && journalIsOpen() && !document.querySelector("dialog[open]")) {
+            closeBook();
+        }
+
+    });
+
+    // A link to one book (?book=…) opens it straight away.
+    if (requested && getBook(requested)) {
+        await openBook(requested);
     }
 
     if (queryParam("add") === "1") {
