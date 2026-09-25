@@ -109,6 +109,15 @@
     font-size: 13px;
 }
 
+/* The fold-away button only shows on phones. */
+.filter-bar__more {
+    display: contents;
+}
+
+.filter-bar__toggle {
+    display: none;
+}
+
 .filter-summary {
     display: flex;
     align-items: center;
@@ -1217,80 +1226,6 @@
     grid-column: 1 / -1;
 }
 
-.toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 14px;
-
-    min-height: 48px;
-
-    cursor: pointer;
-}
-
-.toggle__text {
-    display: grid;
-}
-
-.toggle__text strong {
-    font-size: 17px;
-}
-
-.toggle__text small {
-    color: var(--color-ink-soft);
-
-    font-size: 14px;
-}
-
-.toggle input {
-    appearance: none;
-
-    position: relative;
-
-    width: 52px;
-    height: 30px;
-
-    flex: 0 0 52px;
-
-    border: 1.5px solid #8a6446;
-    border-radius: 999px;
-
-    background: #e3cfb2;
-
-    transition: background 0.2s ease;
-
-    cursor: pointer;
-}
-
-.toggle input::after {
-    content: "";
-
-    position: absolute;
-
-    top: 3px;
-    left: 3px;
-
-    width: 21px;
-    height: 21px;
-
-    border-radius: 50%;
-
-    background: radial-gradient(circle at 35% 35%, #fff8e8, #d8b27a);
-
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
-
-    transition: transform 0.2s ease;
-}
-
-.toggle input:checked {
-    background: var(--color-plum-light);
-}
-
-.toggle input:checked::after {
-    transform: translateX(22px);
-}
-
 .theme-choices {
     min-width: 0;
 
@@ -1417,6 +1352,50 @@
 
     .filter-bar > :first-child {
         grid-column: 1 / -1;
+    }
+
+    /* Library: search, then a Filters button that opens the
+       rest. */
+    .filter-bar:has(.filter-bar__toggle) {
+        grid-template-columns: 1fr auto;
+        align-items: end;
+    }
+
+    .filter-bar:has(.filter-bar__toggle) > :first-child {
+        grid-column: auto;
+    }
+
+    .filter-bar__toggle {
+        display: inline-flex;
+
+        min-height: 46px;
+
+        padding: 0 14px;
+    }
+
+    .filter-bar__toggle svg {
+        width: 16px;
+        height: 16px;
+
+        transition: transform 0.2s ease;
+    }
+
+    .filter-bar.is-open .filter-bar__toggle svg {
+        transform: rotate(180deg);
+    }
+
+    .filter-bar__more {
+        display: none;
+
+        grid-column: 1 / -1;
+
+        grid-template-columns: 1fr 1fr;
+
+        gap: 12px;
+    }
+
+    .filter-bar.is-open .filter-bar__more {
+        display: grid;
     }
 
     .catalogue,

@@ -29,6 +29,8 @@ import { art, loader, toast, toastError, confirmDialog, formDialog, withBusy } f
 import { NovellowError } from "../core/errors.js?v=__VERSION__";
 import { SHELF_SORTS } from "../config.js?v=__VERSION__";
 import { exportLibrary, checkImport, importLibrary } from "../data/transfer.js?v=__VERSION__";
+import { mountMixer } from "../sound/mixer.js?v=__VERSION__";
+import { CATS, GHOST_CHOICES, CURTAINS, RUGS, WINDOW_SHAPES, WOODS, MUGS, CHINA_COLOURS, TEASETS, getPreferences, setPreference } from "../shell/preferences.js?v=__VERSION__";
 
 
 const content =
@@ -62,6 +64,23 @@ function toggle(name, title, text, checked) {
                 <small>${text}</small>
             </span>
             <input type="checkbox" name="${name}" data-setting="${name}" ${checked ? html`checked` : ""}>
+        </label>
+    `;
+
+}
+
+
+/* An on/off room preference (kept on this device). */
+
+function prefToggle(name, title, text, checked) {
+
+    return html`
+        <label class="toggle">
+            <span class="toggle__text">
+                <strong>${title}</strong>
+                <small>${text}</small>
+            </span>
+            <input type="checkbox" data-pref="${name}" ${checked ? html`checked` : ""}>
         </label>
     `;
 
@@ -107,6 +126,9 @@ function renderPage() {
 
     const settings =
         getSettings();
+
+    const prefs =
+        getPreferences();
 
     const rain =
         settings.rain === null || settings.rain === undefined
@@ -243,11 +265,107 @@ function renderPage() {
                             </select>
                         </label>
 
+                        <label class="field">
+                            <span class="field__label">The library cat</span>
+                            <select class="field__input" data-pref="cat">
+                                ${CATS.map((cat) => html`
+                                    <option value="${cat.id}" ${cat.id === prefs.cat ? html`selected` : ""}>${cat.name}</option>
+                                `)}
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">Window</span>
+                            <select class="field__input" data-pref="window">
+                                ${WINDOW_SHAPES.map((choice) => html`
+                                    <option value="${choice.id}" ${choice.id === prefs.window ? html`selected` : ""}>${choice.name}</option>
+                                `)}
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">Window wood</span>
+                            <select class="field__input" data-pref="wood">
+                                ${WOODS.map((choice) => html`
+                                    <option value="${choice.id}" ${choice.id === prefs.wood ? html`selected` : ""}>${choice.name}</option>
+                                `)}
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">Curtains</span>
+                            <select class="field__input" data-pref="curtains">
+                                ${CURTAINS.map((choice) => html`
+                                    <option value="${choice.id}" ${choice.id === prefs.curtains ? html`selected` : ""}>${choice.name}</option>
+                                `)}
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">Rug</span>
+                            <select class="field__input" data-pref="rug">
+                                ${RUGS.map((choice) => html`
+                                    <option value="${choice.id}" ${choice.id === prefs.rug ? html`selected` : ""}>${choice.name}</option>
+                                `)}
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">On the side table</span>
+                            <select class="field__input" data-pref="mug">
+                                ${MUGS.map((choice) => html`
+                                    <option value="${choice.id}" ${choice.id === prefs.mug ? html`selected` : ""}>${choice.name}</option>
+                                `)}
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">The café's tea set</span>
+                            <select class="field__input" data-pref="teaset">
+                                ${TEASETS.map((choice) => html`
+                                    <option value="${choice.id}" ${choice.id === prefs.teaset ? html`selected` : ""}>${choice.name}</option>
+                                `)}
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">China colour (mug and tea set)</span>
+                            <select class="field__input" data-pref="china">
+                                ${CHINA_COLOURS.map((choice) => html`
+                                    <option value="${choice.id}" ${choice.id === prefs.china ? html`selected` : ""}>${choice.name}</option>
+                                `)}
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">Floating ghosts</span>
+                            <select class="field__input" data-pref="ghosts">
+                                ${GHOST_CHOICES.map((choice) => html`
+                                    <option value="${choice.id}" ${choice.id === prefs.ghosts ? html`selected` : ""}>${choice.name}</option>
+                                `)}
+                            </select>
+                        </label>
+
+                        <div class="stack" style="gap: 6px">
+                            ${prefToggle("readingNote", "“Currently reading” note", "A little card on the wall with the book you're reading.", prefs.readingNote === "on")}
+                            ${prefToggle("snippetNote", "“Journal snippets” note", "A card with your latest saved quote or note.", prefs.snippetNote === "on")}
+                        </div>
+
                         <p class="muted">To place and move decorations, choose “Arrange the room” from the moon menu at the top of the page.</p>
 
                     </div>
 
                 </div>
+
+            </section>
+
+            <section class="settings-section paper mixer" aria-labelledby="soundHeading">
+
+                <h2 id="soundHeading">${art("ui-sound")} Sounds of the room</h2>
+
+                <div data-settings-mixer></div>
+
+                <p class="muted">Sounds are made right in your browser and saved on this device only, so your phone can stay quiet while your laptop plays.</p>
 
             </section>
 
@@ -283,6 +401,8 @@ function renderPage() {
     `);
 
     loadSignIns();
+
+    mountMixer(content.querySelector("[data-settings-mixer]"));
 
 }
 
@@ -706,6 +826,19 @@ async function start() {
     renderPage();
 
     content.addEventListener("change", (event) => {
+
+        const pref =
+            event.target.closest("[data-pref]");
+
+        if (pref) {
+
+            setPreference(pref.dataset.pref, pref.type === "checkbox" ? (pref.checked ? "on" : "off") : pref.value);
+
+            toast("Saved on this device.", { tone: "success", timeout: 1600 });
+
+            return;
+
+        }
 
         const control =
             event.target.closest("[data-setting]");
