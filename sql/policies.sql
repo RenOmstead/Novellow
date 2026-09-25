@@ -31,11 +31,15 @@ revoke execute on function public.set_updated_at() from public, authenticated;
 
 alter table public.profiles enable row level security;
 
+drop policy if exists "Profiles: read own" on public.profiles;
+
 create policy "Profiles: read own"
     on public.profiles
     for select
     to authenticated
     using (id = (select auth.uid()));
+
+drop policy if exists "Profiles: update own" on public.profiles;
 
 create policy "Profiles: update own"
     on public.profiles
@@ -53,17 +57,23 @@ create policy "Profiles: update own"
 
 alter table public.user_settings enable row level security;
 
+drop policy if exists "Settings: read own" on public.user_settings;
+
 create policy "Settings: read own"
     on public.user_settings
     for select
     to authenticated
     using (user_id = (select auth.uid()));
 
+drop policy if exists "Settings: create own" on public.user_settings;
+
 create policy "Settings: create own"
     on public.user_settings
     for insert
     to authenticated
     with check (user_id = (select auth.uid()));
+
+drop policy if exists "Settings: update own" on public.user_settings;
 
 create policy "Settings: update own"
     on public.user_settings
@@ -81,11 +91,15 @@ create policy "Settings: update own"
 
 alter table public.sign_in_events enable row level security;
 
+drop policy if exists "Sign-ins: read own" on public.sign_in_events;
+
 create policy "Sign-ins: read own"
     on public.sign_in_events
     for select
     to authenticated
     using (user_id = (select auth.uid()));
+
+drop policy if exists "Sign-ins: record own" on public.sign_in_events;
 
 create policy "Sign-ins: record own"
     on public.sign_in_events
@@ -125,9 +139,19 @@ begin
         );
 
         execute format(
+            'drop policy if exists "Owner can read" on public.%I',
+            library_table
+        );
+
+        execute format(
             'create policy "Owner can read" on public.%I
                 for select to authenticated
                 using (user_id = (select auth.uid()))',
+            library_table
+        );
+
+        execute format(
+            'drop policy if exists "Owner can create" on public.%I',
             library_table
         );
 
@@ -139,10 +163,20 @@ begin
         );
 
         execute format(
+            'drop policy if exists "Owner can update" on public.%I',
+            library_table
+        );
+
+        execute format(
             'create policy "Owner can update" on public.%I
                 for update to authenticated
                 using (user_id = (select auth.uid()))
                 with check (user_id = (select auth.uid()))',
+            library_table
+        );
+
+        execute format(
+            'drop policy if exists "Owner can delete" on public.%I',
             library_table
         );
 

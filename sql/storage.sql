@@ -32,6 +32,8 @@ set
     allowed_mime_types = excluded.allowed_mime_types;
 
 
+drop policy if exists "Covers: read own" on storage.objects;
+
 create policy "Covers: read own"
     on storage.objects
     for select
@@ -41,6 +43,8 @@ create policy "Covers: read own"
         and (storage.foldername(name))[1] = (select auth.uid())::text
     );
 
+drop policy if exists "Covers: upload own" on storage.objects;
+
 create policy "Covers: upload own"
     on storage.objects
     for insert
@@ -49,6 +53,8 @@ create policy "Covers: upload own"
         bucket_id = 'book-covers'
         and (storage.foldername(name))[1] = (select auth.uid())::text
     );
+
+drop policy if exists "Covers: replace own" on storage.objects;
 
 create policy "Covers: replace own"
     on storage.objects
@@ -62,6 +68,8 @@ create policy "Covers: replace own"
         bucket_id = 'book-covers'
         and (storage.foldername(name))[1] = (select auth.uid())::text
     );
+
+drop policy if exists "Covers: delete own" on storage.objects;
 
 create policy "Covers: delete own"
     on storage.objects
