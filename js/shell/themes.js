@@ -28,7 +28,8 @@ export const THEMES = [
         swatch: ["#3f3a4d", "#1f1a26", "#8e86a8", "#d8d0ea"],
         ivy: "forest",
         weather: { rain: false, fog: true, fireflies: false },
-        crownDecor: ["skull", "ghost", "candle", "bat", "stack", "cat", "lantern"]
+        crownDecor: ["skull", "ghost", "candle", "bat", "stack", "cat", "lantern"],
+        wallArt: { moth: "frame-ghost" }
     },
 
     {
@@ -114,6 +115,11 @@ export function applyAppearance(settings) {
     root.classList.toggle("ambient-oddities", settings.oddities !== false);
     root.classList.toggle("reduce-motion", Boolean(settings.reduced_motion));
 
+    pauseDrawnAnimations(
+        Boolean(settings.reduced_motion)
+        || window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+
     // A harmless UI cache so the right room shows before the
     // settings arrive from Supabase on the next visit.
     try {
@@ -135,6 +141,69 @@ export function applyAppearance(settings) {
     }
 
     document.dispatchEvent(new CustomEvent("novellow:appearance", { detail: { theme, settings } }));
+
+}
+
+
+/*
+    The illustrations animate with SMIL (the cat's tail, the
+    lamp, candle flames), which CSS can't stop. Pausing every
+    outer <svg> stills them, including ones drawn later.
+*/
+
+let drawnObserver = null;
+
+function pauseDrawnAnimations(paused) {
+
+    const apply = () => {
+
+        document.querySelectorAll("svg").forEach((svg) => {
+
+            if (svg.ownerSVGElement || typeof svg.pauseAnimations !== "function") {
+                return;
+            }
+
+            if (paused) {
+                svg.pauseAnimations();
+            }
+
+            else {
+                svg.unpauseAnimations();
+            }
+
+        });
+
+    };
+
+    apply();
+
+    if (paused && !drawnObserver && document.body) {
+
+        let queued = false;
+
+        drawnObserver = new MutationObserver(() => {
+
+            if (queued) {
+                return;
+            }
+
+            queued = true;
+
+            requestAnimationFrame(() => {
+                queued = false;
+                apply();
+            });
+
+        });
+
+        drawnObserver.observe(document.body, { childList: true, subtree: true });
+
+    }
+
+    if (!paused && drawnObserver) {
+        drawnObserver.disconnect();
+        drawnObserver = null;
+    }
 
 }
 
