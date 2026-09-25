@@ -101,8 +101,11 @@ create table public.sign_in_events (
 
     signed_in_at timestamptz not null default now(),
 
+    -- password: the sign-in form
+    -- sign_up: signed straight in when creating an account
+    -- email_link: arrived through a confirmation or reset email
     method text not null default 'password'
-        check (method in ('password', 'sign_up')),
+        check (method in ('password', 'sign_up', 'email_link')),
 
     user_agent text
         check (char_length(user_agent) <= 400)
