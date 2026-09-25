@@ -309,6 +309,11 @@ function headerMarkup(eyebrow) {
                     <div class="popover paper" id="themePopover" hidden>
                         <p class="popover-heading">Choose a room</p>
                         <div data-theme-list></div>
+                        <div class="popover-divider" role="separator"></div>
+                        <button class="popover-item" type="button" data-arrange-room>
+                            <svg aria-hidden="true"><use href="#ui-brush"></use></svg>
+                            Arrange the room
+                        </button>
                     </div>
 
                 </div>
@@ -506,6 +511,21 @@ function wirePopovers() {
     });
 
     $("[data-sign-out]").addEventListener("click", () => signOut());
+
+    // Decorations are arranged on the library room (dashboard).
+    $("[data-arrange-room]").addEventListener("click", () => {
+
+        if (document.body.dataset.page === "home" || document.querySelector(".library-room")) {
+            document.dispatchEvent(new CustomEvent("novellow:arrange"));
+            $("#themePopover").hidden = true;
+            $("[data-popover=themePopover]").setAttribute("aria-expanded", "false");
+        }
+
+        else {
+            window.location.href = "dashboard.html?arrange=1";
+        }
+
+    });
 
 }
 

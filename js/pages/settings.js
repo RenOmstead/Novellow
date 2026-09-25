@@ -243,7 +243,7 @@ function renderPage() {
                             </select>
                         </label>
 
-                        <p class="muted">To move decorations around, choose “Arrange the room” on your library page.</p>
+                        <p class="muted">To place and move decorations, choose “Arrange the room” from the moon menu at the top of the page.</p>
 
                     </div>
 

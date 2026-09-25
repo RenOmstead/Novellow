@@ -458,7 +458,7 @@
 
         <symbol id="decor-candle" viewBox="0 0 40 90">
 
-            <circle cx="20" cy="18" r="19" fill="url(#warmGlow)">
+            <circle cx="20" cy="18" r="19" fill="url(#warmGlow)" style="display: var(--glow-display, inline)">
             <animate attributeName="opacity" values="0.7;1;0.82;1;0.75" dur="2.8s" repeatCount="indefinite" />
         </circle>
 
@@ -482,7 +482,7 @@
 
         <symbol id="decor-lantern" viewBox="0 0 50 92">
 
-            <circle cx="25" cy="50" r="25" fill="url(#warmGlow)">
+            <circle cx="25" cy="50" r="25" fill="url(#warmGlow)" style="display: var(--glow-display, inline)">
             <animate attributeName="opacity" values="0.75;1;0.85;1;0.78" dur="3.2s" repeatCount="indefinite" />
         </circle>
 
@@ -1657,7 +1657,7 @@
 
         </defs>
 
-        <ellipse cx="105" cy="196" rx="104" ry="54" fill="url(#warmGlow)">
+        <ellipse cx="105" cy="196" rx="104" ry="54" fill="url(#warmGlow)" style="display: var(--glow-display, inline)">
             <animate attributeName="opacity" values="0.82;1;0.82" dur="6s" repeatCount="indefinite" />
         </ellipse>
 

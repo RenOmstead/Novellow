@@ -777,6 +777,14 @@ body.sidebar-collapsed .app-stage {
     z-index: 80;
 }
 
+.popover-divider {
+    height: 1px;
+
+    margin: 6px 4px;
+
+    background: rgba(120, 80, 60, 0.25);
+}
+
 .popover-item {
     display: flex;
     align-items: center;
