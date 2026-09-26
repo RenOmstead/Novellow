@@ -1211,3 +1211,77 @@ body.sidebar-collapsed .app-stage {
     }
 
 }
+
+
+/* A phone held sideways: a slim top bar, so the shelves and
+   the room get the height. */
+html.room-sideways .scene-header {
+    min-height: 0;
+
+    gap: 8px;
+
+    padding: 6px 12px 4px;
+}
+
+html.room-sideways .scene-header .icon-button,
+html.room-sideways .header-add {
+    width: 36px;
+    height: 36px;
+}
+
+html.room-sideways .scene-header .icon-button svg,
+html.room-sideways .header-add svg {
+    width: 18px;
+    height: 18px;
+}
+
+html.room-sideways .profile-button {
+    padding: 2px;
+}
+
+html.room-sideways .avatar {
+    width: 32px;
+    height: 32px;
+
+    font-size: 15px;
+}
+
+html.room-sideways .library-search {
+    height: 36px;
+}
+
+html.room-sideways .library-search input {
+    font-size: 15px;
+}
+
+html.room-sideways .header-add {
+    min-height: 0;
+
+    padding: 0;
+
+    border-radius: 50%;
+}
+
+
+/* =========================================================
+   EDGE TO EDGE (phones with a notch, and the installed app)
+   The page fills the whole screen; the top bar and the room
+   keep clear of the notch, the rounded corners and the
+   status bar.
+========================================================= */
+
+.scene-header {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    padding-left: calc(18px + env(safe-area-inset-left, 0px));
+    padding-right: calc(20px + env(safe-area-inset-right, 0px));
+}
+
+html.room-sideways .scene-header {
+    padding-top: calc(6px + env(safe-area-inset-top, 0px));
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+}
+
+.library-sidebar {
+    padding-top: env(safe-area-inset-top, 0px);
+}
