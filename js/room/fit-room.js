@@ -18,6 +18,9 @@ const ROOM_WIDTH = 600;
 const NARROW_ROOM_WIDTH = 480;
 const ROOM_MIN_HEIGHT = 620;
 
+// The bookcase's own width, before it is scaled to fit.
+const CASE_WIDTH = 760;
+
 // How much of the width the room takes.
 const ROOM_SHARE = 0.46;
 
@@ -85,8 +88,22 @@ export function startRoomFit(room) {
         }
 
         if (!compact) {
+            root.style.setProperty("--case-zoom", "1");
             return;
         }
+
+        // The bookcase is drawn 760 wide and scaled to fit its
+        // side, so decorations on it keep their places on every
+        // phone, in the browser and the installed app alike.
+        const style =
+            getComputedStyle(bookcaseZone);
+
+        const shelfWidth =
+            bookcaseZone.clientWidth
+            - Number.parseFloat(style.paddingLeft)
+            - Number.parseFloat(style.paddingRight);
+
+        root.style.setProperty("--case-zoom", Math.min(1, Math.max(0.3, shelfWidth / CASE_WIDTH)).toFixed(4));
 
         // The room's side of the screen, and the scale that fits
         // the room into it. The room grows taller (more wall) or
@@ -101,6 +118,7 @@ export function startRoomFit(room) {
             Math.min(width / (sideways ? ROOM_WIDTH : NARROW_ROOM_WIDTH), height / ROOM_MIN_HEIGHT);
 
         root.style.setProperty("--room-zoom", zoom.toFixed(4));
+
         root.style.setProperty("--room-width", `${Math.floor(width / zoom)}px`);
         root.style.setProperty("--room-height", `${Math.floor(height / zoom)}px`);
 
@@ -112,6 +130,24 @@ export function startRoomFit(room) {
         cancelAnimationFrame(frame);
         frame = requestAnimationFrame(fit);
     };
+
+    // Held upright, the home page asks to be turned sideways.
+    document.body.insertAdjacentHTML("beforeend", `
+        <section class="turn-sideways" aria-label="Turn your phone sideways">
+            <svg class="turn-sideways__phone" viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="20" y="6" width="24" height="52" rx="5" fill="#f6e3d6" stroke="#2b1d24" stroke-width="2.4" />
+                <rect x="23.4" y="12" width="17.2" height="38" rx="1.6" fill="#6e3b58" />
+                <circle cx="32" cy="54" r="1.8" fill="#2b1d24" />
+                <path d="M28 26C28 22 36 22 36 26V34H28Z" fill="#f0cf8a" />
+            </svg>
+            <h2>Turn your phone sideways</h2>
+            <p>Your reading room opens up when your phone is held sideways: the shelves on one side, the window and the chair on the other.</p>
+            <div class="turn-sideways__links">
+                <a class="button button--brass button--small" href="library.html">My Books</a>
+                <a class="button button--ghost button--small" href="reading.html">Reading Now</a>
+            </div>
+        </section>
+    `);
 
     fit();
 

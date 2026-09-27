@@ -8,7 +8,7 @@
    theme keeps its own arrangement, saved in the Supabase
    "decorations" table.
 
-   Outside "Arrange the room" the pieces are pictures only:
+   Outside "Edit the room" the pieces are pictures only:
    they never catch a click meant for a book.
 
    While arranging, the pieces wait in a tray that stays on
@@ -21,6 +21,7 @@
 import { listDecorations, createRow, updateRow, deleteRow } from "../core/store.js?v=__VERSION__";
 import { html, render, clamp, debounce } from "../core/helpers.js?v=__VERSION__";
 import { art, toast, toastError } from "../core/ui.js?v=__VERSION__";
+import { setFixtureRows, roomPanelMarkup, onRoomPanelClick, dragWindow, builtInAt, builtInElements, toggleBuiltIn } from "./fixtures.js?v=__VERSION__";
 
 
 /*
@@ -29,6 +30,11 @@ import { art, toast, toastError } from "../core/ui.js?v=__VERSION__";
 */
 
 export const DECOR_GROUPS = [
+    { id: "seating", name: "Seating" },
+    { id: "tables", name: "Tables" },
+    { id: "tabletop", name: "Mugs & tea" },
+    { id: "lighting", name: "Lamps" },
+    { id: "storage", name: "Storage & hearth" },
     { id: "pictures", name: "Pictures" },
     { id: "bookish", name: "Bookish" },
     { id: "cozy", name: "Cozy" },
@@ -40,6 +46,98 @@ export const DECOR_GROUPS = [
 ];
 
 export const DECOR_ASSETS = [
+    // Furniture: seating, tables, lamps, storage and fireplaces
+    { id: "furn-wingback-floral", box: "0 0 220 236", width: 200, name: "Floral wingback chair", group: "seating" },
+    { id: "furn-wingback-rust", box: "0 0 220 236", width: 200, name: "Velvet wingback chair", group: "seating", tint: true },
+    { id: "furn-wingback-black", box: "0 0 220 262", width: 200, name: "Black gothic wingback", group: "seating", tint: true },
+    { id: "furn-armchair-pink", box: "0 0 220 224", width: 210, name: "Pink tufted armchair", group: "seating", tint: true },
+    { id: "furn-throne-purple", box: "0 -20 220 258", width: 210, name: "Purple tufted throne", group: "seating", tint: true },
+    { id: "furn-chair-carved", box: "0 0 130 222", width: 120, name: "Carved wooden chair", group: "seating", tint: true },
+    { id: "furn-chair-wood", box: "0 0 110 206", width: 100, name: "Wooden chair", group: "seating", tint: true },
+    { id: "furn-sofa-coral", box: "0 0 350 196", width: 330, name: "Coral sofa", group: "seating", tint: true },
+    { id: "furn-daybed-purple", box: "0 0 320 196", width: 290, name: "Velvet daybed", group: "seating", tint: true },
+    { id: "furn-bench-cushions", box: "0 0 240 144", width: 220, name: "Cushioned bench", group: "seating", tint: true },
+    { id: "furn-club-chair", box: "0 0 230 196", width: 214, name: "Leather club chair", group: "seating", tint: true },
+    { id: "furn-peacock-chair", box: "0 0 200 250", width: 190, name: "Rattan peacock chair", group: "seating", tint: true },
+    { id: "furn-parlor-chair", box: "0 0 130 222", width: 120, name: "Parlour chair", group: "seating", tint: true },
+    { id: "furn-slipper-chair", box: "0 0 150 214", width: 140, name: "Skirted slipper chair", group: "seating", tint: true },
+    { id: "furn-rocking-chair", box: "0 0 180 212", width: 170, name: "Rocking chair", group: "seating", tint: true },
+    { id: "furn-shell-chair", box: "0 0 210 196", width: 196, name: "Velvet shell chair", group: "seating", tint: true },
+    { id: "furn-loveseat", box: "0 0 290 196", width: 270, name: "Camelback loveseat", group: "seating", tint: true },
+    { id: "furn-gothic-chair", box: "0 0 150 244", width: 140, name: "Spiky gothic chair", group: "seating", tint: true },
+    { id: "furn-floor-cushions", box: "0 0 200 118", width: 180, name: "Floor cushions", group: "seating", tint: true },
+    { id: "furn-ottoman", box: "0 0 140 104", width: 130, name: "Tufted footstool", group: "seating", tint: true },
+    { id: "furn-table-round-empty", box: "0 0 150 200", width: 140, name: "Round table (empty)", group: "tables" },
+    { id: "furn-table-cloth-empty", box: "0 0 170 200", width: 160, name: "Table with a lace cloth (empty)", group: "tables" },
+    { id: "furn-table-side-empty", box: "0 0 100 200", width: 90, name: "Side table (empty)", group: "tables" },
+    { id: "furn-desk-empty", box: "0 0 260 200", width: 230, name: "Writing desk (empty)", group: "tables" },
+    { id: "furn-nightstand", box: "0 0 120 166", width: 110, name: "Nightstand (empty)", group: "tables" },
+    { id: "furn-table-side", box: "0 0 100 170", width: 90, name: "Little side table", group: "tables" },
+    { id: "furn-table-tea", box: "0 0 170 250", width: 160, name: "Tea table", group: "tables" },
+    { id: "furn-table-rustic", box: "0 0 260 250", width: 240, name: "Table with a runner", group: "tables" },
+    { id: "furn-candle-stand", box: "0 0 70 200", width: 64, name: "Candle stand", group: "tables" },
+    { id: "furn-dresser-apothecary", box: "0 0 200 200", width: 190, name: "Apothecary dresser", group: "storage" },
+    { id: "furn-shelf-potions", box: "0 0 180 116", width: 170, name: "Potion shelf", group: "storage" },
+    { id: "furn-bookcase-tall", box: "0 0 170 336", width: 160, name: "Tall bookcase", group: "storage" },
+    { id: "furn-bookcase-low", box: "0 0 190 180", width: 180, name: "Low bookcase", group: "storage" },
+    { id: "furn-wardrobe", box: "0 0 160 310", width: 150, name: "Wardrobe", group: "storage" },
+    { id: "furn-clock-grandfather", box: "0 0 90 290", width: 86, name: "Grandfather clock", group: "storage" },
+    { id: "furn-tv-vintage", box: "0 0 130 150", width: 120, name: "Vintage television", group: "storage" },
+    { id: "furn-fireplace-marble", box: "0 0 270 246", width: 250, name: "Marble fireplace", group: "storage" },
+    { id: "furn-fireplace-gothic", box: "0 0 270 262", width: 250, name: "Gothic stone fireplace", group: "storage" },
+    { id: "furn-fireplace-brick", box: "0 0 270 246", width: 250, name: "Brick fireplace", group: "storage" },
+    { id: "furn-lamp-floor-pink", box: "0 0 84 246", width: 78, name: "Pink floor lamp", group: "lighting", tint: true },
+    { id: "furn-lamp-table", box: "0 0 64 90", width: 56, name: "Table lamp", group: "lighting", tint: true },
+    { id: "furn-candelabra-floor", box: "0 0 80 226", width: 76, name: "Standing candelabra", group: "lighting" },
+    { id: "furn-chandelier-gold", box: "0 0 200 156", width: 190, name: "Gold chandelier", group: "lighting" },
+    { id: "furn-lantern-hanging", box: "0 0 60 156", width: 56, name: "Hanging lantern", group: "lighting" },
+    { id: "furn-lamp-banker", box: "0 0 72 86", width: 58, name: "Banker's lamp", group: "lighting" },
+    { id: "furn-lamp-tiffany", box: "0 0 72 92", width: 62, name: "Tiffany lamp", group: "lighting" },
+    { id: "furn-lamp-fringe-table", box: "0 0 68 92", width: 58, name: "Fringed table lamp", group: "lighting", tint: true },
+    { id: "furn-lamp-oil", box: "0 0 44 82", width: 38, name: "Oil lamp", group: "lighting" },
+    { id: "furn-lamp-crystal", box: "0 0 60 86", width: 52, name: "Crystal lamp", group: "lighting" },
+    { id: "furn-lamp-floor-fringe", box: "0 0 100 250", width: 94, name: "Victorian fringed floor lamp", group: "lighting", tint: true },
+    { id: "furn-lamp-arc", box: "0 0 160 246", width: 150, name: "Brass arc lamp", group: "lighting" },
+    { id: "furn-lamp-tripod", box: "0 0 92 246", width: 86, name: "Wooden tripod lamp", group: "lighting", tint: true },
+    { id: "furn-lamp-torchiere", box: "0 0 80 246", width: 74, name: "Alabaster torchiere", group: "lighting" },
+    { id: "furn-lantern-moroccan", box: "0 0 72 152", width: 62, name: "Moroccan lantern", group: "lighting" },
+    { id: "furn-lantern-paper", box: "0 0 80 140", width: 70, name: "Paper lantern", group: "lighting", tint: true },
+    { id: "furn-plant-hanging", box: "0 0 120 270", width: 110, name: "Hanging plant", group: "plants" },
+    { id: "cup-mug-tea", box: "0 0 40 50", width: 30, name: "Mug of tea", group: "tabletop", tint: true },
+    { id: "cup-mug-latte", box: "0 0 40 50", width: 30, name: "Latte with a heart", group: "tabletop", tint: true },
+    { id: "cup-mug-cocoa", box: "0 0 40 50", width: 30, name: "Cocoa with marshmallows", group: "tabletop", tint: true },
+    { id: "cup-mug-cream", box: "0 0 40 50", width: 30, name: "Hot chocolate with cream", group: "tabletop", tint: true },
+    { id: "cup-mug-cider", box: "0 0 40 50", width: 30, name: "Spiced cider", group: "tabletop", tint: true },
+    { id: "cup-mug-matcha", box: "0 0 40 50", width: 30, name: "Matcha latte", group: "tabletop", tint: true },
+    { id: "cup-mug-dots", box: "0 0 40 50", width: 30, name: "Spotty mug", group: "tabletop", tint: true },
+    { id: "cup-mug-stripes", box: "0 0 40 50", width: 30, name: "Striped mug", group: "tabletop", tint: true },
+    { id: "cup-mug-heart", box: "0 0 40 50", width: 30, name: "Heart mug", group: "tabletop", tint: true },
+    { id: "cup-mug-stoneware", box: "0 0 40 50", width: 30, name: "Speckled stoneware mug", group: "tabletop", tint: true },
+    { id: "cup-mug-cat", box: "0 0 40 50", width: 30, name: "Black cat mug", group: "tabletop" },
+    { id: "cup-mug-ghost", box: "0 0 40 50", width: 30, name: "Ghost mug", group: "tabletop", tint: true },
+    { id: "cup-mug-moon", box: "0 0 40 50", width: 30, name: "Moon mug", group: "tabletop", tint: true },
+    { id: "cup-mug-pumpkin", box: "0 0 42 50", width: 32, name: "Pumpkin mug", group: "tabletop" },
+    { id: "cup-mug-enamel", box: "0 0 40 50", width: 30, name: "Enamel camp mug", group: "tabletop" },
+    { id: "cup-mug-glass", box: "0 0 40 50", width: 30, name: "Glass of tea", group: "tabletop" },
+    { id: "cup-teacup-rose", box: "0 0 40 44", width: 32, name: "Rose teacup", group: "tabletop" },
+    { id: "cup-teacup-blue", box: "0 0 40 44", width: 32, name: "Blue and white teacup", group: "tabletop" },
+    { id: "cup-teacup-gold", box: "0 0 40 44", width: 32, name: "Gilded teacup", group: "tabletop", tint: true },
+    { id: "cup-teapot-rose", box: "0 0 64 60", width: 56, name: "Rose teapot", group: "tabletop" },
+    { id: "cup-teapot-plain", box: "0 0 64 60", width: 56, name: "Teapot", group: "tabletop", tint: true },
+    { id: "cup-teapot-iron", box: "0 0 52 54", width: 46, name: "Cast iron teapot", group: "tabletop" },
+    { id: "cup-tea-set", box: "0 0 140 68", width: 120, name: "Tea set on a tray", group: "tabletop" },
+    { id: "cup-tea-for-two", box: "0 0 120 66", width: 104, name: "Tea for two", group: "tabletop" },
+    { id: "cup-biscuits", box: "0 0 40 16", width: 34, name: "Plate of biscuits", group: "tabletop" },
+    { id: "cup-cake-stand", box: "0 0 60 72", width: 52, name: "Cake stand", group: "tabletop" },
+    { id: "cup-lemonade", box: "0 0 30 42", width: 24, name: "Lemonade", group: "tabletop" },
+    { id: "cup-iced-coffee", box: "0 0 30 42", width: 24, name: "Iced coffee", group: "tabletop" },
+    { id: "cup-milk", box: "0 0 24 32", width: 20, name: "Glass of milk", group: "tabletop" },
+    { id: "cup-wine", box: "0 0 24 42", width: 20, name: "Glass of red wine", group: "tabletop" },
+    { id: "cup-wine-bottle", box: "0 0 24 56", width: 20, name: "Bottle of wine", group: "tabletop" },
+    { id: "cup-wine-pair", box: "0 0 50 56", width: 42, name: "Wine for two", group: "tabletop" },
+    { id: "cup-candle", box: "0 0 34 44", width: 28, name: "Candle in a holder", group: "tabletop" },
+    { id: "cup-books", box: "0 0 56 30", width: 46, name: "Stack of books", group: "tabletop" },
+    { id: "cup-books-mug", box: "0 0 60 52", width: 50, name: "Books and a mug", group: "tabletop", tint: true },
     // Pictures and frames
     { id: "portrait-ghost-reader", box: "0 0 120 152", width: 140, name: "Ghost reader portrait", group: "pictures" },
     { id: "portrait-moth-ornate", box: "0 0 120 152", width: 140, name: "Moth in a gilt frame", group: "pictures" },
@@ -84,7 +182,7 @@ export const DECOR_ASSETS = [
     { id: "decor-spellbook-stack", box: "0 0 86 84", width: 96, name: "Spellbooks and a mouse", group: "bookish" },
     { id: "decor-reading-mouse", box: "0 0 48 50", width: 52, name: "Reading mouse", group: "bookish" },
     { id: "decor-open-book", box: "0 0 86 44", width: 92, name: "Open book", group: "bookish" },
-    { id: "decor-stack", box: "0 0 84 36", width: 64, name: "Book stack", group: "bookish" },
+    { id: "decor-stack", box: "0 0 160 76", width: 80, name: "Book stack", group: "bookish" },
     { id: "decor-quill-mug", box: "0 0 46 82", width: 46, name: "Quills in a mug", group: "bookish" },
     { id: "decor-ink-ghost", box: "0 0 52 62", width: 52, name: "Ghost ink bottle", group: "bookish" },
     { id: "decor-fountain-pen", box: "0 0 98 24", width: 92, name: "Fountain pen", group: "bookish" },
@@ -92,24 +190,24 @@ export const DECOR_ASSETS = [
     { id: "decor-mixtape", box: "0 0 86 56", width: 84, name: "Ghostly mixtape", group: "bookish" },
     { id: "decor-hourglass", box: "0 0 38 64", width: 40, name: "Hourglass", group: "bookish" },
     { id: "decor-tarot", box: "0 0 72 60", width: 72, name: "Tarot cards", group: "bookish" },
-    { id: "decor-teacup", box: "0 0 56 58", width: 40, name: "Teacup", group: "bookish" },
-    { id: "decor-globe", box: "0 0 56 76", width: 44, name: "Globe", group: "bookish" },
-    { id: "decor-bust", box: "0 0 48 76", width: 40, name: "Bust", group: "bookish" },
-    { id: "decor-sign", box: "0 0 84 72", width: 64, name: "Sign", group: "bookish" },
+    { id: "decor-teacup", box: "0 0 112 106", width: 52, name: "Teacup", group: "bookish" },
+    { id: "decor-globe", box: "0 0 112 152", width: 54, name: "Globe", group: "bookish" },
+    { id: "decor-bust", box: "0 0 96 158", width: 50, name: "Bust", group: "bookish" },
+    { id: "decor-sign", box: "0 0 168 128", width: 84, name: "Sign", group: "bookish" },
 
     // Cozy lights and friends
-    { id: "decor-fairy-lights", box: "0 0 140 54", width: 162, name: "Fairy lights", group: "cozy" },
+    { id: "decor-fairy-lights", box: "0 0 140 54", width: 162, name: "Fairy lights", group: "cozy", plain: true },
     { id: "decor-candle-jars", box: "0 0 68 52", width: 76, name: "Candles in jars", group: "cozy" },
     { id: "decor-moon-lamp", box: "0 0 50 60", width: 56, name: "Moon lamp", group: "cozy" },
     { id: "decor-mushroom-lamp", box: "0 0 46 56", width: 50, name: "Mushroom lamp", group: "cozy" },
     { id: "decor-firefly-jar", box: "0 0 40 58", width: 44, name: "Jar of fireflies", group: "cozy" },
-    { id: "decor-candle", box: "0 0 40 90", width: 28, name: "Candle", group: "cozy" },
-    { id: "decor-candelabra", box: "0 0 110 220", width: 60, name: "Candelabra", group: "cozy" },
-    { id: "decor-lantern", box: "0 0 50 92", width: 38, name: "Lantern", group: "cozy" },
+    { id: "decor-candle", box: "0 0 80 178", width: 36, name: "Candle", group: "cozy" },
+    { id: "decor-candelabra", box: "0 0 220 220", width: 110, name: "Candelabra", group: "cozy" },
+    { id: "decor-lantern", box: "0 0 100 186", width: 48, name: "Lantern", group: "cozy" },
     { id: "scene-cat", box: "0 0 220 160", width: 96, name: "Sleeping cat", group: "cozy" },
     { id: "decor-cat-sitting", box: "0 0 80 104", width: 60, name: "Cat", group: "cozy" },
-    { id: "decor-belljar", box: "0 0 50 72", width: 40, name: "Bell jar", group: "cozy" },
-    { id: "decor-umbrella-stand", box: "0 0 80 170", width: 50, name: "Umbrella stand", group: "cozy" },
+    { id: "decor-belljar", box: "0 0 100 150", width: 50, name: "Bell jar", group: "cozy" },
+    { id: "decor-umbrella-stand", box: "0 0 160 210", width: 80, name: "Umbrella stand", group: "cozy" },
 
     // Tea, cocoa and treats
     { id: "decor-teabag-cat", box: "0 0 78 92", width: 62, name: "Kit Tea", group: "treats" },
@@ -132,7 +230,7 @@ export const DECOR_ASSETS = [
     { id: "decor-pumpkin-cherries", box: "0 0 64 70", width: 54, name: "Pumpkin cherries", group: "autumn" },
     { id: "decor-pumpkin-candle", box: "0 0 44 58", width: 38, name: "Pumpkin spice candle", group: "autumn" },
     { id: "decor-bunting", box: "0 0 128 42", width: 124, name: "Autumn bunting", group: "autumn" },
-    { id: "decor-star-garland", box: "0 0 120 40", width: 116, name: "Star garland", group: "autumn" },
+    { id: "decor-star-garland", box: "0 0 120 40", width: 116, name: "Star garland", group: "autumn", plain: true },
     { id: "decor-cardigan", box: "0 0 84 70", width: 70, name: "Cardigan", group: "autumn" },
     { id: "decor-socks", box: "0 0 70 66", width: 56, name: "Cozy socks", group: "autumn" },
     { id: "decor-slippers", box: "0 0 66 56", width: 56, name: "Ghost slippers", group: "autumn" },
@@ -152,19 +250,19 @@ export const DECOR_ASSETS = [
     { id: "decor-pothos", box: "0 0 66 118", width: 76, name: "Hanging pothos", group: "plants" },
     { id: "decor-monstera", box: "0 0 66 84", width: 76, name: "Monstera", group: "plants" },
     { id: "decor-fern", box: "0 0 66 74", width: 76, name: "Fern", group: "plants" },
-    { id: "decor-snake-plant", box: "0 0 44 84", width: 50, name: "Snake plant", group: "plants" },
+    { id: "decor-snake-plant", box: "0 0 88 190", width: 60, name: "Snake plant", group: "plants" },
     { id: "decor-succulents", box: "0 0 76 46", width: 84, name: "Succulents", group: "plants" },
-    { id: "decor-cactus", box: "0 0 42 62", width: 46, name: "Cactus", group: "plants" },
+    { id: "decor-cactus", box: "0 0 100 148", width: 52, name: "Cactus", group: "plants" },
     { id: "decor-lavender-jar", box: "0 0 40 74", width: 44, name: "Lavender", group: "plants" },
-    { id: "decor-roses", box: "0 0 52 76", width: 58, name: "Dark roses", group: "plants" },
+    { id: "decor-roses", box: "0 0 112 152", width: 64, name: "Dark roses", group: "plants" },
     { id: "decor-terrarium", box: "0 0 54 60", width: 60, name: "Terrarium", group: "plants" },
-    { id: "decor-ivy-drape", box: "0 0 130 50", width: 150, name: "Trailing ivy", group: "plants" },
+    { id: "decor-ivy-drape", box: "0 0 130 50", width: 150, name: "Trailing ivy", group: "plants", plain: true },
     { id: "decor-glow-mushrooms", box: "0 0 78 66", width: 88, name: "Glowing mushrooms", group: "plants" },
-    { id: "decor-lantern-flowers", box: "0 0 66 106", width: 72, name: "Lantern flowers", group: "plants" },
-    { id: "decor-plant", box: "0 0 60 78", width: 46, name: "Plant", group: "plants" },
-    { id: "decor-flowers", box: "0 0 54 78", width: 42, name: "Flowers", group: "plants" },
-    { id: "decor-mushrooms", box: "0 0 64 52", width: 46, name: "Toadstools", group: "plants" },
-    { id: "decor-crow", box: "0 0 64 66", width: 50, name: "Crow", group: "plants" },
+    { id: "decor-lantern-flowers", box: "0 0 66 106", width: 72, name: "Lantern flowers", group: "plants", plain: true },
+    { id: "decor-plant", box: "0 0 120 156", width: 58, name: "Plant", group: "plants" },
+    { id: "decor-flowers", box: "0 0 112 152", width: 54, name: "Flowers", group: "plants" },
+    { id: "decor-mushrooms", box: "0 0 128 102", width: 60, name: "Toadstools", group: "plants" },
+    { id: "decor-crow", box: "0 0 128 148", width: 62, name: "Crow", group: "plants" },
 
     // Witchy
     { id: "decor-spell-tome", box: "0 0 76 88", width: 60, name: "Book of spells", group: "witchy" },
@@ -190,9 +288,9 @@ export const DECOR_ASSETS = [
     { id: "decor-heart-skull", box: "0 0 52 50", width: 58, name: "Heart-eyed skull", group: "witchy" },
     { id: "decor-herbs", box: "0 0 34 76", width: 40, name: "Drying herbs", group: "witchy" },
     { id: "decor-moon-charm", box: "0 0 38 70", width: 44, name: "Moon charm", group: "witchy" },
-    { id: "decor-potion", box: "0 0 40 64", width: 30, name: "Potion", group: "witchy" },
-    { id: "decor-crystal", box: "0 0 48 60", width: 36, name: "Crystal", group: "witchy" },
-    { id: "decor-starcharm", box: "0 0 40 52", width: 30, name: "Star charm", group: "witchy" },
+    { id: "decor-potion", box: "0 0 80 124", width: 40, name: "Potion", group: "witchy" },
+    { id: "decor-crystal", box: "0 0 96 120", width: 48, name: "Crystal", group: "witchy" },
+    { id: "decor-starcharm", box: "0 0 80 104", width: 38, name: "Star charm", group: "witchy" },
     { id: "decor-cauldron", box: "0 0 140 140", width: 90, name: "Cauldron", group: "witchy" },
     { id: "decor-broom", box: "0 0 70 210", width: 44, name: "Broom", group: "witchy" },
 
@@ -207,18 +305,18 @@ export const DECOR_ASSETS = [
     { id: "decor-ghost-reader", box: "0 0 70 78", width: 78, name: "Ghost reading", group: "spooky" },
     { id: "decor-ghost-books", box: "0 0 70 80", width: 78, name: "Ghost with books", group: "spooky" },
     { id: "decor-ghost-scholar", box: "0 0 72 96", width: 78, name: "Scholar ghost", group: "spooky" },
-    { id: "decor-ghost", box: "0 0 44 54", width: 40, name: "Ghost", group: "spooky" },
+    { id: "decor-ghost", box: "0 0 92 108", width: 50, name: "Ghost", group: "spooky" },
     { id: "decor-bat-pumpkin", box: "0 0 66 62", width: 72, name: "Bat in a pumpkin", group: "spooky" },
     { id: "decor-bat-hanging", box: "0 0 52 80", width: 56, name: "Sleepy bat", group: "spooky" },
     { id: "decor-bat-ghost", box: "0 0 58 66", width: 60, name: "Bat in a sheet", group: "spooky" },
     { id: "decor-bat-scarf", box: "0 0 88 60", width: 90, name: "Bat in a scarf", group: "spooky" },
-    { id: "decor-bat", box: "0 0 84 46", width: 56, name: "Bat", group: "spooky" },
+    { id: "decor-bat", box: "0 0 168 84", width: 72, name: "Bat", group: "spooky" },
     { id: "decor-jack-lantern", box: "0 0 56 50", width: 64, name: "Jack-o'-lantern", group: "spooky" },
-    { id: "decor-pumpkin", box: "0 0 56 42", width: 44, name: "Pumpkin", group: "spooky" },
+    { id: "decor-pumpkin", box: "0 0 120 86", width: 56, name: "Pumpkin", group: "spooky" },
     { id: "decor-spider", box: "0 0 34 74", width: 34, name: "Spider", group: "spooky" },
-    { id: "decor-skull", box: "0 0 52 48", width: 42, name: "Skull", group: "spooky" },
-    { id: "decor-cobweb", box: "0 0 120 120", width: 100, name: "Cobweb (left corner)", group: "spooky", dark: true },
-    { id: "decor-cobweb-right", box: "0 0 120 120", width: 100, name: "Cobweb (right corner)", group: "spooky", dark: true },
+    { id: "decor-skull", box: "0 -22 104 114", width: 52, name: "Skull", group: "spooky" },
+    { id: "decor-cobweb", box: "0 0 120 120", width: 100, name: "Cobweb (left corner)", group: "spooky", dark: true, plain: true },
+    { id: "decor-cobweb-right", box: "0 0 120 120", width: 100, name: "Cobweb (right corner)", group: "spooky", dark: true, plain: true },
 
     // Older pieces, still shown if they were placed before.
     { id: "frame-moth", box: "0 0 80 100", width: 70, name: "Moth frame", group: "retired" },
@@ -226,11 +324,71 @@ export const DECOR_ASSETS = [
     { id: "frame-castle", box: "0 0 130 100", width: 100, name: "Castle painting", group: "retired" }
 ];
 
+/*
+    Fabrics for chairs, sofas and cushions: the piece's main
+    colour, a lighter one for seats and buttons, and a shade.
+    Saved on the piece as decoration_type "tint:<id>".
+*/
+
+export const FABRICS = [
+    { id: "rose", name: "Rose velvet", colours: ["#c86a88", "#e08aa4", "#8a3a56"] },
+    { id: "blush", name: "Blush", colours: ["#e8a0a8", "#f2bcc2", "#b0606a"] },
+    { id: "oxblood", name: "Oxblood leather", colours: ["#7a2a26", "#9a3a32", "#4a1614"] },
+    { id: "rust", name: "Rust", colours: ["#c8622e", "#d8784a", "#8e3c16"] },
+    { id: "mustard", name: "Mustard", colours: ["#e0a83a", "#f0c460", "#9a6818"] },
+    { id: "sage", name: "Sage", colours: ["#7a9a78", "#94b290", "#4a6448"] },
+    { id: "emerald", name: "Emerald", colours: ["#2f6e4e", "#3f8a62", "#18402c"] },
+    { id: "teal", name: "Teal", colours: ["#3f8a88", "#5aa4a0", "#1f5654"] },
+    { id: "blue", name: "Dusty blue", colours: ["#7a92b8", "#94aacc", "#4a5e82"] },
+    { id: "navy", name: "Navy", colours: ["#2c3a70", "#3e4e8a", "#161e40"] },
+    { id: "lavender", name: "Lavender", colours: ["#9a82c8", "#b8a2e0", "#5a4488"] },
+    { id: "plum", name: "Plum", colours: ["#5e3056", "#7a4070", "#361a30"] },
+    { id: "cream", name: "Cream", colours: ["#e8dcc4", "#f6efe2", "#b0a080"] },
+    { id: "charcoal", name: "Charcoal", colours: ["#3a363c", "#4e4a52", "#1e1c20"] },
+    { id: "black", name: "Black", colours: ["#242026", "#38323c", "#0c0a0e"] }
+];
+
+
+function fabricFor(piece) {
+
+    const id =
+        String(piece.decoration_type || "").startsWith("tint:") ? piece.decoration_type.slice(5) : null;
+
+    return FABRICS.find((fabric) => fabric.id === id) || null;
+
+}
+
+
+function fabricStyle(piece) {
+
+    const fabric =
+        fabricFor(piece);
+
+    return fabric
+        ? `; --up: ${fabric.colours[0]}; --up-light: ${fabric.colours[1]}; --up-shade: ${fabric.colours[2]}`
+        : "";
+
+}
+
+
 const LIMIT = 80;
 
 // Bookcase pieces are placed in pixels down from the top of
 // the bookcase: position_y is a percentage of this height.
+// The bookcase is always drawn 760 wide and scaled to fit
+// (fit-room.js), so a piece stays on the same spot on every
+// screen.
 const SHELF_SPAN = 1600;
+
+
+// How much the bookcase is scaled down on this screen.
+function caseZoom() {
+
+    return Number.parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--case-zoom")
+    ) || 1;
+
+}
 
 
 function topFor(piece) {
@@ -244,7 +402,7 @@ function topFor(piece) {
 // room_area in the database → the part of the room it hangs on.
 const AREAS = {
     wall: ".journal-zone",
-    shelf: ".bookcase-zone"
+    shelf: ".bookcase"
 };
 
 let room = null;
@@ -252,9 +410,12 @@ let theme = "original";
 let pieces = [];
 let arranging = false;
 let selectedId = null;
+// A piece the room came with (the armchair, the chandelier…),
+// picked out to be removed.
+let selectedBuiltIn = null;
 let bar = null;
 let loadToken = 0;
-let paletteGroup = "pictures";
+let paletteGroup = "room";
 
 // The tray: which side it sits on (computers) and whether it
 // is folded down (phones).
@@ -348,9 +509,9 @@ function pieceMarkup(piece) {
 
     return html`
         <div
-            class="placed-decor ${piece.id === selectedId ? "is-selected" : ""}"
+            class="placed-decor ${piece.id === selectedId ? "is-selected" : ""} ${asset.plain ? "placed-decor--plain" : ""}"
             data-decor-id="${piece.id}"
-            style="left: ${piece.position_x}%; top: ${topFor(piece)}; width: ${asset.width}px; z-index: ${piece.z_index}; --scale: ${piece.scale}; --rotation: ${piece.rotation}deg"
+            style="left: ${piece.position_x}%; top: ${topFor(piece)}; width: ${asset.width}px; z-index: ${piece.z_index}; --scale: ${piece.scale}; --rotation: ${piece.rotation}deg${fabricStyle(piece)}"
             ${arranging ? html`tabindex="0" role="button" aria-label="${asset.name}. Drag to move, or use the arrow keys."` : html`aria-hidden="true"`}
         >
             <svg viewBox="${asset.box}" aria-hidden="true"><use href="#${asset.id}"></use></svg>
@@ -386,6 +547,15 @@ function draw() {
 
 function drawBar() {
 
+    drawBarNow();
+
+    drawEditor();
+
+}
+
+
+function drawBarNow() {
+
     if (!arranging) {
 
         trayObserver?.disconnect();
@@ -402,7 +572,7 @@ function drawBar() {
 
     if (!bar) {
 
-        document.body.insertAdjacentHTML("beforeend", `<section class="arrange-bar paper" aria-label="Arrange the room"></section>`);
+        document.body.insertAdjacentHTML("beforeend", `<section class="arrange-bar paper" aria-label="Edit the room"></section>`);
 
         bar = document.body.lastElementChild;
 
@@ -427,16 +597,82 @@ function drawBar() {
     render(bar, html`
 
         <div class="arrange-bar__head">
-            <p class="arrange-bar__title">Arrange the room</p>
+            <p class="arrange-bar__title">Edit the room</p>
             <button class="icon-button arrange-bar__fold" type="button" data-arrange="fold" aria-expanded="${String(!trayFolded)}" aria-label="${trayFolded ? "Show the decorations" : "Fold the tray down"}">
                 ${art("ui-chevron-down")}
             </button>
             <button class="button button--primary button--small" type="button" data-arrange="done">Done</button>
         </div>
 
-        <p class="arrange-bar__hint">Tap a piece to add it to the part of the room you can see, or drag it straight to its spot. Drag pieces to move them.</p>
+        <p class="arrange-bar__hint" ${selectedBuiltIn ? html`hidden` : ""}>${paletteGroup === "room"
+            ? "Choose the wallpaper, floor, window, curtains and rug for this room."
+            : "Tap a piece to add it to the part of the room you can see, or drag it straight to its spot. Drag pieces to move them."}</p>
 
-        <div class="arrange-bar__tools" ${selected ? "" : html`hidden`}>
+        <div class="arrange-bar__tabs" role="tablist" aria-label="Kinds of decoration">
+            <button class="arrange-bar__tab arrange-bar__tab--room ${paletteGroup === "room" ? "is-current" : ""}" type="button" role="tab" aria-selected="${String(paletteGroup === "room")}" data-decor-group="room">Room</button>
+            ${DECOR_GROUPS.map((group) => html`
+                <button class="arrange-bar__tab ${group.id === paletteGroup ? "is-current" : ""}" type="button" role="tab" aria-selected="${String(group.id === paletteGroup)}" data-decor-group="${group.id}">${group.name}</button>
+            `)}
+        </div>
+
+        ${paletteGroup === "room" ? roomPanelMarkup() : html`<ul class="arrange-bar__palette" aria-label="Decorations to add">
+            ${DECOR_ASSETS.filter((asset) => asset.group === paletteGroup).map((asset) => html`
+                <li>
+                    <button class="arrange-bar__asset ${asset.dark ? "arrange-bar__asset--dark" : ""} ${asset.plain ? "arrange-bar__asset--plain" : ""}" type="button" data-add-decor="${asset.id}" title="${asset.name}" aria-label="Add ${asset.name}">
+                        <svg viewBox="${asset.box}" aria-hidden="true"><use href="#${asset.id}"></use></svg>
+                        <span class="arrange-bar__label" aria-hidden="true">${asset.name}</span>
+                    </button>
+                </li>
+            `)}
+        </ul>`}
+
+        <button class="text-button arrange-bar__side" type="button" data-arrange="side">
+            ${bar.dataset.side === "left" ? html`Move this panel to the right ${art("ui-chevron-right")}` : html`${art("ui-chevron-left")} Move this panel to the left`}
+        </button>
+
+    `);
+
+}
+
+
+
+/*
+    The editor that pops up beside a piece tapped in the room:
+    its size, tilt, layer, fabric colour, or taking it away.
+*/
+
+let editor = null;
+let editorFrame = 0;
+
+function drawEditor() {
+
+    const selected =
+        pieces.find((piece) => piece.id === selectedId);
+
+    if (!arranging || (!selected && !selectedBuiltIn)) {
+        editor?.remove();
+        editor = null;
+        cancelAnimationFrame(editorFrame);
+        return;
+    }
+
+    if (!editor) {
+        document.body.insertAdjacentHTML("beforeend", `<section class="piece-editor paper" aria-label="Edit this piece"></section>`);
+        editor = document.body.lastElementChild;
+        editor.addEventListener("click", onBarClick);
+    }
+
+    render(editor, html`
+        <button class="icon-button piece-editor__close" type="button" data-arrange="deselect" aria-label="Close">${art("ui-close")}</button>
+        ${selectedBuiltIn ? html`
+            <div class="arrange-bar__tools arrange-bar__tools--built-in">
+                <span class="arrange-bar__selected">${selectedBuiltIn.name}</span>
+                <p class="arrange-bar__built-in-note">This came with the room. Take it out to make space for your own pieces; you can put it back in the Room tab.</p>
+                <button class="button button--small arrange-bar__remove-built-in" type="button" data-arrange="remove-built-in">${art("ui-trash")} Take it out of the room</button>
+            </div>
+        ` : ""}
+
+        ${selected ? html`<div class="arrange-bar__tools">
             <span class="arrange-bar__selected">${selected ? assetFor(selected.asset_id)?.name : ""}</span>
             <div class="arrange-bar__buttons">
                 <button class="icon-button" type="button" data-arrange="smaller" aria-label="Smaller" title="Smaller">−</button>
@@ -447,30 +683,71 @@ function drawBar() {
                 <button class="icon-button" type="button" data-arrange="forward" aria-label="Bring to front" title="Bring to front">⤒</button>
                 <button class="icon-button" type="button" data-arrange="remove" aria-label="Remove" title="Remove">${art("ui-trash")}</button>
             </div>
-        </div>
-
-        <div class="arrange-bar__tabs" role="tablist" aria-label="Kinds of decoration">
-            ${DECOR_GROUPS.map((group) => html`
-                <button class="arrange-bar__tab ${group.id === paletteGroup ? "is-current" : ""}" type="button" role="tab" aria-selected="${String(group.id === paletteGroup)}" data-decor-group="${group.id}">${group.name}</button>
-            `)}
-        </div>
-
-        <ul class="arrange-bar__palette" aria-label="Decorations to add">
-            ${DECOR_ASSETS.filter((asset) => asset.group === paletteGroup).map((asset) => html`
-                <li>
-                    <button class="arrange-bar__asset ${asset.dark ? "arrange-bar__asset--dark" : ""}" type="button" data-add-decor="${asset.id}" title="${asset.name}" aria-label="Add ${asset.name}">
-                        <svg viewBox="${asset.box}" aria-hidden="true"><use href="#${asset.id}"></use></svg>
-                        <span class="arrange-bar__label" aria-hidden="true">${asset.name}</span>
-                    </button>
-                </li>
-            `)}
-        </ul>
-
-        <button class="text-button arrange-bar__side" type="button" data-arrange="side">
-            ${bar.dataset.side === "left" ? html`Move this panel to the right ${art("ui-chevron-right")}` : html`${art("ui-chevron-left")} Move this panel to the left`}
-        </button>
+            ${selected && assetFor(selected.asset_id)?.tint ? html`
+                <div class="arrange-bar__fabrics" role="group" aria-label="Fabric colour">
+                    <button class="arrange-bar__fabric arrange-bar__fabric--own ${fabricFor(selected) ? "" : "is-current"}" type="button" data-fabric="" title="Its own colours" aria-label="Its own colours"></button>
+                    ${FABRICS.map((fabric) => html`
+                        <button class="arrange-bar__fabric ${fabricFor(selected)?.id === fabric.id ? "is-current" : ""}" type="button" data-fabric="${fabric.id}" title="${fabric.name}" aria-label="${fabric.name}" style="background: linear-gradient(135deg, ${fabric.colours[1]} 0 35%, ${fabric.colours[0]} 35% 75%, ${fabric.colours[2]} 75%)"></button>
+                    `)}
+                </div>
+            ` : ""}
+        </div>` : ""}
 
     `);
+
+    placeEditor();
+
+}
+
+
+// Keeps the editor beside its piece (above it, or below when
+// there's no room), inside the screen.
+function placeEditor() {
+
+    cancelAnimationFrame(editorFrame);
+
+    if (!editor) {
+        return;
+    }
+
+    const target =
+        selectedId
+            ? room.querySelector(`[data-decor-id="${selectedId}"]`)
+            : selectedBuiltIn ? room.querySelector(".is-built-in-selected") : null;
+
+    if (target) {
+
+        const box =
+            target.getBoundingClientRect();
+
+        const width =
+            editor.offsetWidth;
+
+        const height =
+            editor.offsetHeight;
+
+        const margin =
+            10;
+
+        let left =
+            box.left + box.width / 2 - width / 2;
+
+        let top =
+            box.top - height - margin;
+
+        if (top < 64) {
+            top = box.bottom + margin;
+        }
+
+        left = clamp(left, 8, window.innerWidth - width - 8);
+        top = clamp(top, 8, window.innerHeight - height - 8);
+
+        editor.style.left = `${Math.round(left)}px`;
+        editor.style.top = `${Math.round(top)}px`;
+
+    }
+
+    editorFrame = requestAnimationFrame(placeEditor);
 
 }
 
@@ -491,6 +768,7 @@ function saveSoon(piece) {
             try {
 
                 await updateRow("decorations", latest.id, {
+                    decoration_type: latest.decoration_type,
                     room_area: latest.room_area,
                     position_x: latest.position_x,
                     position_y: latest.position_y,
@@ -625,8 +903,9 @@ function positionIn(area, pointX, pointY) {
     const box =
         layerFor(area).getBoundingClientRect();
 
+    // On the bookcase, pixels on screen are scaled pixels.
     const height =
-        area === "shelf" ? SHELF_SPAN : box.height;
+        area === "shelf" ? SHELF_SPAN * caseZoom() : box.height;
 
     return {
         position_x: Number(clamp(((x - box.left) / box.width) * 100, 0, 100).toFixed(2)),
@@ -739,7 +1018,29 @@ function adjust(piece, change) {
    ARRANGE MODE: TOOLS, DRAGGING, KEYS
 ========================================================= */
 
+function selectBuiltIn(part) {
+
+    selectedBuiltIn = part;
+    selectedId = null;
+
+    room.querySelectorAll(".placed-decor.is-selected").forEach((element) => element.classList.remove("is-selected"));
+    room.querySelectorAll(".is-built-in-selected").forEach((element) => element.classList.remove("is-built-in-selected"));
+
+    if (part) {
+        builtInElements(part.id).forEach((element) => element.classList.add("is-built-in-selected"));
+    }
+
+    drawBar();
+
+}
+
+
 function select(id) {
+
+    if (selectedBuiltIn) {
+        selectedBuiltIn = null;
+        room.querySelectorAll(".is-built-in-selected").forEach((element) => element.classList.remove("is-built-in-selected"));
+    }
 
     selectedId = id;
 
@@ -770,6 +1071,25 @@ function onBarClick(event) {
         return;
     }
 
+    if (paletteGroup === "room" && onRoomPanelClick(event)) {
+
+        // Redraw, keeping the panel where it was scrolled to.
+        const scrolled =
+            bar.querySelector(".arrange-bar__room")?.scrollTop || 0;
+
+        drawBar();
+
+        const panel =
+            bar.querySelector(".arrange-bar__room");
+
+        if (panel) {
+            panel.scrollTop = scrolled;
+        }
+
+        return;
+
+    }
+
     const add =
         event.target.closest("[data-add-decor]");
 
@@ -780,6 +1100,27 @@ function onBarClick(event) {
 
     const action =
         event.target.closest("[data-arrange]")?.dataset.arrange;
+
+    if (action === "deselect") {
+
+        if (selectedBuiltIn) {
+            selectBuiltIn(null);
+        }
+
+        else {
+            select(null);
+        }
+
+        return;
+
+    }
+
+    if (action === "remove-built-in" && selectedBuiltIn) {
+        toggleBuiltIn(selectedBuiltIn.id);
+        toast(`${selectedBuiltIn.name} taken out. Put it back any time from the Room tab.`);
+        selectBuiltIn(null);
+        return;
+    }
 
     if (action === "done") {
         setArranging(false);
@@ -798,6 +1139,28 @@ function onBarClick(event) {
         drawBar();
         bar.querySelector("[data-arrange=fold]")?.focus();
         return;
+    }
+
+    const fabricButton =
+        event.target.closest("[data-fabric]");
+
+    if (fabricButton) {
+
+        const tinted =
+            pieces.find((item) => item.id === selectedId);
+
+        if (tinted) {
+
+            tinted.decoration_type = fabricButton.dataset.fabric ? `tint:${fabricButton.dataset.fabric}` : "ornament";
+
+            draw();
+            drawBar();
+            saveSoon(tinted);
+
+        }
+
+        return;
+
     }
 
     const piece =
@@ -914,10 +1277,38 @@ function autoScroll(pointer, follow, ready = () => true) {
 
 function onPointerDown(event) {
 
+    // While arranging, the window can be dragged along the wall.
+    if (arranging && event.button <= 0 && event.target.closest(".moon-window") && !event.target.closest(".placed-decor")) {
+
+        if (selectedId) {
+            select(null);
+        }
+
+        dragWindow(event);
+
+        return;
+
+    }
+
+    // A piece the room came with: pick it out, to remove it.
+    const builtIn =
+        arranging && event.button <= 0 && !event.target.closest(".placed-decor") ? builtInAt(event.target) : null;
+
+    if (builtIn) {
+        event.preventDefault();
+        selectBuiltIn(builtIn);
+        return;
+    }
+
     const element =
         event.target.closest(".placed-decor");
 
     if (arranging && !element && !event.target.closest(".arrange-bar")) {
+
+        if (selectedBuiltIn) {
+            selectBuiltIn(null);
+        }
+
 
         // A tap on the room itself puts the tools away.
         if (selectedId) {
@@ -1066,9 +1457,17 @@ function onPalettePointerDown(event) {
     // Until the piece is out of the tray, the page stays put.
     let outOfTray = false;
 
-    button.setPointerCapture(event.pointerId);
-
     const begin = () => {
+
+        // Held only once a drag begins: holding it from the first
+        // touch can stop iPhones scrolling the tray.
+        try {
+            button.setPointerCapture(event.pointerId);
+        }
+
+        catch {
+            // The pointer has already gone.
+        }
 
         ghost = document.createElement("div");
         ghost.className = "decor-ghost";
@@ -1294,7 +1693,9 @@ export function setArranging(on) {
 
     if (!on) {
         selectedId = null;
+        selectedBuiltIn = null;
         trayFolded = false;
+        room.querySelectorAll(".is-built-in-selected").forEach((element) => element.classList.remove("is-built-in-selected"));
     }
 
     document.documentElement.classList.toggle("is-arranging-room", on);
@@ -1342,7 +1743,11 @@ async function load(themeId) {
             return;
         }
 
-        pieces = rows.map((row) => ({
+        // The room's own fixtures (wallpaper, window…) come with
+        // the decorations; js/room/fixtures.js looks after them.
+        setFixtureRows(themeId, rows.filter((row) => row.decoration_type === "fixture"));
+
+        pieces = rows.filter((row) => row.decoration_type !== "fixture").map((row) => ({
             ...row,
             position_x: Number(row.position_x),
             position_y: Number(row.position_y),
