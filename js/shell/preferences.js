@@ -33,6 +33,12 @@ export const CURTAINS = [
     { id: "drapes", name: "Velvet drapes, tied back" },
     { id: "lace", name: "Sheer lace" },
     { id: "cafe", name: "Café curtains" },
+    { id: "swag", name: "Swags and tails" },
+    { id: "fringe", name: "Velvet with fringe" },
+    { id: "pinch", name: "Pinch-pleat drapes" },
+    { id: "ruffle", name: "Ruffled tie-ups" },
+    { id: "roman", name: "Roman blind" },
+    { id: "stars", name: "Starry sheers" },
     { id: "none", name: "No curtains" }
 ];
 
@@ -40,13 +46,33 @@ export const RUGS = [
     { id: "oval", name: "Round, with flowers" },
     { id: "persian", name: "Rectangle, with tassels" },
     { id: "braided", name: "Round braided" },
+    { id: "runner", name: "Striped runner" },
+    { id: "celestial", name: "Moon and stars" },
+    { id: "checker", name: "Checkerboard" },
+    { id: "rag", name: "Rag stripes" },
+    { id: "scallop", name: "Scalloped flower" },
+    { id: "mandala", name: "Round lace" },
+    { id: "medallion", name: "Faded medallion" },
+    { id: "moons", name: "Moon phases" },
+    { id: "spiderweb", name: "Spiderweb" },
+    { id: "pumpkin", name: "Pumpkin potion" },
+    { id: "sheepskin", name: "Fluffy round" },
+    { id: "oriental", name: "Oriental medallion" },
+    { id: "kilim", name: "Kilim diamonds" },
+    { id: "hearts", name: "Hearts" },
+    { id: "rosegarden", name: "Rose garden" },
+    { id: "trellis", name: "Moroccan trellis" },
+    { id: "cat", name: "Black cat" },
+    { id: "patchwork", name: "Patchwork quilt" },
+    { id: "autumn", name: "Autumn leaves" },
     { id: "none", name: "No rug" }
 ];
 
 export const WINDOW_SHAPES = [
     { id: "arched", name: "Arched" },
     { id: "square", name: "Square" },
-    { id: "gothic", name: "Gothic, pointed" }
+    { id: "gothic", name: "Gothic, pointed" },
+    { id: "stone", name: "Stone arch with ivy" }
 ];
 
 export const WOODS = [
@@ -94,7 +120,8 @@ const DEFAULTS = {
     china: "rose",
     teaset: "gold",
     readingNote: "off",
-    snippetNote: "off"
+    snippetNote: "off",
+    bookcaseIvy: "off"
 };
 
 
@@ -135,17 +162,17 @@ export function setPreference(key, value) {
 
 export function applyPreferences() {
 
-    const { cat, curtains, rug, mug, china, teaset, window: shape, wood } =
+    const { cat, mug, china, teaset } =
         getPreferences();
 
     const root =
         document.documentElement;
 
     root.dataset.cat = CATS.some((item) => item.id === cat) ? cat : "black";
-    root.dataset.curtains = CURTAINS.some((item) => item.id === curtains) ? curtains : "drapes";
-    root.dataset.rug = RUGS.some((item) => item.id === rug) ? rug : "oval";
-    root.dataset.window = WINDOW_SHAPES.some((item) => item.id === shape) ? shape : "arched";
-    root.dataset.wood = WOODS.some((item) => item.id === wood) ? wood : "walnut";
+
+    // The window, its wood, the curtains and the rug are the
+    // room's own now (js/room/fixtures.js); the choices kept
+    // here are only where each room starts.
     root.dataset.china = CHINA_COLOURS.some((item) => item.id === china) ? china : "rose";
     root.dataset.teaset = TEASETS.some((item) => item.id === teaset) ? teaset : "gold";
 
@@ -155,6 +182,9 @@ export function applyPreferences() {
 
     root.dataset.readingNote = readingNote === "on" ? "on" : "off";
     root.dataset.snippetNote = snippetNote === "on" ? "on" : "off";
+
+    // Ivy climbing the sides of the bookcase, if the reader wants it.
+    root.dataset.bookcaseIvy = getPreferences().bookcaseIvy === "on" ? "on" : "off";
 
     // The drink on the side table.
     const mugId =

@@ -281,6 +281,47 @@ body.sidebar-collapsed .app-stage {
         transform 0.2s ease;
 }
 
+.sidebar-badge {
+    min-width: 22px;
+    height: 22px;
+
+    display: grid;
+    place-items: center;
+
+    margin-left: auto;
+    padding: 0 6px;
+
+    border-radius: 999px;
+
+    color: #2b1a10;
+
+    background: linear-gradient(180deg, #f3d38c, #d7a452);
+
+    box-shadow: 0 1px 3px rgba(20, 8, 4, 0.45);
+
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.library-sidebar.is-collapsed .sidebar-link {
+    position: relative;
+}
+
+.library-sidebar.is-collapsed .sidebar-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+
+    min-width: 18px;
+    height: 18px;
+
+    padding: 0 4px;
+
+    font-size: 11px;
+}
+
 .sidebar-link:hover {
     color: #fff1dc;
 
@@ -779,7 +820,14 @@ body.sidebar-collapsed .app-stage {
 
     min-width: 240px;
 
+    /* On a short screen (a phone held sideways) the menu
+       scrolls instead of running off the bottom. */
+    max-height: calc(100dvh - var(--header-h, var(--header-height)) - 12px);
+
     padding: 10px;
+
+    overflow-y: auto;
+    overscroll-behavior: contain;
 
     z-index: 80;
 }
@@ -1210,4 +1258,93 @@ body.sidebar-collapsed .app-stage {
         min-width: 0;
     }
 
+}
+
+
+/* A phone held sideways: a slim top bar, so the shelves and
+   the room get the height. */
+html.room-sideways .scene-header {
+    min-height: 0;
+
+    gap: 8px;
+
+    padding: 6px 12px 4px;
+}
+
+html.room-sideways .scene-header .icon-button,
+html.room-sideways .header-add {
+    width: 36px;
+    height: 36px;
+}
+
+html.room-sideways .scene-header .icon-button svg,
+html.room-sideways .header-add svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Just the round avatar, the same size as the other buttons. */
+html.room-sideways .profile-button {
+    width: 36px;
+    height: 36px;
+
+    justify-content: center;
+
+    gap: 0;
+
+    padding: 0;
+}
+
+html.room-sideways .profile-button__name,
+html.room-sideways .profile-button > svg {
+    display: none;
+}
+
+html.room-sideways .profile-button .avatar {
+    width: 32px;
+    height: 32px;
+
+    flex: 0 0 32px;
+
+    font-size: 15px;
+}
+
+html.room-sideways .library-search {
+    height: 36px;
+}
+
+html.room-sideways .library-search input {
+    font-size: 15px;
+}
+
+html.room-sideways .header-add {
+    min-height: 0;
+
+    padding: 0;
+
+    border-radius: 50%;
+}
+
+
+/* =========================================================
+   EDGE TO EDGE (phones with a notch, and the installed app)
+   The page fills the whole screen; the top bar and the room
+   keep clear of the notch, the rounded corners and the
+   status bar.
+========================================================= */
+
+.scene-header {
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    padding-left: calc(18px + env(safe-area-inset-left, 0px));
+    padding-right: calc(20px + env(safe-area-inset-right, 0px));
+}
+
+html.room-sideways .scene-header {
+    padding-top: calc(6px + env(safe-area-inset-top, 0px));
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+}
+
+.library-sidebar {
+    padding-top: env(safe-area-inset-top, 0px);
 }
