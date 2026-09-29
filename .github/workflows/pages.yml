@@ -1,16 +1,12 @@
-# Publishes Novellow to GitHub Pages.
+# Publishes Novellow to GitHub Pages, only when run by hand.
 #
-# Every relative file reference in the site ends in ?v=__VERSION__.
-# This replaces __VERSION__ with the commit being published, so each
-# release loads fresh CSS and JavaScript instead of a stale cached copy.
-#
-# One-time setup: repository Settings → Pages → Source: GitHub Actions.
+# The site is hosted on Cloudflare Pages (novellow.com), which builds
+# it with build.sh on every push to main. This stays as a backup:
+# Actions → Publish to GitHub Pages → Run workflow.
 
 name: Publish to GitHub Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -32,16 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Stamp the version for cache busting
-        run: |
-          VERSION="${GITHUB_SHA::8}"
-          mkdir -p _site
-          cp -r *.html manifest.webmanifest css js assets _site/
-          find _site -type f \( -name '*.html' -o -name '*.css' -o -name '*.js' -o -name '*.svg' \) \
-            -exec sed -i "s/__VERSION__/${VERSION}/g" {} +
-          if grep -rl "__VERSION__" _site; then
-            echo "Some files still contain __VERSION__" && exit 1
-          fi
+      - name: Build the site
+        run: bash build.sh
 
       - uses: actions/configure-pages@v5
 
