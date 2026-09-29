@@ -21,7 +21,7 @@ let watching = false;
 /* =========================================================
    URLS
    Built relative to the current page, so the app works at
-   renomstead.github.io/Novellow/ or any other folder.
+   novellow.com, renomstead.github.io/Novellow/ or any other folder.
 ========================================================= */
 
 export function appUrl(path) {

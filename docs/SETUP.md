@@ -48,8 +48,9 @@ In **Authentication** → **Sign In / Providers** → **Email**:
 
 In **Authentication** → **URL Configuration**:
 
-- **Site URL**: `https://renomstead.github.io/Novellow/`
-- **Redirect URLs**: add `https://renomstead.github.io/Novellow/**`
+- **Site URL**: `https://novellow.com/`
+- **Redirect URLs**: add `https://novellow.com/**` (and
+  `https://www.novellow.com/**` if you use the www address too)
 
 These addresses are where the confirmation and password-reset emails
 send people back to. If they're wrong, the email links won't work.
@@ -62,16 +63,34 @@ the "Confirm signup" and "Reset password" emails. Keep the
 > That's fine for you and a few friends. For more readers, add your own
 > email service under **Authentication** → **Emails** → **SMTP Settings**.
 
-## 3. Publish with GitHub Pages
+## 3. Publish with Cloudflare Pages
 
-1. In GitHub, open the repository → **Settings** → **Pages**.
-2. Under **Build and deployment** → **Source**, choose **GitHub Actions**.
-3. Merge this branch into `main`. The **Publish to GitHub Pages**
-   workflow runs on every push to `main`. It stamps each file with the
-   commit ID so browsers always load the newest version, then
-   publishes the site.
+1. In Cloudflare, open **Workers & Pages** → **Create** → **Pages** tab →
+   **Import an existing Git repository** (not "Create a Worker"), and
+   choose the `Novellow` repository.
+2. Set up the build:
+   - **Project name**: `novellow`
+   - **Production branch**: `main`
+   - **Framework preset**: None
+   - **Build command**: `bash build.sh`
+   - **Build output directory**: `_site`
+3. **Save and Deploy**. After that, every merge into `main` publishes
+   the site. `build.sh` stamps each file with the commit ID so browsers
+   always load the newest version, and publishes only the site (not
+   `sql/` or `docs/`). Pages shows `404.html` for addresses that don't
+   exist.
+4. In the project, open **Custom domains** → **Set up a custom domain**,
+   enter `novellow.com` and follow the steps (then `www.novellow.com` if
+   you want it). If the domain's DNS is already on this Cloudflare
+   account, Cloudflare adds the record for you. If it says a record
+   already exists, delete that record under the domain's **DNS** →
+   **Records** (for example the old GitHub Pages ones) and try again.
 
-The site will be at <https://renomstead.github.io/Novellow/>.
+The site will be at <https://novellow.com/>.
+
+GitHub Pages is kept as a backup and no longer publishes on its own.
+To publish there by hand, open **Actions** → **Publish to GitHub
+Pages** → **Run workflow**.
 
 ## 4. Try it
 
