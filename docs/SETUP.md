@@ -63,25 +63,28 @@ the "Confirm signup" and "Reset password" emails. Keep the
 > That's fine for you and a few friends. For more readers, add your own
 > email service under **Authentication** → **Emails** → **SMTP Settings**.
 
-## 3. Publish with Cloudflare
+## 3. Publish with Cloudflare Pages
 
-The site runs as a Cloudflare Worker named `novellow` that only serves
-the site's files. `wrangler.jsonc` holds its settings.
-
-1. In Cloudflare, open **Workers & Pages** → `novellow` → **Settings** →
-   **Build**, connected to this repository, with:
+1. In Cloudflare, open **Workers & Pages** → **Create** → **Pages** tab →
+   **Import an existing Git repository** (not "Create a Worker"), and
+   choose the `Novellow` repository.
+2. Set up the build:
+   - **Project name**: `novellow`
    - **Production branch**: `main`
+   - **Framework preset**: None
    - **Build command**: `bash build.sh`
-   - **Deploy command**: `npx wrangler deploy`
-2. Every merge into `main` now publishes the site. `build.sh` stamps each
-   file with the commit ID so browsers always load the newest version,
-   and publishes only the site (not `sql/` or `docs/`).
-3. Under **Settings** → **Domains & Routes** → **Add** → **Custom
-   domain**, add `novellow.com` (and `www.novellow.com` if you want it).
-   The domain must be on this Cloudflare account. If Cloudflare says a
-   DNS record already exists for it, delete that record under the
-   domain's **DNS** → **Records** first (for example the old GitHub Pages
-   ones), then add the custom domain again.
+   - **Build output directory**: `_site`
+3. **Save and Deploy**. After that, every merge into `main` publishes
+   the site. `build.sh` stamps each file with the commit ID so browsers
+   always load the newest version, and publishes only the site (not
+   `sql/` or `docs/`). Pages shows `404.html` for addresses that don't
+   exist.
+4. In the project, open **Custom domains** → **Set up a custom domain**,
+   enter `novellow.com` and follow the steps (then `www.novellow.com` if
+   you want it). If the domain's DNS is already on this Cloudflare
+   account, Cloudflare adds the record for you. If it says a record
+   already exists, delete that record under the domain's **DNS** →
+   **Records** (for example the old GitHub Pages ones) and try again.
 
 The site will be at <https://novellow.com/>.
 
