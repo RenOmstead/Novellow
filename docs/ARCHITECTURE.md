@@ -72,16 +72,17 @@ be migrated from a database because none exists yet.
    another shelf, journal close button, status pill, three of the four
    bookmark ribbons, the Reading/Journal/Notes tabs (visual only), the
    snippets arrow.
-6. **The custom domain is not configured.** The `CNAME` was deleted, so the
-   site is only at the `github.io` address. This matters for Supabase's
-   auth redirect settings (question 2 at the end).
+6. **Hosted on Cloudflare Pages at novellow.com** (the `novellow` project),
+   built with `build.sh` into `_site` on every push to `main`; the
+   GitHub Pages workflow now only runs by hand. Supabase's auth Site URL
+   and Redirect URLs must match novellow.com.
 
 ---
 
 ## 2. File architecture
 
 A static site with no build step to run locally. It is plain HTML, CSS and
-JavaScript modules, and GitHub Pages serves it as-is.
+JavaScript modules, published as-is apart from the version stamp (build.sh).
 
 ```
 /
