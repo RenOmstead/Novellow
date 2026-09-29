@@ -63,21 +63,27 @@ the "Confirm signup" and "Reset password" emails. Keep the
 > That's fine for you and a few friends. For more readers, add your own
 > email service under **Authentication** → **Emails** → **SMTP Settings**.
 
-## 3. Publish with GitHub Pages
+## 3. Publish with Cloudflare Pages
 
-1. In GitHub, open the repository → **Settings** → **Pages**.
-2. Under **Build and deployment** → **Source**, choose **GitHub Actions**.
-3. Merge this branch into `main`. The **Publish to GitHub Pages**
-   workflow runs on every push to `main`. It stamps each file with the
-   commit ID so browsers always load the newest version, then
-   publishes the site.
+1. In Cloudflare, open **Workers & Pages** → **Create** → **Pages** →
+   **Connect to Git**, and choose the `Novellow` repository.
+2. Set up the build:
+   - **Production branch**: `main`
+   - **Framework preset**: None
+   - **Build command**: `bash build.sh`
+   - **Build output directory**: `_site`
+3. Save and deploy. After that, every merge into `main` publishes the
+   site. `build.sh` stamps each file with the commit ID so browsers
+   always load the newest version, and publishes only the site (not
+   `sql/` or `docs/`).
+4. Under the project's **Custom domains**, add `novellow.com` (and
+   `www.novellow.com` if you want it).
 
-4. Under **Custom domain**, enter `novellow.com` and save. Once the
-   DNS check passes, tick **Enforce HTTPS**.
+The site will be at <https://novellow.com/>.
 
-The site will be at <https://novellow.com/>. The old
-`renomstead.github.io/Novellow/` address sends visitors there
-automatically.
+GitHub Pages is kept as a backup and no longer publishes on its own.
+To publish there by hand, open **Actions** → **Publish to GitHub
+Pages** → **Run workflow**.
 
 ## 4. Try it
 
