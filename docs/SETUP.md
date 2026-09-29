@@ -63,21 +63,25 @@ the "Confirm signup" and "Reset password" emails. Keep the
 > That's fine for you and a few friends. For more readers, add your own
 > email service under **Authentication** → **Emails** → **SMTP Settings**.
 
-## 3. Publish with Cloudflare Pages
+## 3. Publish with Cloudflare
 
-1. In Cloudflare, open **Workers & Pages** → **Create** → **Pages** →
-   **Connect to Git**, and choose the `Novellow` repository.
-2. Set up the build:
+The site runs as a Cloudflare Worker named `novellow` that only serves
+the site's files. `wrangler.jsonc` holds its settings.
+
+1. In Cloudflare, open **Workers & Pages** → `novellow` → **Settings** →
+   **Build**, connected to this repository, with:
    - **Production branch**: `main`
-   - **Framework preset**: None
    - **Build command**: `bash build.sh`
-   - **Build output directory**: `_site`
-3. Save and deploy. After that, every merge into `main` publishes the
-   site. `build.sh` stamps each file with the commit ID so browsers
-   always load the newest version, and publishes only the site (not
-   `sql/` or `docs/`).
-4. Under the project's **Custom domains**, add `novellow.com` (and
-   `www.novellow.com` if you want it).
+   - **Deploy command**: `npx wrangler deploy`
+2. Every merge into `main` now publishes the site. `build.sh` stamps each
+   file with the commit ID so browsers always load the newest version,
+   and publishes only the site (not `sql/` or `docs/`).
+3. Under **Settings** → **Domains & Routes** → **Add** → **Custom
+   domain**, add `novellow.com` (and `www.novellow.com` if you want it).
+   The domain must be on this Cloudflare account. If Cloudflare says a
+   DNS record already exists for it, delete that record under the
+   domain's **DNS** → **Records** first (for example the old GitHub Pages
+   ones), then add the custom domain again.
 
 The site will be at <https://novellow.com/>.
 
