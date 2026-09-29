@@ -72,9 +72,9 @@ be migrated from a database because none exists yet.
    another shelf, journal close button, status pill, three of the four
    bookmark ribbons, the Reading/Journal/Notes tabs (visual only), the
    snippets arrow.
-6. **The custom domain is not configured.** The `CNAME` was deleted, so the
-   site is only at the `github.io` address. This matters for Supabase's
-   auth redirect settings (question 2 at the end).
+6. **The custom domain is novellow.com.** It is set in the repository's
+   Settings → Pages (a site published by GitHub Actions needs no `CNAME`
+   file). Supabase's auth Site URL and Redirect URLs must match it.
 
 ---
 

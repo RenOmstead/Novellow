@@ -48,8 +48,9 @@ In **Authentication** → **Sign In / Providers** → **Email**:
 
 In **Authentication** → **URL Configuration**:
 
-- **Site URL**: `https://renomstead.github.io/Novellow/`
-- **Redirect URLs**: add `https://renomstead.github.io/Novellow/**`
+- **Site URL**: `https://novellow.com/`
+- **Redirect URLs**: add `https://novellow.com/**` (and
+  `https://www.novellow.com/**` if you use the www address too)
 
 These addresses are where the confirmation and password-reset emails
 send people back to. If they're wrong, the email links won't work.
@@ -71,7 +72,12 @@ the "Confirm signup" and "Reset password" emails. Keep the
    commit ID so browsers always load the newest version, then
    publishes the site.
 
-The site will be at <https://renomstead.github.io/Novellow/>.
+4. Under **Custom domain**, enter `novellow.com` and save. Once the
+   DNS check passes, tick **Enforce HTTPS**.
+
+The site will be at <https://novellow.com/>. The old
+`renomstead.github.io/Novellow/` address sends visitors there
+automatically.
 
 ## 4. Try it
 
