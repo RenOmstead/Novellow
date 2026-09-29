@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Builds the site into _site/ for publishing (Cloudflare Pages runs
-# this on every push; build command "bash build.sh", output "_site").
+# Builds the site into _site/ for publishing. Cloudflare runs this on
+# every push to main (see wrangler.jsonc and docs/SETUP.md).
 #
 # Every relative file reference in the site ends in ?v=__VERSION__.
 # This replaces __VERSION__ with the commit being published, so each

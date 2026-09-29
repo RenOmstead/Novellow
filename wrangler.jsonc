@@ -1,0 +1,18 @@
+// Cloudflare hosting for Novellow (the "novellow" Worker, which only
+// serves the site's files). Workers Builds runs on every push to main:
+//   Build command:  bash build.sh
+//   Deploy command: npx wrangler deploy
+// build.sh stamps the version into every file link and puts only the
+// site (not sql/ or docs/) into _site/, which is what gets published.
+{
+    "name": "novellow",
+    "compatibility_date": "2026-09-29",
+    "build": {
+        "command": "bash build.sh"
+    },
+    "assets": {
+        "directory": "./_site",
+        "not_found_handling": "404-page",
+        "html_handling": "auto-trailing-slash"
+    }
+}

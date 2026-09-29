@@ -72,8 +72,8 @@ be migrated from a database because none exists yet.
    another shelf, journal close button, status pill, three of the four
    bookmark ribbons, the Reading/Journal/Notes tabs (visual only), the
    snippets arrow.
-6. **Hosted on Cloudflare Pages at novellow.com.** Cloudflare builds the
-   site with `build.sh` (output `_site`) on every push to `main`; the
+6. **Hosted on Cloudflare at novellow.com** (the `novellow` Worker,
+   `wrangler.jsonc`), built with `build.sh` into `_site` on every push to `main`; the
    GitHub Pages workflow now only runs by hand. Supabase's auth Site URL
    and Redirect URLs must match novellow.com.
 

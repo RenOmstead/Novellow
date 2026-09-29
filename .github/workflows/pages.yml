@@ -1,7 +1,7 @@
 # Publishes Novellow to GitHub Pages, only when run by hand.
 #
-# The site is hosted on Cloudflare Pages (novellow.com), which builds
-# it with build.sh on every push to main. This stays as a backup:
+# The site is hosted on Cloudflare (novellow.com), which builds it
+# with build.sh on every push to main. This stays as a backup:
 # Actions → Publish to GitHub Pages → Run workflow.
 
 name: Publish to GitHub Pages
