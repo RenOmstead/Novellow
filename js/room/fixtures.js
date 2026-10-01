@@ -15,6 +15,7 @@
    wall before the database answers.
 ========================================================= */
 
+import { isVisiting } from "../core/visit-mode.js?v=__VERSION__";
 import { createRow, updateRow } from "../core/store.js?v=__VERSION__";
 import { html } from "../core/helpers.js?v=__VERSION__";
 import { toastError } from "../core/ui.js?v=__VERSION__";
@@ -101,7 +102,21 @@ export const WALLPAPERS = [
         wall: ["#24222a", "#2e2b34", "#38343f"],
         pattern: svg("<g fill='#f2e6c4' fill-opacity='0.1'><path d='M20 10a9 9 0 1 0 8 13a7 7 0 0 1-8-13z'/><path d='M54 46a6 6 0 1 0 5 9a4.6 4.6 0 0 1-5-9z'/><circle cx='50' cy='16' r='1.2'/><circle cx='14' cy='52' r='1'/></g>", 70, 70),
         size: "70px 70px"
-    }
+    },
+
+    // Painted wallpapers (pictures, not drawings).
+    { id: "plum-stripe", name: "Plum stripes", wall: ["#4f3439", "#5d3d43", "#624047"], src: "assets/wallpapers/plum_stripe.webp", pattern: `url("../assets/wallpapers/plum_stripe.webp?v=__VERSION__")`, size: "114px 109px" },
+    { id: "pumpkin-patch", name: "Pumpkin patch", wall: ["#c4b196", "#e5ceaf", "#f2dab9"], src: "assets/wallpapers/pumpkin_patch.webp", pattern: `url("../assets/wallpapers/pumpkin_patch.webp?v=__VERSION__")`, size: "292px 291px", light: true },
+    { id: "fern-sage", name: "Sage ferns", wall: ["#6e6d58", "#817f67", "#88866d"], src: "assets/wallpapers/fern_sage.webp", pattern: `url("../assets/wallpapers/fern_sage.webp?v=__VERSION__")`, size: "289px 291px" },
+    { id: "rose-flowers", name: "Rose and blossom", wall: ["#835752", "#996660", "#a26c65"], src: "assets/wallpapers/rose_flowers.webp", pattern: `url("../assets/wallpapers/rose_flowers.webp?v=__VERSION__")`, size: "291px 291px" },
+    { id: "moon-stars", name: "Moons and stars", wall: ["#38282c", "#422f34", "#453137"], src: "assets/wallpapers/moon_stars.webp", pattern: `url("../assets/wallpapers/moon_stars.webp?v=__VERSION__")`, size: "291px 289px" },
+    { id: "fleur-trellis", name: "Fleur trellis", wall: ["#332e2b", "#3c3633", "#3f3936"], src: "assets/wallpapers/fleur_trellis.webp", pattern: `url("../assets/wallpapers/fleur_trellis.webp?v=__VERSION__")`, size: "209px 274px" },
+    { id: "moth-lilac", name: "Lilac moths", wall: ["#6c5c59", "#7e6b68", "#85716e"], src: "assets/wallpapers/moth_lilac.webp", pattern: `url("../assets/wallpapers/moth_lilac.webp?v=__VERSION__")`, size: "289px 289px" },
+    { id: "gothic-arches", name: "Gothic arches", wall: ["#4f4e3d", "#5c5b47", "#61604b"], src: "assets/wallpapers/gothic_arches.webp", pattern: `url("../assets/wallpapers/gothic_arches.webp?v=__VERSION__")`, size: "257px 277px" },
+    { id: "wine-damask", name: "Worn wine damask", wall: ["#5b3132", "#6a3a3b", "#703d3e"], src: "assets/wallpapers/wine_damask.webp", pattern: `url("../assets/wallpapers/wine_damask.webp?v=__VERSION__")`, size: "581px 595px" },
+    { id: "cobweb-grey", name: "Cobwebs", wall: ["#746461", "#887571", "#907c77"], src: "assets/wallpapers/cobweb_grey.webp", pattern: `url("../assets/wallpapers/cobweb_grey.webp?v=__VERSION__")`, size: "292px 298px" },
+    { id: "bat-stripe", name: "Bat stripes", wall: ["#302b27", "#38322e", "#3b3530"], src: "assets/wallpapers/bat_stripe.webp", pattern: `url("../assets/wallpapers/bat_stripe.webp?v=__VERSION__")`, size: "178px 240px" },
+    { id: "climbing-roses", name: "Climbing roses", wall: ["#bca78d", "#dbc3a5", "#e8ceae"], src: "assets/wallpapers/climbing_roses.webp", pattern: `url("../assets/wallpapers/climbing_roses.webp?v=__VERSION__")`, size: "581px 595px", light: true }
 ];
 
 
@@ -129,7 +144,21 @@ export const FLOORS = [
         id: "stone", name: "Grey flagstones", top: "#5a5856", bottom: "#44423f", planks: "transparent",
         pattern: svg("<path d='M0 2H38V30H0M42 2H78V30H42M0 34H20V62H0M24 34H62V62H24M66 34H80V62H66' fill='none' stroke='#1c1b1a' stroke-opacity='0.4' stroke-width='2.5'/>", 80, 64),
         size: "80px 64px"
-    }
+    },
+
+    // Painted floors (pictures, not drawings).
+    { id: "walnut-planks", name: "Walnut planks", top: "#65432d", bottom: "#4f3424", planks: "transparent", src: "assets/floors/walnut_planks.webp", pattern: `url("../assets/floors/walnut_planks.webp?v=__VERSION__")`, size: "172px 82px" },
+    { id: "dark-planks", name: "Dark planks", top: "#3c2a23", bottom: "#30211b", planks: "transparent", src: "assets/floors/dark_planks.webp", pattern: `url("../assets/floors/dark_planks.webp?v=__VERSION__")`, size: "95px 63px" },
+    { id: "honey-boards", name: "Honey boards", top: "#956c49", bottom: "#76553a", planks: "transparent", src: "assets/floors/honey_boards.webp", pattern: `url("../assets/floors/honey_boards.webp?v=__VERSION__")`, size: "88px 63px" },
+    { id: "weathered-grey", name: "Weathered grey boards", top: "#675345", bottom: "#514137", planks: "transparent", src: "assets/floors/weathered_grey.webp", pattern: `url("../assets/floors/weathered_grey.webp?v=__VERSION__")`, size: "92px 75px" },
+    { id: "herringbone", name: "Herringbone", top: "#603f2c", bottom: "#4c3223", planks: "transparent", src: "assets/floors/herringbone.webp", pattern: `url("../assets/floors/herringbone.webp?v=__VERSION__")`, size: "166px 76px" },
+    { id: "basketweave", name: "Basketweave parquet", top: "#3e2b23", bottom: "#31221b", planks: "transparent", src: "assets/floors/basketweave.webp", pattern: `url("../assets/floors/basketweave.webp?v=__VERSION__")`, size: "134px 68px" },
+    { id: "whitewashed", name: "Whitewashed boards", top: "#b39c85", bottom: "#8d7b69", planks: "transparent", src: "assets/floors/whitewashed.webp", pattern: `url("../assets/floors/whitewashed.webp?v=__VERSION__")`, size: "90px 66px" },
+    { id: "plum-boards", name: "Worn plum boards", top: "#3f2b2c", bottom: "#322223", planks: "transparent", src: "assets/floors/plum_boards.webp", pattern: `url("../assets/floors/plum_boards.webp?v=__VERSION__")`, size: "163px 73px" },
+    { id: "checker-marble", name: "Marble checkerboard", top: "#817568", bottom: "#665c52", planks: "transparent", src: "assets/floors/checker_marble.webp", pattern: `url("../assets/floors/checker_marble.webp?v=__VERSION__")`, size: "146px 82px" },
+    { id: "slate-flags", name: "Slate flagstones", top: "#5f5d52", bottom: "#4b4940", planks: "transparent", src: "assets/floors/slate_flags.webp", pattern: `url("../assets/floors/slate_flags.webp?v=__VERSION__")`, size: "158px 96px" },
+    { id: "cobblestone", name: "Cobblestones", top: "#7d6854", bottom: "#635242", planks: "transparent", src: "assets/floors/cobblestone.webp", pattern: `url("../assets/floors/cobblestone.webp?v=__VERSION__")`, size: "169px 91px" },
+    { id: "wine-diamond", name: "Wine and cream tiles", top: "#947764", bottom: "#755e4f", planks: "transparent", src: "assets/floors/wine_diamond.webp", pattern: `url("../assets/floors/wine_diamond.webp?v=__VERSION__")`, size: "92px 76px" }
 ];
 
 
@@ -339,6 +368,11 @@ function readCache() {
 
 function writeCache(theme, values) {
 
+    // Someone else's room isn't remembered.
+    if (isVisiting()) {
+        return;
+    }
+
     try {
 
         const cache =
@@ -369,10 +403,10 @@ function defaultsFor(theme) {
         getPreferences();
 
     if (theme === "sandbox") {
-        return { wallpaper: "plaster", floor: "oak", window: "none", wood: prefs.wood, curtains: "none", curtainColour: "room", rug: "none", rugColour: "room", time: "night", light: "bright", tree: "oak", season: "auto", hidden: "", windowX: null, windowY: null };
+        return { wallpaper: "plaster", floor: "oak", window: "none", wood: prefs.wood, curtains: "none", curtainColour: "room", rug: "none", rugColour: "room", time: "night", light: "bright", tree: "oak", season: "auto", hidden: "", windowX: null, windowY: null, rugX: null, rugY: null };
     }
 
-    return { wallpaper: "room", floor: "room", window: prefs.window, wood: prefs.wood, curtains: prefs.curtains, curtainColour: "room", rug: prefs.rug, rugColour: "room", time: "night", light: "bright", tree: "oak", season: "auto", hidden: "", windowX: null, windowY: null };
+    return { wallpaper: "room", floor: "room", window: prefs.window, wood: prefs.wood, curtains: prefs.curtains, curtainColour: "room", rug: prefs.rug, rugColour: "room", time: "night", light: "bright", tree: "oak", season: "auto", hidden: "", windowX: null, windowY: null, rugX: null, rugY: null };
 
 }
 
@@ -426,6 +460,9 @@ export function applyFixtures(theme = document.documentElement.dataset.theme) {
 
     WALL_VARS.forEach((name) => root.style.removeProperty(name));
 
+    // A light painted wallpaper needs darker lettering around it.
+    root.dataset.wallTone = paper?.light ? "light" : "dark";
+
     if (paper?.wall) {
         root.style.setProperty("--wall-left", paper.wall[0]);
         root.style.setProperty("--wall-middle", paper.wall[1]);
@@ -469,7 +506,11 @@ export function applyFixtures(theme = document.documentElement.dataset.theme) {
         CURTAIN_VARS.forEach((name, index) => root.style.setProperty(name, curtainColour.colours[index]));
     }
 
+    root.dataset.curtainTint = curtainColour?.colours ? "on" : "off";
+
     placeWindow(fixtures);
+
+    placeRug(fixtures);
 
 }
 
@@ -497,6 +538,137 @@ function placeWindow(fixtures) {
 
     wall.style.setProperty("--window-left", `calc(${fixtures.windowX}% - var(--window-width) / 2)`);
     wall.style.setProperty("--window-bottom", `calc(${100 - fixtures.windowY}% - var(--window-width) * 0.375)`);
+
+}
+
+
+/*
+    Where the rug lies: its middle as a share of the floor's
+    width, and how far forward (0, at the wall) or back (100,
+    at the bottom edge) it sits. Unmoved, it lies under the
+    window and the chair.
+*/
+
+function placeRug(fixtures) {
+
+    const floor =
+        document.querySelector(".room-floor");
+
+    if (!floor) {
+        return;
+    }
+
+    if (fixtures.rugX === null || fixtures.rugX === undefined) {
+        floor.style.removeProperty("--rug-left");
+        floor.style.removeProperty("--rug-bottom");
+        floor.classList.remove("has-moved-rug");
+        return;
+    }
+
+    floor.classList.add("has-moved-rug");
+    floor.style.setProperty("--rug-left", `${fixtures.rugX}%`);
+    floor.style.setProperty("--rug-bottom", `${-10 - fixtures.rugY * 0.7}px`);
+
+}
+
+
+export function moveRug(x, y, { persist = true } = {}) {
+
+    const theme =
+        themeId || document.documentElement.dataset.theme;
+
+    const fixtures = {
+        ...getFixtures(theme),
+        rugX: Number(Math.min(100, Math.max(0, x)).toFixed(2)),
+        rugY: Number(Math.min(100, Math.max(0, y)).toFixed(2))
+    };
+
+    writeCache(theme, fixtures);
+
+    placeRug(fixtures);
+
+    if (persist) {
+        save("rug", fixtures.rug, { position_x: fixtures.rugX, position_y: fixtures.rugY, rotation: 1 });
+    }
+
+}
+
+
+/*
+    Dragging the rug across the floor while arranging.
+*/
+
+export function dragRug(event) {
+
+    const floor =
+        document.querySelector(".room-floor");
+
+    const rug =
+        event.target.closest(".room-rug");
+
+    if (!floor || !rug) {
+        return false;
+    }
+
+    event.preventDefault();
+
+    rug.setPointerCapture?.(event.pointerId);
+    rug.classList.add("is-dragging");
+
+    const box =
+        floor.getBoundingClientRect();
+
+    const start =
+        rug.getBoundingClientRect();
+
+    const current =
+        getFixtures();
+
+    // Start from where the rug is now, moved or not.
+    const startX = current.rugX ?? ((start.left + start.width / 2 - box.left) / box.width) * 100;
+    const startY = current.rugY ?? 48;
+
+    let last = null;
+
+    const move = (moveEvent) => {
+
+        if (moveEvent.pointerId !== event.pointerId) {
+            return;
+        }
+
+        last = {
+            x: startX + ((moveEvent.clientX - event.clientX) / box.width) * 100,
+            // Down the screen is toward the front of the room.
+            y: startY + (moveEvent.clientY - event.clientY) / 0.7
+        };
+
+        moveRug(last.x, last.y, { persist: false });
+
+    };
+
+    const finish = (upEvent) => {
+
+        if (upEvent.pointerId !== event.pointerId) {
+            return;
+        }
+
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", finish);
+        window.removeEventListener("pointercancel", finish);
+
+        rug.classList.remove("is-dragging");
+
+        if (last) {
+            moveRug(last.x, last.y);
+        }
+
+    };
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", finish);
+    window.addEventListener("pointercancel", finish);
+
+    return true;
 
 }
 
@@ -538,6 +710,11 @@ export function setFixtureRows(theme, fixtureRows) {
         if (kind === "window" && row.rotation === 1) {
             values.windowX = Number(row.position_x);
             values.windowY = Number(row.position_y);
+        }
+
+        if (kind === "rug" && row.rotation === 1) {
+            values.rugX = Number(row.position_x);
+            values.rugY = Number(row.position_y);
         }
 
     });
@@ -795,9 +972,18 @@ export function dragWindow(event) {
 function swatchStyle(kind, choice) {
 
     if (kind === "wallpaper") {
+        // A painted wallpaper: its own picture, a little smaller.
+        if (choice.src) {
+            return `background: url("${choice.src}?v=__VERSION__") center / 90px auto`;
+        }
+
         return choice.wall
             ? `background: ${choice.pattern}, linear-gradient(90deg, ${choice.wall[0]}, ${choice.wall[2]})`
             : "";
+    }
+
+    if (kind === "floor" && choice.src) {
+        return `background: url("${choice.src}?v=__VERSION__") center / 80px auto`;
     }
 
     if (kind === "floor") {
@@ -871,7 +1057,7 @@ function chips(kind, label, current) {
 }
 
 
-export function roomPanelMarkup() {
+export function roomPanelMarkup(section = "room-walls") {
 
     const fixtures =
         getFixtures();
@@ -888,39 +1074,21 @@ export function roomPanelMarkup() {
     const builtIn =
         BUILT_IN.filter((part) => part.rooms.includes(theme));
 
-    return html`
-        <div class="arrange-bar__room">
+    const sections = {
 
-            ${chips("time", "Outside the window", fixtures.time)}
-
-            ${chips("light", "Light in the room", fixtures.light)}
-
-            ${chips("tree", "Tree outside", fixtures.tree)}
-
-            ${chips("season", "Season", fixtures.season)}
-
-            ${builtIn.length ? html`
-                <fieldset class="room-choices">
-                    <legend class="room-choices__label">Built into this room</legend>
-                    <p class="room-choices__note">Tap a piece here, or tap it in the room, to take it away. Tap it here again to put it back.</p>
-                    <div class="room-choices__chips">
-                        ${builtIn.map((part) => html`
-                            <button class="room-chip room-chip--toggle ${hidden.has(part.id) ? "" : "is-current"}" type="button" data-built-in="${part.id}" aria-pressed="${String(!hidden.has(part.id))}">${hidden.has(part.id) ? "＋ " : "✓ "}${part.name}</button>
-                        `)}
-                    </div>
-                </fieldset>
-            ` : ""}
-
+        "room-walls": html`
+            ${swatches("wallpaper", "Wallpaper", fixtures.wallpaper)}
             ${sandbox ? "" : html`
                 <p class="room-choices__note">Each room keeps its own choices. For a room that starts empty, choose <strong>Sandbox</strong> from the moon menu.</p>
             `}
+        `,
 
-            ${swatches("wallpaper", "Wallpaper", fixtures.wallpaper)}
-
+        "room-floor": html`
             ${swatches("floor", "Floor", fixtures.floor)}
+        `,
 
+        "room-window": html`
             ${chips("window", "Window", fixtures.window)}
-
             ${fixtures.window === "none" ? "" : html`
                 <p class="room-choices__note">Drag the window to move it around the wall.</p>
                 ${fixtures.windowX === null || fixtures.windowX === undefined ? "" : html`
@@ -930,11 +1098,55 @@ export function roomPanelMarkup() {
                 ${chips("curtains", "Curtains", fixtures.curtains)}
                 ${fixtures.curtains === "none" || fixtures.curtains === "lace" ? "" : swatches("curtainColour", "Curtain colours", fixtures.curtainColour)}
             `}
+        `,
 
-            ${chips("rug", "Rug", fixtures.rug)}
+        "room-light": html`
+            ${chips("time", "Outside the window", fixtures.time)}
+            ${chips("light", "Light in the room", fixtures.light)}
+            ${chips("tree", "Tree outside", fixtures.tree)}
+            ${chips("season", "Season", fixtures.season)}
+        `,
 
-            ${fixtures.rug === "none" ? "" : swatches("rugColour", "Rug colours", fixtures.rugColour)}
+        "room-pieces": builtIn.length ? html`
+            <fieldset class="room-choices">
+                <legend class="room-choices__label">Built into this room</legend>
+                <p class="room-choices__note">Tap a piece here, or tap it in the room, to take it away. Tap it here again to put it back.</p>
+                <div class="room-choices__chips">
+                    ${builtIn.map((part) => html`
+                        <button class="room-chip room-chip--toggle ${hidden.has(part.id) ? "" : "is-current"}" type="button" data-built-in="${part.id}" aria-pressed="${String(!hidden.has(part.id))}">${hidden.has(part.id) ? "＋ " : "✓ "}${part.name}</button>
+                    `)}
+                </div>
+            </fieldset>
+        ` : html`<p class="room-choices__note">This room has no pieces of its own; everything in it is yours.</p>`
 
+    };
+
+    return html`
+        <div class="arrange-bar__room">
+            ${sections[section] || sections["room-walls"]}
+        </div>
+    `;
+
+}
+
+
+/*
+    The room's own rug (the one under the window and chair), at
+    the top of the Rugs tab.
+*/
+
+export function rugPanelMarkup() {
+
+    const fixtures =
+        getFixtures();
+
+    return html`
+        <div class="arrange-bar__room-rug-choices">
+            ${chips("rug", "The room's rug", fixtures.rug)}
+            ${fixtures.rug === "none" ? "" : html`
+                ${swatches("rugColour", "Its colours", fixtures.rugColour)}
+                <p class="room-choices__note">Drag the room's rug to move it across the floor.</p>
+            `}
         </div>
     `;
 

@@ -1758,3 +1758,242 @@
     }
 
 }
+
+/* Help: home screen steps, and questions and answers (js/pages/about-help.js) */
+.help-card {
+    margin-top: 20px;
+}
+
+.help-card__subtitle {
+    margin-top: 6px;
+
+    color: var(--color-plum);
+
+    font-family: var(--font-heading);
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.home-screen {
+    display: grid;
+
+    gap: 10px;
+}
+
+.home-screen__tabs {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.home-screen__tab {
+    min-height: 40px;
+
+    padding: 6px 16px;
+
+    border: 1px solid var(--color-paper-edge);
+    border-radius: 999px;
+
+    color: var(--color-plum);
+    background: var(--color-paper-light);
+
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.home-screen__tab.is-current {
+    border-color: var(--color-plum);
+
+    color: #fff8ec;
+    background: var(--color-plum);
+}
+
+.home-screen__panel {
+    display: grid;
+
+    gap: 8px;
+
+    padding: 14px 16px;
+
+    border: 1px solid rgba(160, 120, 100, 0.3);
+    border-radius: 14px;
+
+    background: rgba(255, 250, 240, 0.6);
+}
+
+.home-screen__intro,
+.home-screen__note,
+.home-screen__done {
+    color: var(--color-ink-soft);
+}
+
+.home-screen__note {
+    font-size: 14px;
+}
+
+.home-screen__steps {
+    display: grid;
+
+    gap: 8px;
+
+    margin: 0;
+    padding-left: 22px;
+}
+
+.home-screen__steps li::marker {
+    color: var(--color-berry);
+
+    font-weight: 800;
+}
+
+.faq {
+    display: grid;
+
+    gap: 8px;
+}
+
+.faq__item {
+    border: 1px solid rgba(160, 120, 100, 0.3);
+    border-radius: 12px;
+
+    background: rgba(255, 250, 240, 0.55);
+}
+
+.faq__item[open] {
+    background: rgba(255, 250, 240, 0.92);
+}
+
+.faq__item summary {
+    padding: 12px 16px;
+
+    color: var(--color-plum-deep);
+
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.faq__answer {
+    display: grid;
+
+    gap: 8px;
+
+    padding: 0 16px 14px;
+}
+
+.faq__answer a {
+    color: var(--color-berry);
+}
+
+/* The Novellow account's Notes inbox */
+.notes-inbox {
+    margin-bottom: 20px;
+
+    scroll-margin-top: 90px;
+}
+
+.notes-inbox__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    gap: 10px 16px;
+}
+
+.note-filter {
+    min-height: 36px;
+
+    padding: 4px 16px;
+
+    border: 1px solid #b89a76;
+    border-radius: 999px;
+
+    color: #3b2418;
+    background: rgba(255, 250, 238, 0.85);
+
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.note-filter.is-on {
+    border-color: #5c2f47;
+
+    color: #fff8ec;
+    background: #6e3b58;
+}
+
+.note-item.is-new {
+    border-style: solid;
+    border-color: rgba(110, 59, 88, 0.55);
+
+    background: rgba(255, 250, 240, 0.9);
+}
+
+.note-item__device {
+    margin: 0;
+
+    color: var(--color-ink-soft);
+
+    font-family: var(--font-ui);
+    font-size: 13px;
+}
+
+.note-answer {
+    display: grid;
+
+    gap: 10px;
+
+    padding-top: 10px;
+
+    border-top: 1px dashed rgba(92, 55, 73, 0.25);
+}
+
+.note-answer__row {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+
+    gap: 10px;
+}
+
+.note-answer__status {
+    flex: 0 1 200px;
+}
+
+.settings-subheading {
+    margin: 12px 0 0;
+
+    color: var(--color-plum-deep);
+
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.note-report {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    padding: 8px 12px;
+
+    border-radius: 10px;
+
+    background: rgba(160, 97, 47, 0.12);
+
+    font-family: var(--font-ui);
+    font-size: 14px;
+}
