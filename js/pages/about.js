@@ -11,9 +11,11 @@
 import { startApp } from "../shell/app-shell.js?v=__VERSION__";
 import { supabase } from "../core/supabase.js?v=__VERSION__";
 import { NovellowError } from "../core/errors.js?v=__VERSION__";
+import { currentUserId } from "../core/store.js?v=__VERSION__";
 
 import { html, render, formatDate, plural } from "../core/helpers.js?v=__VERSION__";
 import { art, loader, toast, toastError, confirmDialog, withBusy } from "../core/ui.js?v=__VERSION__";
+import { helpSection, wireHelp } from "./about-help.js?v=__VERSION__";
 
 
 const content =
@@ -44,6 +46,12 @@ const MAX_LENGTH = 4000;
 
 let updates = [];
 let notes = [];
+
+// Signed in as the Novellow account (sql/notes-inbox.sql), the
+// page also shows the Notes inbox: every reader's note.
+let team = false;
+let inbox = [];
+let inboxAll = false;
 
 // Until sql/notes.sql has been run, the page still shows the
 // About section and says the rest is on its way.
@@ -84,6 +92,7 @@ async function loadNotes() {
         await supabase
             .from("reader_notes")
             .select("id, kind, message, status, reply, created_at")
+            .eq("user_id", currentUserId())
             .order("created_at", { ascending: false })
             .limit(50);
 
@@ -171,9 +180,129 @@ async function takeBack(id) {
 }
 
 
+async function loadTeam() {
+
+    const { data, error } =
+        await supabase.rpc("is_novellow_team");
+
+    // Before notes-inbox.sql has been run, there's no inbox.
+    return !error && data === true;
+
+}
+
+
+async function loadInbox() {
+
+    const { data, error } =
+        await supabase.rpc("team_notes", { only_open: !inboxAll });
+
+    if (error) {
+        throw new NovellowError("The Notes inbox couldn't be opened just now.", error);
+    }
+
+    return data;
+
+}
+
+
+async function setPageHidden(userId, hidden) {
+
+    const { error } =
+        await supabase.rpc("set_page_hidden", { p_user: userId, p_hidden: hidden });
+
+    if (error) {
+        throw new NovellowError(error.code === "P0001" ? error.message : "That page couldn't be changed just now.", error);
+    }
+
+}
+
+
+async function answerNote(id, { status, reply }) {
+
+    const { error } =
+        await supabase
+            .from("reader_notes")
+            .update({ status, reply })
+            .eq("id", id);
+
+    if (error) {
+        throw new NovellowError("That answer couldn't be saved just now. Please try again.", error);
+    }
+
+}
+
+
 /* =========================================================
    RENDER
 ========================================================= */
+
+function inboxSection() {
+
+    if (!team) {
+        return "";
+    }
+
+    const waiting =
+        inbox.filter((note) => note.status === "new").length;
+
+    return html`
+        <section class="about-card paper notes-inbox" id="inbox" aria-labelledby="inboxTitle">
+
+            <div class="notes-inbox__head">
+                <div>
+                    <p class="eyebrow">Only the Novellow account sees this</p>
+                    <h2 id="inboxTitle" class="about-card__title">Notes inbox</h2>
+                    <p class="about-quiet">${waiting ? `${plural(waiting, "new note")} to read.` : "You're all caught up."}</p>
+                </div>
+                <div class="chip-row" role="group" aria-label="Which notes">
+                    <button class="note-filter ${inboxAll ? "" : "is-on"}" type="button" data-action="inbox-open" aria-pressed="${inboxAll ? "false" : "true"}">Open</button>
+                    <button class="note-filter ${inboxAll ? "is-on" : ""}" type="button" data-action="inbox-all" aria-pressed="${inboxAll ? "true" : "false"}">All</button>
+                </div>
+            </div>
+
+            ${inbox.length ? html`
+                <ul class="note-list">
+                    ${inbox.map((note) => html`
+                        <li class="note-item ${note.status === "new" ? "is-new" : ""}">
+                            <div class="note-item__meta">
+                                <span>${note.reader_name} · ${note.kind === "report" ? "A report" : KINDS[note.kind] || "Note"} · ${formatDate(note.created_at)}</span>
+                                <span class="note-status note-status--${note.status}">${STATUS[note.status] || "Sent"}</span>
+                            </div>
+                            <p class="note-item__message">${note.message}</p>
+                            ${note.device ? html`<p class="note-item__device">${note.device}</p>` : ""}
+                            ${note.kind === "report" && note.reported_id ? html`
+                                <div class="note-report">
+                                    <span>About ${note.reported_username ? html`<a href="visit.html?u=${note.reported_username}">@${note.reported_username}’s library</a>` : "a reader’s library"}${note.reported_hidden ? html` · <strong>hidden</strong>` : ""}</span>
+                                    <button class="button button--ghost button--small" type="button" data-action="${note.reported_hidden ? "show-page" : "hide-page"}" data-user="${note.reported_id}">${note.reported_hidden ? "Show the page again" : "Hide this page"}</button>
+                                </div>
+                            ` : ""}
+                            <form class="note-answer" data-answer="${note.id}" novalidate>
+                                <label class="field">
+                                    <span class="field__label">Your reply (the reader sees this in Novellow)</span>
+                                    <textarea class="field__input" name="reply" rows="3" maxlength="${MAX_LENGTH}">${note.reply || ""}</textarea>
+                                </label>
+                                <div class="note-answer__row">
+                                    <label class="field note-answer__status">
+                                        <span class="field__label">Status</span>
+                                        <select class="field__input" name="status">
+                                            ${Object.entries(STATUS).map(([id, label]) => html`
+                                                <option value="${id}" ${id === note.status ? "selected" : ""}>${label}</option>
+                                            `)}
+                                        </select>
+                                    </label>
+                                    <button class="button button--primary button--small" type="submit">Save</button>
+                                </div>
+                            </form>
+                        </li>
+                    `)}
+                </ul>
+            ` : html`<p class="about-quiet">${inboxAll ? "No notes yet." : "No open notes."}</p>`}
+
+        </section>
+    `;
+
+}
+
 
 function updateList() {
 
@@ -256,7 +385,7 @@ function noteList() {
                 ${notes.map((note) => html`
                     <li class="note-item">
                         <div class="note-item__meta">
-                            <span>${KINDS[note.kind] || "Note"} · ${formatDate(note.created_at)}</span>
+                            <span>${note.kind === "report" ? "A report" : KINDS[note.kind] || "Note"} · ${formatDate(note.created_at)}</span>
                             <span class="note-status note-status--${note.status}">${STATUS[note.status] || "Sent"}</span>
                         </div>
                         <p class="note-item__message">${note.message}</p>
@@ -284,9 +413,11 @@ function renderPage() {
         <div class="page-heading">
             <div>
                 <h1 class="page-heading__title">About Novellow</h1>
-                <p class="page-heading__subtitle">News from the library, and a way to reach us.</p>
+                <p class="page-heading__subtitle">News from the library, help finding your way, and a way to reach us. <a href="#help">Questions and answers</a></p>
             </div>
         </div>
+
+        ${inboxSection()}
 
         <div class="about-grid">
 
@@ -341,6 +472,8 @@ function renderPage() {
 
         </div>
 
+        ${helpSection()}
+
     `);
 
 }
@@ -358,6 +491,10 @@ async function refresh() {
             await Promise.all([loadUpdates(), loadNotes()]);
 
         ready = true;
+
+        team = await loadTeam();
+
+        inbox = team ? await loadInbox() : [];
 
     }
 
@@ -385,7 +522,15 @@ async function start() {
     render(content, loader("Opening the letters…"));
 
     try {
+
         await refresh();
+
+        // The link in a note's email goes straight to the inbox;
+        // #help goes to the questions and answers.
+        if (location.hash === "#inbox" || location.hash === "#help") {
+            document.getElementById(location.hash.slice(1))?.scrollIntoView({ block: "start" });
+        }
+
     }
 
     catch (error) {
@@ -394,7 +539,45 @@ async function start() {
         renderPage();
     }
 
+    wireHelp(content);
+
     content.addEventListener("submit", async (event) => {
+
+        if (event.target.dataset.answer) {
+
+            event.preventDefault();
+
+            const form =
+                event.target;
+
+            const reply =
+                form.elements.reply.value.trim();
+
+            let status =
+                form.elements.status.value;
+
+            // Answering a new note marks it read.
+            if (reply && status === "new") {
+                status = "seen";
+            }
+
+            await withBusy(form.querySelector("[type=submit]"), "Saving…", async () => {
+
+                try {
+                    await answerNote(form.dataset.answer, { status, reply: reply || null });
+                    toast("Saved. The reader will see it on their About page.", { tone: "success" });
+                    await refresh();
+                }
+
+                catch (error) {
+                    toastError(error);
+                }
+
+            });
+
+            return;
+
+        }
 
         if (event.target.id !== "noteForm") {
             return;
@@ -440,6 +623,64 @@ async function start() {
     });
 
     content.addEventListener("click", async (event) => {
+
+        const pageToggle =
+            event.target.closest("[data-action='hide-page'], [data-action='show-page']");
+
+        if (pageToggle) {
+
+            const hide =
+                pageToggle.dataset.action === "hide-page";
+
+            if (hide) {
+
+                const sure =
+                    await confirmDialog({
+                        title: "Hide this library?",
+                        message: "Nobody but its owner will be able to visit it until you show it again. Their friends still can, if they share with friends.",
+                        confirmLabel: "Hide it",
+                        tone: "danger"
+                    });
+
+                if (!sure) {
+                    return;
+                }
+
+            }
+
+            try {
+                await setPageHidden(pageToggle.dataset.user, hide);
+                toast(hide ? "The page is hidden." : "The page is visible again.", { tone: "success" });
+                await refresh();
+            }
+
+            catch (error) {
+                toastError(error);
+            }
+
+            return;
+
+        }
+
+        const filter =
+            event.target.closest("[data-action='inbox-open'], [data-action='inbox-all']");
+
+        if (filter) {
+
+            inboxAll = filter.dataset.action === "inbox-all";
+
+            try {
+                inbox = await loadInbox();
+                renderPage();
+            }
+
+            catch (error) {
+                toastError(error);
+            }
+
+            return;
+
+        }
 
         const trigger =
             event.target.closest("[data-action='take-back']");

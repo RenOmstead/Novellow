@@ -19,9 +19,11 @@
 ========================================================= */
 
 import { listDecorations, createRow, updateRow, deleteRow } from "../core/store.js?v=__VERSION__";
-import { html, render, clamp, debounce } from "../core/helpers.js?v=__VERSION__";
+import { html, raw, render, clamp, debounce } from "../core/helpers.js?v=__VERSION__";
 import { art, toast, toastError } from "../core/ui.js?v=__VERSION__";
-import { setFixtureRows, roomPanelMarkup, onRoomPanelClick, dragWindow, builtInAt, builtInElements, toggleBuiltIn } from "./fixtures.js?v=__VERSION__";
+import { takeRoomPicture } from "./capture.js?v=__VERSION__";
+import { paintedFx } from "./painted-fx.js?v=__VERSION__";
+import { setFixtureRows, roomPanelMarkup, rugPanelMarkup, onRoomPanelClick, dragWindow, dragRug, builtInAt, builtInElements, toggleBuiltIn } from "./fixtures.js?v=__VERSION__";
 
 
 /*
@@ -36,16 +38,278 @@ export const DECOR_GROUPS = [
     { id: "lighting", name: "Lamps" },
     { id: "storage", name: "Storage & hearth" },
     { id: "pictures", name: "Pictures" },
+    { id: "garlands", name: "Garlands & cobwebs" },
+    { id: "vines", name: "Ivy & vines" },
     { id: "bookish", name: "Bookish" },
     { id: "cozy", name: "Cozy" },
     { id: "treats", name: "Treats" },
     { id: "autumn", name: "Autumn" },
     { id: "plants", name: "Plants" },
     { id: "witchy", name: "Witchy" },
-    { id: "spooky", name: "Spooky" }
+    { id: "spooky", name: "Spooky" },
+    { id: "haunted", name: "Haunted" },
+    { id: "rugs", name: "Rugs" }
 ];
 
+// The panel's tabs: a few broad kinds, each gathering some of
+// the groups above (shown as headings inside the tab).
+export const DECOR_TABS = [
+    "seating", "tables", "storage", "lighting", "pictures", "garlands", "vines", "rugs",
+    "tabletop", "bookish", "cozy", "treats", "plants", "witchy", "spooky", "haunted", "autumn"
+].map((id) => ({ id, name: DECOR_GROUPS.find((group) => group.id === id).name, groups: [id] }));
+
+// The room's own choices, each in its own tab too.
+export const ROOM_TABS = [
+    { id: "room-walls", name: "Wallpaper" },
+    { id: "room-floor", name: "Floor" },
+    { id: "room-window", name: "Window" },
+    { id: "room-light", name: "Light & outside" },
+    { id: "room-pieces", name: "Room's pieces" }
+];
+
+const isRoomTab = (id) => id.startsWith("room-");
+
 export const DECOR_ASSETS = [
+    // Hand-painted pieces (pictures, not drawings): each shows first in its tab.
+    { id: "art-armchair-plum", src: "assets/decor/painted/armchair_plum.webp", size: [478, 379], width: 190, name: "Wine armchair", group: "seating" },
+    { id: "art-curio-cabinet", src: "assets/decor/painted/curio_cabinet.webp", size: [376, 478], width: 170, name: "Curio cabinet", group: "storage" },
+    { id: "art-coffin-cabinet", src: "assets/decor/painted/coffin_cabinet.webp", size: [308, 414], width: 130, name: "Coffin cabinet", group: "storage" },
+    { id: "art-door-knocker", src: "assets/decor/painted/door_knocker.webp", size: [308, 460], width: 70, name: "Door knocker", group: "pictures" },
+    { id: "art-ghost-moon-portrait", src: "assets/decor/painted/ghost_moon_portrait.webp", size: [391, 460], width: 95, name: "Ghost in a gilded frame", group: "pictures" },
+    { id: "art-orb-garland", src: "assets/decor/painted/orb_garland.webp", size: [460, 237], width: 200, name: "Moon lantern garland", group: "garlands" },
+    { id: "art-charcoal-wingback", src: "assets/decor/painted/charcoal_wingback.webp", size: [410, 478], width: 190, name: "Charcoal wingback", group: "seating" },
+    { id: "art-wine-sofa", src: "assets/decor/painted/wine_sofa.webp", size: [478, 251], width: 290, name: "Wine camelback sofa", group: "seating" },
+    { id: "art-walnut-bookcase", src: "assets/decor/painted/walnut_bookcase.webp", size: [373, 478], width: 160, name: "Walnut bookcase", group: "storage" },
+    { id: "art-walnut-desk", src: "assets/decor/painted/walnut_desk.webp", size: [478, 337], width: 210, name: "Walnut writing desk", group: "tables" },
+    { id: "art-walnut-pedestal-table", src: "assets/decor/painted/walnut_pedestal_table.webp", size: [338, 380], width: 120, name: "Walnut pedestal table", group: "tables" },
+    { id: "art-grey-fireplace", src: "assets/decor/painted/grey_fireplace.webp", size: [478, 379], width: 250, name: "Grey stone fireplace", group: "storage" },
+    { id: "art-sofa-pumpkin", src: "assets/decor/painted/sofa_pumpkin.webp", size: [420, 258], width: 300, name: "Pumpkin scalloped sofa", group: "seating" },
+    { id: "art-moon-pillow", src: "assets/decor/painted/moon_pillow.webp", size: [198, 157], width: 90, name: "Plaid moon pillow", group: "seating" },
+    { id: "art-side-table", src: "assets/decor/painted/side_table.webp", size: [214, 230], width: 120, name: "Carved cabinet table", group: "tables" },
+    { id: "art-gothic-bookcase", src: "assets/decor/painted/gothic_bookcase.webp", size: [350, 420], width: 150, name: "Gothic bookcase", group: "storage" },
+    { id: "art-apothecary-cabinet", src: "assets/decor/painted/potion_cabinet.webp", size: [378, 472], width: 200, name: "Potion cabinet", group: "retired" },
+    { id: "art-stone-fireplace", src: "assets/decor/painted/stone_fireplace.webp", size: [478, 414], width: 250, name: "Dark stone fireplace", group: "storage" },
+    { id: "art-fringed-lamp", src: "assets/decor/painted/fringed_lamp.webp", size: [240, 460], width: 100, name: "Fringed floor lamp", group: "lighting" },
+    { id: "art-candelabra", src: "assets/decor/painted/candelabra.webp", size: [329, 460], width: 100, name: "Brass candelabra", group: "lighting" },
+    { id: "art-hanging-lantern", src: "assets/decor/painted/hanging_lantern.webp", size: [201, 460], width: 60, name: "Hanging lantern", group: "lighting" },
+    { id: "art-pumpkin-lantern", src: "assets/decor/painted/pumpkin_lantern.webp", size: [298, 418], width: 80, name: "Pumpkin lantern", group: "lighting" },
+    { id: "art-moon-lamp", src: "assets/decor/painted/moon_lamp.webp", size: [306, 434], width: 90, name: "Crescent moon lamp", group: "lighting" },
+    { id: "art-star-garland", src: "assets/decor/painted/star_garland.webp", size: [460, 281], width: 240, name: "Moon and star garland", group: "garlands" },
+    { id: "art-retro-tv", src: "assets/decor/painted/retro_tv.webp", size: [468, 410], width: 150, name: "Retro television", group: "cozy" },
+    { id: "art-vhs-stack", src: "assets/decor/painted/vhs_stack.webp", size: [440, 362], width: 100, name: "Stack of tapes", group: "cozy" },
+    { id: "art-rotary-phone", src: "assets/decor/painted/rotary_phone.webp", size: [478, 314], width: 100, name: "Rotary telephone", group: "cozy" },
+    { id: "art-camp-sign", src: "assets/decor/painted/camp_sign.webp", size: [460, 458], width: 150, name: "Pine tree banner", group: "pictures" },
+    { id: "art-flashlight", src: "assets/decor/painted/flashlight.webp", size: [460, 322], width: 80, name: "Flashlight", group: "cozy" },
+    { id: "art-jack-o-lantern", src: "assets/decor/painted/jack_o_lantern.webp", size: [446, 426], width: 100, name: "Jack-o'-lantern", group: "autumn" },
+    { id: "art-autumn-wreath", src: "assets/decor/painted/autumn_wreath.webp", size: [429, 460], width: 130, name: "Autumn leaf wreath", group: "garlands" },
+    { id: "art-bubbling-cauldron", src: "assets/decor/painted/cauldron.webp", size: [474, 408], width: 120, name: "Black cauldron", group: "witchy" },
+    { id: "art-potion-trio", src: "assets/decor/painted/potion_trio.webp", size: [456, 402], width: 110, name: "Three potions", group: "witchy" },
+    { id: "art-witch-hat", src: "assets/decor/painted/witch_hat.webp", size: [478, 409], width: 130, name: "Witch's hat", group: "witchy" },
+    { id: "art-ghost", src: "assets/decor/painted/ghost.webp", size: [398, 446], width: 110, name: "Friendly ghost", group: "spooky" },
+    { id: "art-ghost-friend", src: "assets/decor/painted/ghost.webp", size: [398, 446], width: 100, name: "Little ghost", group: "retired" },
+    { id: "art-bat", src: "assets/decor/painted/bat.webp", size: [460, 275], width: 130, name: "Hanging bat", group: "garlands" },
+    { id: "art-rug-night-sky", src: "assets/decor/painted/rug_night_sky.webp", size: [460, 335], width: 280, name: "Night sky rug", group: "rugs", floor: true },
+    { id: "art-rug-mushroom", src: "assets/decor/painted/rug_mushroom.webp", size: [460, 304], width: 280, name: "Mushroom rug", group: "rugs", floor: true },
+    { id: "art-rug-pumpkin", src: "assets/decor/painted/rug_pumpkin.webp", size: [249, 154], width: 260, name: "Pumpkin rug", group: "rugs", floor: true },
+    { id: "art-rug-crescent", src: "assets/decor/painted/rug_moon.webp", size: [388, 454], width: 260, name: "Crescent moon rug", group: "retired", floor: true },
+    { id: "art-tattered-wingback", src: "assets/decor/painted/tattered_wingback.webp", size: [310, 308], width: 190, name: "Tattered wingback", group: "seating" },
+    { id: "art-torn-recliner", src: "assets/decor/painted/torn_recliner.webp", size: [312, 308], width: 210, name: "Torn recliner", group: "seating" },
+    { id: "art-haunted-tv-stand", src: "assets/decor/painted/tv_stand.webp", size: [440, 466], width: 200, name: "TV stand", group: "storage" },
+    { id: "art-dusty-bookcase", src: "assets/decor/painted/leaning_bookcase.webp", size: [368, 478], width: 160, name: "Dusty bookcase", group: "retired" },
+    { id: "art-rusty-locker", src: "assets/decor/painted/rusty_locker.webp", size: [338, 476], width: 160, name: "Rusty locker", group: "storage" },
+    { id: "art-phone-table", src: "assets/decor/painted/phone_table.webp", size: [322, 418], width: 150, name: "Telephone table", group: "tables" },
+    { id: "art-stitched-mask", src: "assets/decor/painted/stone_mask.webp", size: [402, 426], width: 80, name: "Masquerade mask", group: "haunted" },
+    { id: "art-button-eye-doll", src: "assets/decor/painted/voodoo_doll.webp", size: [385, 478], width: 110, name: "Stitched doll", group: "haunted" },
+    { id: "art-rusty-saw", src: "assets/decor/painted/saw_stump.webp", size: [478, 410], width: 150, name: "Saw in a stump", group: "haunted" },
+    { id: "art-axe-stump", src: "assets/decor/painted/axe_stump.webp", size: [427, 478], width: 140, name: "Axe in a stump", group: "haunted" },
+    { id: "art-straight-razor", src: "assets/decor/painted/straight_razor.webp", size: [262, 190], width: 130, name: "Straight razor", group: "haunted" },
+    { id: "art-hanging-cloak", src: "assets/decor/painted/hanging_cloak.webp", size: [292, 478], width: 110, name: "Hanging red cloak", group: "haunted" },
+    { id: "art-red-cage-lamp", src: "assets/decor/painted/red_lantern.webp", size: [268, 460], width: 90, name: "Red cage lamp", group: "retired" },
+    { id: "art-rusty-flashlight", src: "assets/decor/painted/flashlight.webp", size: [460, 322], width: 120, name: "Rusty flashlight", group: "retired" },
+    { id: "art-oil-lantern", src: "assets/decor/painted/red_lantern.webp", size: [268, 460], width: 80, name: "Oil lantern", group: "retired" },
+    { id: "art-torn-lamp", src: "assets/decor/painted/fringed_lamp.webp", size: [240, 460], width: 110, name: "Torn red lamp", group: "retired" },
+    { id: "art-screaming-candle", src: "assets/decor/painted/skull_candle.webp", size: [413, 460], width: 90, name: "Screaming candle", group: "retired" },
+    { id: "art-hanging-shop-lamp", src: "assets/decor/painted/pendant_lamp.webp", size: [434, 402], width: 120, name: "Green pendant lamp", group: "lighting" },
+    { id: "art-rug-handprint", src: "assets/decor/painted/rug_handprint.webp", size: [396, 456], width: 270, name: "Handprint rug", group: "rugs", floor: true },
+    { id: "art-rug-checker", src: "assets/decor/painted/rug_checker.webp", size: [460, 209], width: 220, name: "Checkered rug", group: "rugs", floor: true },
+    { id: "art-rug-mask", src: "assets/decor/painted/rug_mask.webp", size: [298, 149], width: 280, name: "Masked face rug", group: "rugs", floor: true },
+    { id: "art-rug-dead-tree", src: "assets/decor/painted/rug_dead_tree.webp", size: [271, 152], width: 270, name: "Bare tree rug", group: "rugs", floor: true },
+    { id: "art-rug-thorn-spiral", src: "assets/decor/painted/rug_thorn_spiral.webp", size: [230, 169], width: 230, name: "Thorn spiral rug", group: "rugs", floor: true },
+    { id: "art-rug-footprints", src: "assets/decor/painted/rug_footprints.webp", size: [460, 350], width: 250, name: "Footprints rug", group: "rugs", floor: true },
+    { id: "art-worn-books", src: "assets/decor/painted/worn_books.webp", size: [209, 183], width: 110, name: "Worn book stack", group: "bookish" },
+    { id: "art-camcorder", src: "assets/decor/painted/camcorder.webp", size: [476, 328], width: 120, name: "Old camcorder", group: "haunted" },
+    { id: "art-cream-phone", src: "assets/decor/painted/rotary_phone.webp", size: [478, 314], width: 110, name: "Cream push-button phone", group: "retired" },
+    { id: "art-boarded-window", src: "assets/decor/painted/boarded_window.webp", size: [262, 315], width: 140, name: "Boarded-up window", group: "retired" },
+    { id: "art-chain-padlock", src: "assets/decor/painted/chain_padlock.webp", size: [438, 410], width: 100, name: "Chain and padlock", group: "haunted" },
+    { id: "art-eye-sign", src: "assets/decor/painted/eye_sign.webp", size: [460, 415], width: 140, name: "All-seeing eye sign", group: "pictures" },
+    { id: "art-faded-wingback", src: "assets/decor/painted/tattered_wingback.webp", size: [310, 308], width: 180, name: "Faded wingback", group: "retired" },
+    { id: "art-tattered-chaise", src: "assets/decor/painted/velvet_chaise.webp", size: [478, 296], width: 290, name: "Tattered chaise", group: "retired" },
+    { id: "art-cobweb-bookcase", src: "assets/decor/painted/leaning_bookcase.webp", size: [368, 478], width: 160, name: "Leaning bookcase", group: "storage" },
+    { id: "art-old-writing-desk", src: "assets/decor/painted/old_desk.webp", size: [478, 380], width: 210, name: "Hutch desk", group: "tables" },
+    { id: "art-broken-cabinet", src: "assets/decor/painted/glass_cabinet.webp", size: [319, 478], width: 190, name: "Glass-front cabinet", group: "storage" },
+    { id: "art-cold-fireplace", src: "assets/decor/painted/cold_fireplace.webp", size: [326, 230], width: 240, name: "Cold stone fireplace", group: "storage" },
+    { id: "art-cracked-mirror", src: "assets/decor/painted/cracked_mirror.webp", size: [322, 460], width: 110, name: "Cracked mirror", group: "pictures" },
+    { id: "art-haunted-portrait", src: "assets/decor/painted/haunted_portrait.webp", size: [220, 296], width: 120, name: "Haunted portrait", group: "pictures" },
+    { id: "art-raven-statue", src: "assets/decor/painted/raven_statue.webp", size: [188, 211], width: 110, name: "Raven on a stone", group: "haunted" },
+    { id: "art-open-birdcage", src: "assets/decor/painted/birdcage.webp", size: [358, 478], width: 110, name: "Birdcage", group: "haunted" },
+    { id: "art-skull-on-books", src: "assets/decor/painted/skull_on_books.webp", size: [239, 190], width: 120, name: "Skull on old books", group: "bookish" },
+    { id: "art-grandfather-clock", src: "assets/decor/painted/grandfather_clock.webp", size: [186, 478], width: 110, name: "Grandfather clock", group: "storage" },
+    { id: "art-cobweb-candelabra", src: "assets/decor/painted/candelabra.webp", size: [329, 460], width: 120, name: "Cobwebbed candelabra", group: "retired" },
+    { id: "art-iron-lantern", src: "assets/decor/painted/red_lantern.webp", size: [268, 460], width: 70, name: "Red lantern", group: "lighting" },
+    { id: "art-tattered-lamp", src: "assets/decor/painted/fringed_lamp.webp", size: [240, 460], width: 100, name: "Tattered fringed lamp", group: "retired" },
+    { id: "art-candle-sconce", src: "assets/decor/painted/candle_holder.webp", size: [374, 360], width: 80, name: "Chamberstick candle", group: "lighting" },
+    { id: "art-candle-dish", src: "assets/decor/painted/pillar_candle.webp", size: [290, 322], width: 90, name: "Pillar candle", group: "lighting" },
+    { id: "art-candle-chandelier", src: "assets/decor/painted/candle_chandelier.webp", size: [405, 460], width: 170, name: "Candle chandelier", group: "lighting" },
+    { id: "art-rug-red-medallion", src: "assets/decor/painted/rug_red_medallion.webp", size: [460, 351], width: 260, name: "Worn medallion rug", group: "rugs", floor: true },
+    { id: "art-rug-web", src: "assets/decor/painted/rug_web.webp", size: [460, 333], width: 240, name: "Cobweb rug", group: "rugs", floor: true },
+    { id: "art-rug-moth", src: "assets/decor/painted/rug_moth.webp", size: [460, 319], width: 260, name: "Moth rug", group: "rugs", floor: true },
+    { id: "art-rug-thorn-oval", src: "assets/decor/painted/rug_thorn_oval.webp", size: [240, 144], width: 250, name: "Thorn oval rug", group: "rugs", floor: true },
+    { id: "art-rug-green-diamond", src: "assets/decor/painted/rug_green_diamond.webp", size: [304, 115], width: 290, name: "Green diamond runner", group: "rugs", floor: true },
+    { id: "art-rug-rose", src: "assets/decor/painted/rug_rose.webp", size: [183, 145], width: 190, name: "Faded rose rug", group: "rugs", floor: true },
+    { id: "art-boarded-arch-window", src: "assets/decor/painted/boarded_arch_window.webp", size: [237, 292], width: 110, name: "Boarded arched window", group: "retired" },
+    { id: "art-arched-door", src: "assets/decor/painted/arched_door.webp", size: [353, 460], width: 120, name: "Arched wooden door", group: "pictures" },
+    { id: "art-empty-frame", src: "assets/decor/painted/empty_frame.webp", size: [426, 460], width: 100, name: "Empty gilded frame", group: "pictures" },
+    { id: "art-cobweb-shelf", src: "assets/decor/painted/wall_shelf.webp", size: [478, 310], width: 170, name: "Wall shelf", group: "storage" },
+    { id: "art-gargoyle", src: "assets/decor/painted/gargoyle.webp", size: [432, 460], width: 130, name: "Gargoyle", group: "haunted" },
+    { id: "art-torn-curtains", src: "assets/decor/painted/torn_curtains.webp", size: [344, 276], width: 240, name: "Torn curtains", group: "retired" },
+    { id: "art-velvet-chaise", src: "assets/decor/painted/velvet_chaise.webp", size: [478, 296], width: 290, name: "Velvet chaise", group: "seating" },
+    { id: "art-rocking-chair", src: "assets/decor/painted/rocking_chair.webp", size: [404, 478], width: 170, name: "Cushioned rocking chair", group: "seating" },
+    { id: "art-moon-writing-desk", src: "assets/decor/painted/writing_desk.webp", size: [420, 262], width: 210, name: "Writing desk", group: "tables" },
+    { id: "art-potion-cabinet", src: "assets/decor/painted/potion_cabinet.webp", size: [378, 472], width: 130, name: "Potion cabinet", group: "storage" },
+    { id: "art-gothic-shelf", src: "assets/decor/painted/gothic_bookcase.webp", size: [350, 420], width: 140, name: "Gothic arched shelf", group: "retired" },
+    { id: "art-gramophone", src: "assets/decor/painted/gramophone.webp", size: [320, 478], width: 120, name: "Gramophone", group: "cozy" },
+    { id: "art-flower-skull", src: "assets/decor/painted/flower_skull.webp", size: [439, 478], width: 110, name: "Flower-crowned skull", group: "spooky" },
+    { id: "art-amethyst-cluster", src: "assets/decor/painted/amethyst_cluster.webp", size: [436, 462], width: 100, name: "Amethyst cluster", group: "witchy" },
+    { id: "art-lavender-bundle", src: "assets/decor/painted/herb_bundle.webp", size: [293, 478], width: 100, name: "Herb and flower bundle", group: "plants" },
+    { id: "art-raven-on-books", src: "assets/decor/painted/raven_on_books.webp", size: [423, 478], width: 120, name: "Raven on books", group: "bookish" },
+    { id: "art-mushroom-cloche", src: "assets/decor/painted/mushroom_cloche.webp", size: [390, 478], width: 100, name: "Mushroom cloche", group: "witchy" },
+    { id: "art-ghost-portrait", src: "assets/decor/painted/ghost_portrait.webp", size: [335, 460], width: 110, name: "Ghost portrait", group: "pictures" },
+    { id: "art-tiffany-lamp", src: "assets/decor/painted/pink_lamp.webp", size: [314, 460], width: 110, name: "Pink table lamp", group: "lighting" },
+    { id: "art-oil-lamp", src: "assets/decor/painted/oil_lamp.webp", size: [204, 460], width: 80, name: "Brass oil lamp", group: "lighting" },
+    { id: "art-bat-candle", src: "assets/decor/painted/bat_candle.webp", size: [460, 316], width: 130, name: "Bat candle sconce", group: "spooky" },
+    { id: "art-star-lantern", src: "assets/decor/painted/star_lantern.webp", size: [340, 460], width: 90, name: "Star lantern", group: "lighting" },
+    { id: "art-skull-candle", src: "assets/decor/painted/skull_candle.webp", size: [413, 460], width: 80, name: "Skull candle", group: "spooky" },
+    { id: "art-fringed-table-lamp", src: "assets/decor/painted/pink_lamp.webp", size: [314, 460], width: 110, name: "Rose fringed lamp", group: "retired" },
+    { id: "art-rug-poppy", src: "assets/decor/painted/rug_poppy.webp", size: [267, 145], width: 270, name: "Poppy rug", group: "rugs", floor: true },
+    { id: "art-rug-moth-oval", src: "assets/decor/painted/rug_moth.webp", size: [460, 319], width: 240, name: "Moon moth rug", group: "retired", floor: true },
+    { id: "art-rug-maple-leaf", src: "assets/decor/painted/rug_leaf.webp", size: [460, 334], width: 210, name: "Leaf oval rug", group: "rugs", floor: true },
+    { id: "art-rug-fern", src: "assets/decor/painted/rug_leaf.webp", size: [460, 334], width: 270, name: "Fern oval rug", group: "retired", floor: true },
+    { id: "art-rug-web-moon", src: "assets/decor/painted/rug_web.webp", size: [460, 333], width: 270, name: "Web and moon rug", group: "retired", floor: true },
+    { id: "art-rug-moon", src: "assets/decor/painted/rug_moon.webp", size: [388, 454], width: 200, name: "Crescent moon rug", group: "rugs", floor: true },
+    { id: "art-boombox", src: "assets/decor/painted/boombox.webp", size: [478, 347], width: 150, name: "Boombox", group: "cozy" },
+    { id: "art-red-phone", src: "assets/decor/painted/red_phone.webp", size: [478, 332], width: 120, name: "Red telephone", group: "cozy" },
+    { id: "art-cuckoo-clock", src: "assets/decor/painted/cuckoo_clock.webp", size: [356, 460], width: 100, name: "Bat cuckoo clock", group: "pictures" },
+    { id: "art-camping-lantern", src: "assets/decor/painted/hanging_lantern.webp", size: [201, 460], width: 70, name: "Camping lantern", group: "retired" },
+    { id: "art-moon-mask", src: "assets/decor/painted/moon_mask.webp", size: [130, 196], width: 80, name: "Moon mask", group: "witchy" },
+    { id: "art-wooden-door", src: "assets/decor/painted/wooden_door.webp", size: [236, 290], width: 110, name: "Little wooden door", group: "pictures" },
+    { id: "art-plum-tea-set", src: "assets/decor/painted/plum_tea_set.webp", size: [460, 399], width: 110, name: "Plum tea set", group: "tabletop" },
+    { id: "art-sage-tea-set", src: "assets/decor/painted/sage_tea_set.webp", size: [460, 395], width: 110, name: "Sage tea set", group: "tabletop" },
+    { id: "art-pumpkin-tea-set", src: "assets/decor/painted/pumpkin_tea_set.webp", size: [454, 406], width: 110, name: "Pumpkin tea set", group: "tabletop" },
+    { id: "art-cream-teacup", src: "assets/decor/painted/cream_teacup.webp", size: [460, 354], width: 60, name: "Cream teacup", group: "tabletop" },
+    { id: "art-plum-teacup", src: "assets/decor/painted/plum_teacup.webp", size: [460, 363], width: 60, name: "Plum teacup", group: "tabletop" },
+    { id: "art-sage-teacup", src: "assets/decor/painted/sage_teacup.webp", size: [460, 367], width: 60, name: "Sage teacup", group: "tabletop" },
+    { id: "art-pink-teacup", src: "assets/decor/painted/pink_teacup.webp", size: [460, 352], width: 60, name: "Pink teacup", group: "tabletop" },
+    { id: "art-amber-teacup", src: "assets/decor/painted/amber_teacup.webp", size: [460, 359], width: 60, name: "Amber glass teacup", group: "tabletop" },
+    { id: "art-espresso-cup", src: "assets/decor/painted/espresso_cup.webp", size: [460, 343], width: 55, name: "Espresso cup", group: "tabletop" },
+    { id: "art-plum-mug", src: "assets/decor/painted/plum_mug.webp", size: [460, 366], width: 55, name: "Plum mug", group: "tabletop" },
+    { id: "art-sage-mug", src: "assets/decor/painted/sage_mug.webp", size: [458, 396], width: 55, name: "Sage mug", group: "tabletop" },
+    { id: "art-pink-mug", src: "assets/decor/painted/pink_mug.webp", size: [460, 375], width: 55, name: "Pink mug", group: "tabletop" },
+    { id: "art-pumpkin-mug", src: "assets/decor/painted/pumpkin_mug.webp", size: [460, 336], width: 55, name: "Pumpkin mug", group: "tabletop" },
+    { id: "art-ghost-mug", src: "assets/decor/painted/ghost_mug.webp", size: [460, 374], width: 55, name: "Ghost mug", group: "tabletop" },
+    { id: "art-moon-mug", src: "assets/decor/painted/moon_mug.webp", size: [460, 374], width: 55, name: "Moon mug", group: "tabletop" },
+    { id: "art-coffee-pot", src: "assets/decor/painted/coffee_pot.webp", size: [460, 437], width: 80, name: "Coffee pot and mug", group: "tabletop" },
+    { id: "art-french-press", src: "assets/decor/painted/french_press.webp", size: [460, 433], width: 75, name: "French press", group: "tabletop" },
+    { id: "art-moka-pot", src: "assets/decor/painted/moka_pot.webp", size: [450, 444], width: 75, name: "Moka pot and cups", group: "tabletop" },
+    { id: "art-pumpkin-kettle", src: "assets/decor/painted/pumpkin_kettle.webp", size: [460, 437], width: 80, name: "Pumpkin kettle", group: "tabletop" },
+    { id: "art-espresso-machine", src: "assets/decor/painted/espresso_machine.webp", size: [431, 460], width: 90, name: "Espresso machine", group: "tabletop" },
+    { id: "art-milk-jug", src: "assets/decor/painted/milk_jug.webp", size: [442, 420], width: 55, name: "Milk jug", group: "tabletop" },
+    { id: "art-sugar-bowl", src: "assets/decor/painted/sugar_bowl.webp", size: [460, 334], width: 55, name: "Sugar bowl", group: "tabletop" },
+    { id: "art-honey-jar", src: "assets/decor/painted/honey_jar.webp", size: [460, 409], width: 55, name: "Honey jar", group: "tabletop" },
+    { id: "art-tea-tin", src: "assets/decor/painted/tea_tin.webp", size: [339, 460], width: 50, name: "Tea tin", group: "tabletop" },
+    { id: "art-cookie-jar", src: "assets/decor/painted/cookie_jar.webp", size: [388, 460], width: 60, name: "Cookie jar", group: "treats" },
+    { id: "art-cocoa-and-cookies", src: "assets/decor/painted/cocoa_and_cookies.webp", size: [460, 396], width: 85, name: "Cocoa and cookies", group: "treats" },
+    { id: "art-lemon-tea-and-book", src: "assets/decor/painted/lemon_tea_and_book.webp", size: [460, 404], width: 90, name: "Lemon tea and a book", group: "bookish" },
+    { id: "art-plate-stack", src: "assets/decor/painted/plate_stack.webp", size: [460, 289], width: 70, name: "Stack of plates", group: "tabletop" },
+    { id: "art-mushroom-lamp", src: "assets/decor/painted/mushroom_lamp.webp", size: [362, 396], width: 90, name: "Mushroom lamp", group: "lighting" },
+    { id: "art-ghost-candle", src: "assets/decor/painted/ghost_candle.webp", size: [300, 434], width: 60, name: "Ghost candle", group: "lighting" },
+    { id: "art-wall-lamp", src: "assets/decor/painted/wall_lamp.webp", size: [460, 333], width: 90, name: "Wall lamp", group: "lighting" },
+    { id: "art-tufted-ottoman", src: "assets/decor/painted/tufted_ottoman.webp", size: [454, 318], width: 130, name: "Tufted ottoman", group: "seating" },
+    { id: "art-mushroom-stool", src: "assets/decor/painted/mushroom_stool.webp", size: [400, 358], width: 90, name: "Mushroom stool", group: "seating" },
+    { id: "art-wooden-bench", src: "assets/decor/painted/wooden_bench.webp", size: [478, 254], width: 180, name: "Tufted bench", group: "seating" },
+    { id: "art-round-table", src: "assets/decor/painted/round_table.webp", size: [347, 420], width: 130, name: "Round pedestal table", group: "tables" },
+    { id: "art-pedestal-table", src: "assets/decor/painted/pedestal_table.webp", size: [338, 420], width: 110, name: "Small pedestal table", group: "tables" },
+    { id: "art-tea-trolley", src: "assets/decor/painted/tea_trolley.webp", size: [466, 478], width: 150, name: "Tea trolley", group: "tables" },
+    { id: "art-book-cart", src: "assets/decor/painted/book_cart.webp", size: [478, 457], width: 150, name: "Book cart", group: "storage" },
+    { id: "art-chest-of-drawers", src: "assets/decor/painted/chest_of_drawers.webp", size: [441, 478], width: 150, name: "Chest of drawers", group: "storage" },
+    { id: "art-white-cabinet", src: "assets/decor/painted/white_cabinet.webp", size: [243, 237], width: 140, name: "Worn white cabinet", group: "storage" },
+    { id: "art-wooden-trunk", src: "assets/decor/painted/wooden_trunk.webp", size: [478, 299], width: 160, name: "Wooden trunk", group: "storage" },
+    { id: "art-cat-painting", src: "assets/decor/painted/cat_painting.webp", size: [327, 460], width: 100, name: "Cat on books painting", group: "pictures" },
+    { id: "art-haunted-house-painting", src: "assets/decor/painted/haunted_house_painting.webp", size: [460, 331], width: 100, name: "Haunted house painting", group: "pictures" },
+    { id: "art-raven-moon-painting", src: "assets/decor/painted/raven_moon_painting.webp", size: [460, 409], width: 100, name: "Raven and moon painting", group: "pictures" },
+    { id: "art-lantern-forest-painting", src: "assets/decor/painted/lantern_forest_painting.webp", size: [292, 460], width: 100, name: "Lantern in the woods painting", group: "pictures" },
+    { id: "art-lady-portrait", src: "assets/decor/painted/lady_portrait.webp", size: [351, 460], width: 100, name: "Lady's portrait", group: "pictures" },
+    { id: "art-pressed-flowers", src: "assets/decor/painted/pressed_flowers.webp", size: [346, 336], width: 150, name: "Pressed flower frames", group: "pictures" },
+    { id: "art-potion-shelf", src: "assets/decor/painted/potion_shelf.webp", size: [460, 396], width: 140, name: "Potion shelf", group: "pictures" },
+    { id: "art-ivy-book-shelf", src: "assets/decor/painted/ivy_book_shelf.webp", size: [460, 373], width: 170, name: "Shelf with books and ivy", group: "pictures" },
+    { id: "art-key-rack", src: "assets/decor/painted/key_rack.webp", size: [394, 398], width: 100, name: "Key rack", group: "pictures" },
+    { id: "art-scarf-hook", src: "assets/decor/painted/scarf_hook.webp", size: [211, 460], width: 60, name: "Scarf on a hook", group: "pictures" },
+    { id: "art-moon-mobile", src: "assets/decor/painted/moon_mobile.webp", size: [375, 460], width: 110, name: "Moon mobile", group: "garlands" },
+    { id: "art-drying-herbs", src: "assets/decor/painted/drying_herbs.webp", size: [443, 460], width: 140, name: "Herb shelf", group: "garlands" },
+    { id: "art-string-lights", src: "assets/decor/painted/string_lights.webp", size: [460, 214], width: 200, name: "Fairy lights", group: "garlands" },
+    { id: "art-lantern-garland", src: "assets/decor/painted/lantern_garland.webp", size: [460, 278], width: 200, name: "Lantern garland", group: "garlands" },
+    { id: "art-pumpkin-garland", src: "assets/decor/painted/pumpkin_garland.webp", size: [460, 241], width: 200, name: "Pumpkin garland", group: "garlands" },
+    { id: "art-ghost-garland", src: "assets/decor/painted/ghost_garland.webp", size: [460, 269], width: 200, name: "Ghost garland", group: "garlands" },
+    { id: "art-bat-garland", src: "assets/decor/painted/bat_garland.webp", size: [460, 276], width: 200, name: "Bat garland", group: "garlands" },
+    { id: "art-thorn-wreath", src: "assets/decor/painted/thorn_wreath.webp", size: [396, 460], width: 130, name: "Thorn and rose wreath", group: "garlands" },
+    { id: "art-cobweb", src: "assets/decor/painted/cobweb.webp", size: [460, 284], width: 130, name: "Cobweb", group: "garlands" },
+    { id: "art-cobweb-corner", src: "assets/decor/painted/cobweb_corner.webp", size: [460, 229], width: 130, name: "Corner cobweb", group: "garlands" },
+    { id: "art-cobweb-spider", src: "assets/decor/painted/cobweb_spider.webp", size: [419, 460], width: 120, name: "Cobweb with a spider", group: "garlands" },
+    { id: "art-cobweb-swag", src: "assets/decor/painted/cobweb_swag.webp", size: [218, 448], width: 200, name: "Cobweb swag", group: "garlands" },
+    { id: "art-rug-bat", src: "assets/decor/painted/rug_bat.webp", size: [460, 282], width: 260, name: "Bat rug", group: "rugs", floor: true },
+    { id: "art-rug-ghost", src: "assets/decor/painted/rug_ghost.webp", size: [432, 438], width: 230, name: "Ghost rug", group: "rugs", floor: true },
+    { id: "art-black-cat", src: "assets/decor/painted/black_cat.webp", size: [326, 466], width: 90, name: "Black cat", group: "spooky" },
+    { id: "art-skull", src: "assets/decor/painted/skull.webp", size: [446, 412], width: 80, name: "Skull", group: "spooky" },
+    { id: "art-pumpkin-trio", src: "assets/decor/painted/pumpkin_trio.webp", size: [478, 385], width: 120, name: "Three pumpkins", group: "autumn" },
+    { id: "art-broom", src: "assets/decor/painted/broom.webp", size: [355, 478], width: 130, name: "Witch's broom", group: "witchy" },
+    { id: "art-crystal-ball", src: "assets/decor/painted/crystal_ball.webp", size: [344, 418], width: 80, name: "Crystal ball", group: "witchy" },
+    { id: "art-potted-mushrooms", src: "assets/decor/painted/potted_mushrooms.webp", size: [370, 470], width: 90, name: "Potted mushrooms", group: "plants" },
+    { id: "art-hanging-ivy", src: "assets/decor/painted/hanging_ivy.webp", size: [476, 478], width: 110, name: "Hanging ivy", group: "plants" },
+    { id: "art-cat-moon-portrait", src: "assets/decor/painted/cat_moon_portrait.webp", size: [378, 460], width: 100, name: "Black cat portrait", group: "pictures" },
+    { id: "art-moth-portrait", src: "assets/decor/painted/moth_portrait.webp", size: [385, 460], width: 100, name: "Moon moth portrait", group: "pictures" },
+    { id: "art-ghost-tea-portrait", src: "assets/decor/painted/ghost_tea_portrait.webp", size: [410, 460], width: 105, name: "Ghost with tea", group: "pictures" },
+    { id: "art-bare-tree-painting", src: "assets/decor/painted/bare_tree_painting.webp", size: [349, 460], width: 90, name: "Bare tree at dusk", group: "pictures" },
+    { id: "art-pumpkin-patch-painting", src: "assets/decor/painted/pumpkin_patch_painting.webp", size: [460, 349], width: 110, name: "Pumpkin patch painting", group: "pictures" },
+    { id: "art-cottage-painting", src: "assets/decor/painted/cottage_painting.webp", size: [460, 349], width: 110, name: "Cottage in the woods", group: "pictures" },
+    { id: "art-mushroom-painting", src: "assets/decor/painted/mushroom_painting.webp", size: [460, 335], width: 100, name: "Mushroom painting", group: "pictures" },
+    { id: "art-crow-painting", src: "assets/decor/painted/crow_painting.webp", size: [378, 460], width: 100, name: "Crow at sunset", group: "pictures" },
+    { id: "art-candle-painting", src: "assets/decor/painted/candle_painting.webp", size: [340, 460], width: 75, name: "Candle painting", group: "pictures" },
+    { id: "art-moon-phases", src: "assets/decor/painted/moon_phases.webp", size: [330, 460], width: 160, name: "Moon phases", group: "pictures" },
+    { id: "art-pressed-botanicals", src: "assets/decor/painted/pressed_botanicals.webp", size: [460, 321], width: 160, name: "Pressed leaf frames", group: "pictures" },
+    { id: "art-bat-diamond", src: "assets/decor/painted/bat_diamond.webp", size: [419, 460], width: 95, name: "Bat in a diamond frame", group: "pictures" },
+    { id: "art-jack-garland", src: "assets/decor/painted/jack_garland.webp", size: [460, 259], width: 200, name: "Jack-o'-lantern garland", group: "garlands" },
+    { id: "art-ghost-bunting", src: "assets/decor/painted/ghost_bunting.webp", size: [460, 253], width: 200, name: "Ghost bunting", group: "garlands" },
+    { id: "art-bat-bunting", src: "assets/decor/painted/bat_bunting.webp", size: [460, 250], width: 200, name: "Bat bunting", group: "garlands" },
+    { id: "art-moon-star-bunting", src: "assets/decor/painted/moon_star_bunting.webp", size: [460, 262], width: 200, name: "Moon and star bunting", group: "garlands" },
+    { id: "art-skull-garland", src: "assets/decor/painted/skull_garland.webp", size: [460, 251], width: 200, name: "Skull garland", group: "garlands" },
+    { id: "art-witch-hat-garland", src: "assets/decor/painted/witch_hat_garland.webp", size: [460, 274], width: 200, name: "Witch hat garland", group: "garlands" },
+    { id: "art-fairy-lights", src: "assets/decor/painted/fairy_lights.webp", size: [356, 124], width: 200, name: "Fairy lights", group: "garlands" },
+    { id: "art-lantern-string", src: "assets/decor/painted/lantern_string.webp", size: [460, 303], width: 200, name: "String of lanterns", group: "garlands" },
+    { id: "art-cat-garland", src: "assets/decor/painted/cat_garland.webp", size: [460, 250], width: 200, name: "Black cat garland", group: "garlands" },
+    { id: "art-maple-garland", src: "assets/decor/painted/maple_garland.webp", size: [460, 262], width: 200, name: "Maple leaf garland", group: "garlands" },
+    { id: "art-moth-garland", src: "assets/decor/painted/moth_garland.webp", size: [460, 244], width: 200, name: "Moth garland", group: "garlands" },
+    { id: "art-potion-garland", src: "assets/decor/painted/potion_garland.webp", size: [460, 279], width: 200, name: "Potion bottle garland", group: "garlands" },
+    { id: "art-ivy-swag", src: "assets/decor/painted/ivy_swag.webp", size: [460, 259], width: 230, name: "Ivy swag", group: "vines" },
+    { id: "art-ivy-hanging", src: "assets/decor/painted/ivy_hanging.webp", size: [160, 460], width: 60, name: "Trailing ivy", group: "vines" },
+    { id: "art-ivy-corner-left", src: "assets/decor/painted/ivy_corner_left.webp", size: [431, 460], width: 160, name: "Ivy corner (left)", group: "vines" },
+    { id: "art-ivy-corner-right", src: "assets/decor/painted/ivy_corner_right.webp", size: [460, 458], width: 140, name: "Ivy corner (right)", group: "vines" },
+    { id: "art-ivy-arch", src: "assets/decor/painted/ivy_arch.webp", size: [458, 460], width: 220, name: "Ivy arch", group: "vines" },
+    { id: "art-ivy-basket", src: "assets/decor/painted/ivy_basket.webp", size: [444, 460], width: 110, name: "Ivy in a hanging pot", group: "vines" },
+    { id: "art-ivy-fairy-lights", src: "assets/decor/painted/ivy_fairy_lights.webp", size: [460, 429], width: 210, name: "Ivy with fairy lights", group: "vines" },
+    { id: "art-ivy-web-swag", src: "assets/decor/painted/ivy_web_swag.webp", size: [460, 432], width: 190, name: "Ivy and cobweb swag", group: "vines" },
+    { id: "art-autumn-vine", src: "assets/decor/painted/autumn_vine.webp", size: [460, 325], width: 200, name: "Autumn leaf vine", group: "vines" },
+    { id: "art-rose-vine", src: "assets/decor/painted/rose_vine.webp", size: [460, 404], width: 200, name: "Rose vine", group: "vines" },
+    { id: "art-bat-branch", src: "assets/decor/painted/bat_branch.webp", size: [460, 365], width: 210, name: "Branch with bats", group: "vines" },
+    { id: "art-hanging-herbs", src: "assets/decor/painted/hanging_herbs.webp", size: [446, 444], width: 180, name: "Drying herb garland", group: "vines" },
     // Furniture: seating, tables, lamps, storage and fireplaces
     { id: "furn-wingback-floral", box: "0 0 220 236", width: 200, name: "Floral wingback chair", group: "seating" },
     { id: "furn-wingback-rust", box: "0 0 220 236", width: 200, name: "Velvet wingback chair", group: "seating", tint: true },
@@ -391,16 +655,57 @@ function caseZoom() {
 }
 
 
+// On top of the bookcase, pieces are measured up from its top
+// edge (0) to TOP_SPAN pixels above it (100).
+const TOP_SPAN = 400;
+
+/*
+    How far a piece's height can go. The wall is measured up
+    from the floor across 820px, so a piece above that (on a
+    tall screen, up to the ceiling) is below 0; a piece above
+    the bookcase is measured up from its top across TOP_SPAN,
+    so one higher than that is past 100. Until the database
+    takes those heights (sql/wall.sql), they stop at 0 and 100.
+*/
+let wholeWall = true;
+
+function heightRange(area) {
+
+    if (!wholeWall || area === "shelf") {
+        return [0, 100];
+    }
+
+    // Past 100 is out across a deep floor (the room view).
+    return area === "bookcase_top" ? [0, 400] : [-300, 200];
+
+}
+
+// The database hasn't taken the new heights yet (sql/wall.sql).
+function isHeightRefused(error) {
+    return error?.code === "23514" && /position_y/.test(error.message || "");
+}
+
 function topFor(piece) {
 
-    return piece.room_area === "shelf"
-        ? `${(piece.position_y * SHELF_SPAN) / 100}px`
+    if (piece.room_area === "bookcase_top") {
+        return `${(-piece.position_y * TOP_SPAN) / 100}px`;
+    }
+
+    if (piece.room_area === "shelf") {
+        return `${(piece.position_y * SHELF_SPAN) / 100}px`;
+    }
+
+    // Out on a deep floor: past 100 is a share of the floor's
+    // extra depth, so with a shallow floor it stays at the back.
+    return piece.position_y > 100
+        ? `calc(100% + ${(piece.position_y - 100) / 100} * var(--floor-lift, 0px))`
         : `${piece.position_y}%`;
 
 }
 
 // room_area in the database → the part of the room it hangs on.
 const AREAS = {
+    bookcase_top: ".bookcase",
     wall: ".journal-zone",
     shelf: ".bookcase"
 };
@@ -415,7 +720,7 @@ let selectedId = null;
 let selectedBuiltIn = null;
 let bar = null;
 let loadToken = 0;
-let paletteGroup = "room";
+let paletteGroup = "room-walls";
 
 // The tray: which side it sits on (computers) and whether it
 // is folded down (phones).
@@ -473,17 +778,50 @@ function assetFor(id) {
 }
 
 
+// A piece's picture: hand-painted pieces are images, the rest
+// are drawings in the sprite.
+function artMarkup(asset, { live = false } = {}) {
+
+    if (!asset.src) {
+        return `<svg viewBox="${asset.box}" aria-hidden="true"><use href="#${asset.id}"></use></svg>`;
+    }
+
+    const picture =
+        `<img class="decor-picture" src="${asset.src}?v=__VERSION__" width="${asset.size[0]}" height="${asset.size[1]}" alt="" draggable="false" loading="lazy">`;
+
+    if (!live) {
+        return picture;
+    }
+
+    // In the room, painted pieces get their light and movement
+    // (js/room/painted-fx.js). --art is read by css/painted-fx.css,
+    // so its path starts from css/.
+    const fx =
+        paintedFx(asset.src);
+
+    return `<span class="decor-art ${fx.motion}" style="--art: url('../${asset.src}?v=__VERSION__')">${picture}<span class="decor-fx">${fx.layers}</span></span>`;
+
+}
+
+
+// The groups of pieces in one of the panel's tabs.
+function tabGroups(tabId) {
+    const tab = DECOR_TABS.find((item) => item.id === tabId);
+    return tab ? tab.groups.map((id) => DECOR_GROUPS.find((group) => group.id === id)).filter(Boolean) : [];
+}
+
+
 function layerFor(area) {
 
     const zone =
         room.querySelector(AREAS[area] || AREAS.wall);
 
     let layer =
-        zone?.querySelector(":scope > .decor-layer");
+        zone?.querySelector(`:scope > .decor-layer[data-area="${area in AREAS ? area : "wall"}"]`);
 
     if (zone && !layer) {
 
-        zone.insertAdjacentHTML("beforeend", `<div class="decor-layer" data-area="${area}"></div>`);
+        zone.insertAdjacentHTML("beforeend", `<div class="decor-layer" data-area="${area in AREAS ? area : "wall"}"></div>`);
 
         layer = zone.lastElementChild;
 
@@ -509,12 +847,12 @@ function pieceMarkup(piece) {
 
     return html`
         <div
-            class="placed-decor ${piece.id === selectedId ? "is-selected" : ""} ${asset.plain ? "placed-decor--plain" : ""}"
+            class="placed-decor ${piece.id === selectedId ? "is-selected" : ""} ${asset.plain ? "placed-decor--plain" : ""} ${asset.floor ? "placed-decor--floor" : ""}"
             data-decor-id="${piece.id}"
             style="left: ${piece.position_x}%; top: ${topFor(piece)}; width: ${asset.width}px; z-index: ${piece.z_index}; --scale: ${piece.scale}; --rotation: ${piece.rotation}deg${fabricStyle(piece)}"
             ${arranging ? html`tabindex="0" role="button" aria-label="${asset.name}. Drag to move, or use the arrow keys."` : html`aria-hidden="true"`}
         >
-            <svg viewBox="${asset.box}" aria-hidden="true"><use href="#${asset.id}"></use></svg>
+            ${raw(artMarkup(asset, { live: true }))}
         </div>
     `;
 
@@ -578,6 +916,7 @@ function drawBarNow() {
 
         bar.addEventListener("click", onBarClick);
         bar.addEventListener("pointerdown", onPalettePointerDown);
+        bar.addEventListener("input", onPaletteSearch);
 
         // Leave room under the page for the tray on a phone.
         trayObserver = new ResizeObserver(() => {
@@ -597,40 +936,215 @@ function drawBarNow() {
     render(bar, html`
 
         <div class="arrange-bar__head">
-            <p class="arrange-bar__title">Edit the room</p>
+            <p class="arrange-bar__title">Decorate</p>
+            <button class="icon-button arrange-bar__side" type="button" data-arrange="side" aria-label="${bar.dataset.side === "left" ? "Move this panel to the right" : "Move this panel to the left"}" title="${bar.dataset.side === "left" ? "Move this panel to the right" : "Move this panel to the left"}">
+                ${art(bar.dataset.side === "left" ? "ui-chevron-right" : "ui-chevron-left")}
+            </button>
+            <button class="icon-button arrange-bar__picture" type="button" data-arrange="picture" aria-label="Take a picture of your room" title="Take a picture of your room">
+                ${art("ui-camera")}
+            </button>
             <button class="icon-button arrange-bar__fold" type="button" data-arrange="fold" aria-expanded="${String(!trayFolded)}" aria-label="${trayFolded ? "Show the panel" : "Hide the panel"}" title="${trayFolded ? "Show the panel" : "Hide the panel"}">
                 ${art("ui-chevron-down")}
             </button>
             <button class="button button--primary button--small" type="button" data-arrange="done">Done</button>
         </div>
 
-        <p class="arrange-bar__hint" ${selectedBuiltIn ? html`hidden` : ""}>${paletteGroup === "room"
-            ? "Choose the wallpaper, floor, window, curtains and rug for this room."
-            : "Tap a piece to add it to the part of the room you can see, or drag it straight to its spot. Drag pieces to move them."}</p>
+        <p class="arrange-bar__hint" ${selectedBuiltIn ? html`hidden` : ""}>${isRoomTab(paletteGroup)
+            ? "Choose the wallpaper, floor, window and curtains for this room."
+            : "Tap a piece to add it, or drag it into the room. Tap a piece in the room to pick it, then drag it to move it."}</p>
 
-        <div class="arrange-bar__tabs" role="tablist" aria-label="Kinds of decoration">
-            <button class="arrange-bar__tab arrange-bar__tab--room ${paletteGroup === "room" ? "is-current" : ""}" type="button" role="tab" aria-selected="${String(paletteGroup === "room")}" data-decor-group="room">Room</button>
-            ${DECOR_GROUPS.map((group) => html`
-                <button class="arrange-bar__tab ${group.id === paletteGroup ? "is-current" : ""}" type="button" role="tab" aria-selected="${String(group.id === paletteGroup)}" data-decor-group="${group.id}">${group.name}</button>
+        ${isRoomTab(paletteGroup) ? "" : html`
+            <label class="arrange-bar__search">
+                <span class="visually-hidden">Find a piece</span>
+                <input type="search" placeholder="Find a piece…" value="${paletteQuery}" data-palette-search autocomplete="off" enterkeyhint="search">
+            </label>
+        `}
+
+        <div class="arrange-bar__tabs" role="tablist" aria-label="The room and its pieces">
+            <span class="arrange-bar__tabs-label" aria-hidden="true">Room</span>
+            ${ROOM_TABS.map((tab) => html`
+                <button class="arrange-bar__tab arrange-bar__tab--room ${tab.id === paletteGroup ? "is-current" : ""}" type="button" role="tab" aria-selected="${String(tab.id === paletteGroup)}" data-decor-group="${tab.id}">${tab.name}</button>
+            `)}
+            <span class="arrange-bar__tabs-label" aria-hidden="true">Pieces</span>
+            ${DECOR_TABS.map((tab) => html`
+                <button class="arrange-bar__tab ${tab.id === paletteGroup ? "is-current" : ""}" type="button" role="tab" aria-selected="${String(tab.id === paletteGroup)}" data-decor-group="${tab.id}">${tab.name}</button>
             `)}
         </div>
 
-        ${paletteGroup === "room" ? roomPanelMarkup() : html`<ul class="arrange-bar__palette" aria-label="Decorations to add">
-            ${DECOR_ASSETS.filter((asset) => asset.group === paletteGroup).map((asset) => html`
-                <li>
-                    <button class="arrange-bar__asset ${asset.dark ? "arrange-bar__asset--dark" : ""} ${asset.plain ? "arrange-bar__asset--plain" : ""}" type="button" data-add-decor="${asset.id}" title="${asset.name}" aria-label="Add ${asset.name}">
-                        <svg viewBox="${asset.box}" aria-hidden="true"><use href="#${asset.id}"></use></svg>
-                        <span class="arrange-bar__label" aria-hidden="true">${asset.name}</span>
-                    </button>
-                </li>
-            `)}
-        </ul>`}
-
-        <button class="text-button arrange-bar__side" type="button" data-arrange="side">
-            ${bar.dataset.side === "left" ? html`Move this panel to the right ${art("ui-chevron-right")}` : html`${art("ui-chevron-left")} Move this panel to the left`}
-        </button>
+        ${isRoomTab(paletteGroup) ? roomPanelMarkup(paletteGroup) : html`<div class="arrange-bar__palette-holder">${paletteMarkup()}</div>`}
 
     `);
+
+}
+
+
+// What's typed in the panel's search box.
+let paletteQuery = "";
+
+function assetButton(asset) {
+    return html`
+        <li>
+            <button class="arrange-bar__asset ${asset.dark ? "arrange-bar__asset--dark" : ""} ${asset.plain ? "arrange-bar__asset--plain" : ""}" type="button" data-add-decor="${asset.id}" title="${asset.name}" aria-label="Add ${asset.name}">
+                ${raw(artMarkup(asset))}
+                <span class="arrange-bar__label" aria-hidden="true">${asset.name}</span>
+            </button>
+        </li>
+    `;
+}
+
+// Words that find a piece besides its name: its group and tab.
+function searchText(asset) {
+    const group = DECOR_GROUPS.find((item) => item.id === asset.group);
+    const tab = DECOR_TABS.find((item) => item.groups.includes(asset.group));
+    return `${asset.name} ${group?.name || ""} ${tab?.name || ""}`.toLowerCase();
+}
+
+function paletteMarkup() {
+
+    const query =
+        paletteQuery.trim().toLowerCase();
+
+    if (query) {
+
+        const words =
+            query.split(/\s+/);
+
+        const found =
+            DECOR_ASSETS.filter((asset) => asset.group !== "retired" && words.every((word) => searchText(asset).includes(word)));
+
+        return html`<ul class="arrange-bar__palette" aria-label="Pieces found">
+            <li class="arrange-bar__group" aria-hidden="true">${found.length ? `${found.length} found` : "Nothing found"}</li>
+            ${found.slice(0, 120).map(assetButton)}
+        </ul>`;
+
+    }
+
+    const recent =
+        recentlyUsed().map(assetFor).filter((asset) => asset && asset.group !== "retired");
+
+    return html`<ul class="arrange-bar__palette" aria-label="Decorations to add">
+        ${recent.length ? html`
+            <li class="arrange-bar__group" aria-hidden="true">Recently used</li>
+            ${recent.map(assetButton)}
+        ` : ""}
+        ${paletteGroup === "rugs" ? html`<li class="arrange-bar__room-rug">${rugPanelMarkup()}</li>` : ""}
+        ${tabGroups(paletteGroup).map((group) => html`
+            ${tabGroups(paletteGroup).length > 1 || group.id === "rugs" || recent.length ? html`<li class="arrange-bar__group" aria-hidden="true">${group.id === "rugs" ? "Rugs to place" : group.name}</li>` : ""}
+            ${DECOR_ASSETS.filter((asset) => asset.group === group.id).map(assetButton)}
+        `)}
+    </ul>`;
+
+}
+
+function onPaletteSearch(event) {
+
+    const input =
+        event.target.closest?.("[data-palette-search]");
+
+    if (!input || !bar) {
+        return;
+    }
+
+    paletteQuery = input.value;
+
+    const holder =
+        bar.querySelector(".arrange-bar__palette-holder");
+
+    if (holder) {
+        render(holder, paletteMarkup());
+    }
+
+}
+
+
+// The last pieces this reader added (kept on this device only).
+const RECENT = "novellow-recent-decor";
+
+function recentlyUsed() {
+    try {
+        return JSON.parse(localStorage.getItem(RECENT) || "[]").slice(0, 8);
+    }
+    catch {
+        return [];
+    }
+}
+
+function rememberUsed(assetId) {
+    try {
+        const list = [assetId, ...recentlyUsed().filter((id) => id !== assetId)].slice(0, 8);
+        localStorage.setItem(RECENT, JSON.stringify(list));
+    }
+    catch {
+        // Storage may be switched off; the row just stays empty.
+    }
+}
+
+
+// Small steps for the arrow buttons in the piece editor.
+const NUDGES = {
+    "nudge-left": [-1, 0],
+    "nudge-right": [1, 0],
+    "nudge-up": [0, -1],
+    "nudge-down": [0, 1]
+};
+
+function nudge(piece, [dx, dy]) {
+
+    // On top of the bookcase, heights count upward.
+    const up =
+        piece.room_area === "bookcase_top" ? -1 : 1;
+
+    return {
+        position_x: piece.position_x + dx * 0.6,
+        position_y: piece.position_y + dy * 0.6 * up
+    };
+
+}
+
+
+// A copy of a piece, just beside it.
+async function duplicate(piece) {
+
+    if (pieces.length >= LIMIT) {
+        toast(`The room can hold ${LIMIT} decorations. Remove one to add another.`);
+        return;
+    }
+
+    try {
+
+        const saved =
+            await createRow("decorations", {
+                asset_id: piece.asset_id,
+                decoration_type: piece.decoration_type,
+                room_area: piece.room_area,
+                theme,
+                position_x: clamp(piece.position_x + 4, 0, 100),
+                position_y: piece.position_y,
+                scale: piece.scale,
+                rotation: piece.rotation,
+                z_index: Math.min(50, piece.z_index + 1)
+            });
+
+        const copy = {
+            ...saved,
+            position_x: Number(saved.position_x),
+            position_y: Number(saved.position_y),
+            scale: Number(saved.scale),
+            rotation: Number(saved.rotation)
+        };
+
+        pieces.push(copy);
+
+        remember({ kind: "add", row: { ...copy } });
+
+        draw();
+        select(copy.id);
+
+    }
+
+    catch (error) {
+        toastError(error, "That piece couldn't be copied. Please try again.");
+    }
 
 }
 
@@ -674,16 +1188,27 @@ function drawEditor() {
 
         ${selected ? html`<div class="arrange-bar__tools">
             <span class="arrange-bar__selected">${selected ? assetFor(selected.asset_id)?.name : ""}</span>
-            <div class="arrange-bar__buttons">
-                <button class="icon-button" type="button" data-arrange="smaller" aria-label="Smaller" title="Smaller">−</button>
-                <button class="icon-button" type="button" data-arrange="bigger" aria-label="Bigger" title="Bigger">+</button>
-                <button class="icon-button" type="button" data-arrange="tilt-left" aria-label="Tilt left" title="Tilt left">↺</button>
-                <button class="icon-button" type="button" data-arrange="tilt-right" aria-label="Tilt right" title="Tilt right">↻</button>
-                <button class="icon-button" type="button" data-arrange="back" aria-label="Send behind" title="Send behind">⤓</button>
-                <button class="icon-button" type="button" data-arrange="forward" aria-label="Bring to front" title="Bring to front">⤒</button>
-                <button class="icon-button" type="button" data-arrange="remove" aria-label="Remove" title="Remove">${art("ui-trash")}</button>
+            <div class="piece-editor__grid">
+                <div class="piece-editor__row" role="group" aria-label="Size and turn">
+                    <button class="piece-editor__button" type="button" data-arrange="smaller" aria-label="Smaller" title="Smaller"><b>−</b><small>Smaller</small></button>
+                    <button class="piece-editor__button" type="button" data-arrange="bigger" aria-label="Bigger" title="Bigger"><b>+</b><small>Bigger</small></button>
+                    <button class="piece-editor__button" type="button" data-arrange="tilt-left" aria-label="Turn left" title="Turn left"><b>↺</b><small>Turn</small></button>
+                    <button class="piece-editor__button" type="button" data-arrange="tilt-right" aria-label="Turn right" title="Turn right"><b>↻</b><small>Turn</small></button>
+                </div>
+                <div class="piece-editor__row" role="group" aria-label="Layer, copy and remove">
+                    <button class="piece-editor__button" type="button" data-arrange="back" aria-label="Send behind" title="Send behind"><b>⤓</b><small>Behind</small></button>
+                    <button class="piece-editor__button" type="button" data-arrange="forward" aria-label="Bring to front" title="Bring to front"><b>⤒</b><small>Front</small></button>
+                    <button class="piece-editor__button" type="button" data-arrange="duplicate" aria-label="Make a copy" title="Make a copy"><b>⧉</b><small>Copy</small></button>
+                    <button class="piece-editor__button piece-editor__button--remove" type="button" data-arrange="remove" aria-label="Remove" title="Remove">${art("ui-trash")}<small>Remove</small></button>
+                </div>
+                <div class="piece-editor__nudge" role="group" aria-label="Move a little">
+                    <button class="piece-editor__arrow" type="button" data-arrange="nudge-up" aria-label="Move up a little">▲</button>
+                    <button class="piece-editor__arrow" type="button" data-arrange="nudge-left" aria-label="Move left a little">◀</button>
+                    <button class="piece-editor__arrow" type="button" data-arrange="nudge-right" aria-label="Move right a little">▶</button>
+                    <button class="piece-editor__arrow" type="button" data-arrange="nudge-down" aria-label="Move down a little">▼</button>
+                </div>
             </div>
-            <p class="piece-editor__tip">Hold it with one finger and pinch with another to resize or turn it.</p>
+            <p class="piece-editor__tip">Drag it to move it. With two fingers, pinch to resize or twist to turn.</p>
             ${selected && assetFor(selected.asset_id)?.tint ? html`
                 <div class="arrange-bar__fabrics" role="group" aria-label="Fabric colour">
                     <button class="arrange-bar__fabric arrange-bar__fabric--own ${fabricFor(selected) ? "" : "is-current"}" type="button" data-fabric="" title="Its own colours" aria-label="Its own colours"></button>
@@ -716,7 +1241,40 @@ function placeEditor() {
             ? room.querySelector(`[data-decor-id="${selectedId}"]`)
             : selectedBuiltIn ? room.querySelector(".is-built-in-selected") : null;
 
-    if (target) {
+    // A short screen (a phone held sideways): a slim bar docked at
+    // the top, or at the bottom when the piece is up high, beside
+    // the panel, so the piece and the floor under it stay in view.
+    const docked =
+        window.innerHeight <= 540;
+
+    editor.classList.toggle("piece-editor--docked", docked);
+
+    if (target && docked) {
+
+        const box =
+            target.getBoundingClientRect();
+
+        const panel =
+            bar && bar.dataset.folded !== "true" ? bar.getBoundingClientRect() : null;
+
+        const from =
+            panel && panel.left < window.innerWidth / 2 ? panel.right + 8 : 8;
+
+        const to =
+            panel && panel.left >= window.innerWidth / 2 ? panel.left - 8 : window.innerWidth - 8;
+
+        const width =
+            Math.min(editor.offsetWidth, to - from);
+
+        const high =
+            box.top + box.height / 2 < window.innerHeight * 0.45;
+
+        editor.style.left = `${Math.round(from + (to - from - width) / 2)}px`;
+        editor.style.top = high ? `${Math.round(window.innerHeight - editor.offsetHeight - 8)}px` : "8px";
+
+    }
+
+    else if (target) {
 
         const box =
             target.getBoundingClientRect();
@@ -766,22 +1324,41 @@ function saveSoon(piece) {
 
         pendingSaves.set(piece.id, debounce(async (latest) => {
 
+            const values = () => ({
+                decoration_type: latest.decoration_type,
+                room_area: latest.room_area,
+                position_x: latest.position_x,
+                position_y: latest.position_y,
+                scale: latest.scale,
+                rotation: latest.rotation,
+                z_index: latest.z_index
+            });
+
             try {
 
-                await updateRow("decorations", latest.id, {
-                    decoration_type: latest.decoration_type,
-                    room_area: latest.room_area,
-                    position_x: latest.position_x,
-                    position_y: latest.position_y,
-                    scale: latest.scale,
-                    rotation: latest.rotation,
-                    z_index: latest.z_index
-                });
+                await updateRow("decorations", latest.id, values());
 
             }
 
             catch (error) {
-                toastError(error, "That decoration didn't save. Please try again.");
+
+                if (!isHeightRefused(error)) {
+                    toastError(error, "That decoration didn't save. Please try again.");
+                    return;
+                }
+
+                // Save it as high as the database allows for now.
+                wholeWall = false;
+                adjust(latest, {});
+
+                try {
+                    await updateRow("decorations", latest.id, values());
+                }
+
+                catch (again) {
+                    toastError(again, "That decoration didn't save. Please try again.");
+                }
+
             }
 
         }, 500));
@@ -857,8 +1434,8 @@ function spotInView() {
     ];
 
     const area =
-        tries.map(([x, y]) => areaAt(x, y)).find(Boolean)
-        || Object.keys(AREAS).find((name) => layerShown(name));
+        tries.map(([x, y]) => areaAt(x, y)).find((name) => name && name !== "bookcase_top")
+        || ["wall", "shelf"].find((name) => layerShown(name));
 
     if (!area) {
         return null;
@@ -890,27 +1467,99 @@ function spotInView() {
     bookcase, say) is kept to its edge.
 */
 
-function positionIn(area, pointX, pointY) {
+/*
+    The part of the screen each area takes pieces in. The top of
+    the bookcase is the space just above it; the wall reaches
+    right to the edge of the room, under a phone's rounded
+    corners too.
+*/
+// A spot moved down onto the floor (for rugs): the floor's
+// middle, or lower if it was dropped lower.
+function onFloor(spot) {
+
+    const floor =
+        room.querySelector(".room-floorboards, .room-floor")?.getBoundingClientRect();
+
+    if (!floor) {
+        return spot;
+    }
+
+    const lowest =
+        Math.min(window.innerHeight - 12, floor.bottom - 10);
+
+    return { ...spot, area: "wall", y: clamp(spot.y, floor.top + Math.min(40, floor.height / 2), lowest) };
+
+}
+
+// How much deeper than usual the floor runs (the room view).
+function floorLift() {
+    const box = room.getBoundingClientRect();
+    const zone = room.querySelector(".journal-zone")?.getBoundingClientRect();
+    return zone ? Math.max(0, box.bottom - zone.bottom) : 0;
+}
+
+function areaBox(area) {
 
     const zone =
         room.querySelector(AREAS[area]).getBoundingClientRect();
+
+    if (area === "bookcase_top") {
+        // Up to the ceiling (at least TOP_SPAN).
+        const ceiling = room.getBoundingClientRect().top;
+        const reach = Math.max(TOP_SPAN * caseZoom(), wholeWall ? zone.top - ceiling : 0);
+        return { left: zone.left, right: zone.right, top: zone.top - reach, bottom: zone.top + 6 * caseZoom() };
+    }
+
+    if (area === "wall") {
+        return { left: zone.left, right: room.getBoundingClientRect().right, top: zone.top, bottom: zone.bottom + floorLift() };
+    }
+
+    return { left: zone.left, right: zone.right, top: zone.top, bottom: zone.bottom };
+
+}
+
+
+function positionIn(area, pointX, pointY) {
+
+    const zone =
+        areaBox(area);
 
     const x =
         clamp(pointX, zone.left + 8, zone.right - 8);
 
     const y =
-        clamp(pointY, zone.top + 8, zone.bottom - 28);
+        area === "bookcase_top"
+            ? clamp(pointY, zone.top, zone.bottom)
+            : clamp(pointY, zone.top + 8, zone.bottom - 28);
 
     const box =
         layerFor(area).getBoundingClientRect();
+
+    if (area === "bookcase_top") {
+        return {
+            position_x: Number(clamp(((x - box.left) / box.width) * 100, 0, 100).toFixed(2)),
+            position_y: Number(clamp(((box.top - y) / (TOP_SPAN * caseZoom())) * 100, ...heightRange(area)).toFixed(2))
+        };
+    }
 
     // On the bookcase, pixels on screen are scaled pixels.
     const height =
         area === "shelf" ? SHELF_SPAN * caseZoom() : box.height;
 
+    // Below the wall, out on a deep floor.
+    const lift =
+        area === "wall" ? floorLift() : 0;
+
+    if (lift > 0 && y > box.bottom) {
+        return {
+            position_x: Number(clamp(((x - box.left) / box.width) * 100, 0, 100).toFixed(2)),
+            position_y: Number(clamp(100 + ((y - box.bottom) / lift) * 100, ...heightRange(area)).toFixed(2))
+        };
+    }
+
     return {
         position_x: Number(clamp(((x - box.left) / box.width) * 100, 0, 100).toFixed(2)),
-        position_y: Number(clamp(((y - box.top) / height) * 100, 0, 100).toFixed(2))
+        position_y: Number(clamp(((y - box.top) / height) * 100, ...heightRange(area)).toFixed(2))
     };
 
 }
@@ -928,18 +1577,30 @@ async function addPiece(assetId, spot = spotInView()) {
         return;
     }
 
+    // A rug lies on the floor, wherever it was dropped.
+    if (assetFor(assetId)?.floor) {
+        spot = onFloor(spot);
+    }
+
     try {
 
+        const row = () => ({
+            asset_id: assetId,
+            decoration_type: assetId.startsWith("frame-") ? "frame" : "ornament",
+            room_area: spot.area,
+            theme,
+            ...positionIn(spot.area, spot.x, spot.y),
+            scale: 1,
+            rotation: 0,
+            z_index: assetFor(assetId)?.floor ? 0 : Math.min(50, pieces.reduce((top, piece) => Math.max(top, piece.z_index), 0) + 1)
+        });
+
         const saved =
-            await createRow("decorations", {
-                asset_id: assetId,
-                decoration_type: assetId.startsWith("frame-") ? "frame" : "ornament",
-                room_area: spot.area,
-                theme,
-                ...positionIn(spot.area, spot.x, spot.y),
-                scale: 1,
-                rotation: 0,
-                z_index: Math.min(50, pieces.reduce((top, piece) => Math.max(top, piece.z_index), 0) + 1)
+            await createRow("decorations", row()).catch((error) => {
+                if (!isHeightRefused(error)) throw error;
+                // As high as the database allows for now (sql/wall.sql).
+                wholeWall = false;
+                return createRow("decorations", row());
             });
 
         pieces.push({
@@ -949,6 +1610,9 @@ async function addPiece(assetId, spot = spotInView()) {
             scale: Number(saved.scale),
             rotation: Number(saved.rotation)
         });
+
+        remember({ kind: "add", row: { ...pieces[pieces.length - 1] } });
+        rememberUsed(assetId);
 
         selectedId = saved.id;
 
@@ -961,6 +1625,8 @@ async function addPiece(assetId, spot = spotInView()) {
 
         element?.classList.add("is-new");
 
+        settle(pieces[pieces.length - 1]);
+
     }
 
     catch (error) {
@@ -970,7 +1636,244 @@ async function addPiece(assetId, spot = spotInView()) {
 }
 
 
-async function removePiece(piece) {
+/* =========================================================
+   UNDO AND REDO
+   Each change to a piece is remembered while arranging: what
+   it was before and after. Undo puts it back; redo does it
+   again. Taking a piece out and undoing puts it back as a new
+   row, so later steps follow it by its new id.
+========================================================= */
+
+const KEPT = ["room_area", "position_x", "position_y", "scale", "rotation", "z_index", "decoration_type"];
+
+const history = { done: [], undone: [] };
+
+// A removed piece that was put back has a new id.
+const renamed = new Map();
+
+const idNow = (id) => {
+    while (renamed.has(id)) id = renamed.get(id);
+    return id;
+};
+
+const pieceById = (id) =>
+    pieces.find((item) => item.id === idNow(id));
+
+function snapshot(piece) {
+    return Object.fromEntries(KEPT.map((key) => [key, piece[key]]));
+}
+
+const same = (a, b) =>
+    KEPT.every((key) => a[key] === b[key]);
+
+let lastMark = null;
+
+/*
+    Remembers a change to a piece. Quick repeats of the same
+    kind of change (tapping + four times, holding an arrow key)
+    become one step.
+*/
+function remember(entry, mergeKey = null) {
+
+    const now = Date.now();
+
+    const top =
+        history.done[history.done.length - 1];
+
+    if (mergeKey && top && lastMark && lastMark.key === mergeKey && now - lastMark.at < 1200 && top.kind === "change" && idNow(top.id) === idNow(entry.id)) {
+        top.after = entry.after;
+    }
+
+    else {
+        history.done.push(entry);
+        if (history.done.length > 80) history.done.shift();
+    }
+
+    lastMark = mergeKey ? { key: mergeKey, at: now } : null;
+
+    history.undone.length = 0;
+
+    drawHistory();
+
+}
+
+function changePiece(piece, change, mergeKey = null) {
+
+    const before =
+        snapshot(piece);
+
+    adjust(piece, change);
+
+    const after =
+        snapshot(piece);
+
+    if (!same(before, after)) {
+        remember({ kind: "change", id: piece.id, before, after }, mergeKey);
+    }
+
+}
+
+function applyState(id, state) {
+
+    const piece =
+        pieceById(id);
+
+    if (!piece) {
+        return;
+    }
+
+    Object.assign(piece, state);
+
+    draw();
+    select(piece.id);
+    saveSoon(piece);
+
+}
+
+async function putBack(row) {
+
+    const values = {
+        asset_id: row.asset_id,
+        decoration_type: row.decoration_type,
+        room_area: row.room_area,
+        theme: row.theme,
+        position_x: row.position_x,
+        position_y: row.position_y,
+        scale: row.scale,
+        rotation: row.rotation,
+        z_index: row.z_index
+    };
+
+    const saved =
+        await createRow("decorations", values);
+
+    const piece = {
+        ...saved,
+        position_x: Number(saved.position_x),
+        position_y: Number(saved.position_y),
+        scale: Number(saved.scale),
+        rotation: Number(saved.rotation)
+    };
+
+    renamed.set(idNow(row.id), piece.id);
+
+    pieces.push(piece);
+
+    draw();
+    select(piece.id);
+
+    return piece;
+
+}
+
+let historyBusy = false;
+
+async function step(direction) {
+
+    const from =
+        direction === "undo" ? history.done : history.undone;
+
+    const to =
+        direction === "undo" ? history.undone : history.done;
+
+    const entry =
+        from.pop();
+
+    if (!entry || historyBusy) {
+        if (entry) from.push(entry);
+        return;
+    }
+
+    historyBusy = true;
+    lastMark = null;
+
+    try {
+
+        if (entry.kind === "change") {
+            applyState(entry.id, direction === "undo" ? entry.before : entry.after);
+        }
+
+        // Undoing an added piece takes it away; redoing puts it back.
+        else if ((entry.kind === "add") === (direction === "undo")) {
+            const piece = pieceById(entry.row.id);
+            if (piece) {
+                entry.row = { ...piece };
+                await removePiece(piece, { remembered: false });
+            }
+        }
+
+        else {
+            await putBack(entry.row);
+        }
+
+        to.push(entry);
+
+    }
+
+    catch (error) {
+        toastError(error, "That couldn't be undone. Please try again.");
+    }
+
+    finally {
+        historyBusy = false;
+        drawHistory();
+    }
+
+}
+
+const undo = () => step("undo");
+const redo = () => step("redo");
+
+function forgetHistory() {
+    history.done.length = 0;
+    history.undone.length = 0;
+    renamed.clear();
+    lastMark = null;
+    drawHistory();
+}
+
+
+// The Undo and Redo buttons, floating over the room while arranging.
+let historyBar = null;
+
+function drawHistory() {
+
+    if (!arranging) {
+        historyBar?.remove();
+        historyBar = null;
+        return;
+    }
+
+    if (!historyBar) {
+
+        document.body.insertAdjacentHTML("beforeend", `
+            <div class="arrange-history" role="group" aria-label="Undo and redo">
+                <button class="icon-button" type="button" data-history="undo" aria-label="Undo" title="Undo (Ctrl+Z)">↶</button>
+                <button class="icon-button" type="button" data-history="redo" aria-label="Redo" title="Redo (Ctrl+Shift+Z)">↷</button>
+            </div>
+        `);
+
+        historyBar = document.body.lastElementChild;
+
+        historyBar.addEventListener("click", (event) => {
+            const which = event.target.closest("[data-history]")?.dataset.history;
+            if (which === "undo") undo();
+            if (which === "redo") redo();
+        });
+
+    }
+
+    historyBar.querySelector("[data-history=undo]").disabled = !history.done.length;
+    historyBar.querySelector("[data-history=redo]").disabled = !history.undone.length;
+
+}
+
+
+async function removePiece(piece, { remembered = true } = {}) {
+
+    if (remembered) {
+        remember({ kind: "remove", row: { ...piece } });
+    }
 
     pieces = pieces.filter((item) => item.id !== piece.id);
 
@@ -997,7 +1900,7 @@ function adjust(piece, change) {
     piece.rotation = Number(clamp(piece.rotation, -180, 180).toFixed(1));
     piece.z_index = clamp(Math.round(piece.z_index), 0, 50);
     piece.position_x = Number(clamp(piece.position_x, 0, 100).toFixed(2));
-    piece.position_y = Number(clamp(piece.position_y, 0, 100).toFixed(2));
+    piece.position_y = Number(clamp(piece.position_y, ...heightRange(piece.room_area)).toFixed(2));
 
     const element =
         room.querySelector(`[data-decor-id="${piece.id}"]`);
@@ -1011,6 +1914,76 @@ function adjust(piece, change) {
     }
 
     saveSoon(piece);
+
+}
+
+
+/*
+    Letting go of a piece just above a shelf, the top of the
+    bookcase, the window sill or the floor sets it down on it,
+    rather than leaving it hovering. Pieces on top of the
+    bookcase always rest on it. Rugs lie wherever they're put.
+*/
+
+const SETTLE_REACH = 26;
+
+function settle(piece) {
+
+    const asset =
+        assetFor(piece.asset_id);
+
+    const element =
+        room.querySelector(`[data-decor-id="${piece.id}"]`);
+
+    if (!asset || asset.floor || !element) {
+        return;
+    }
+
+    const bottom =
+        element.getBoundingClientRect().bottom;
+
+    const tops = [];
+
+    if (piece.room_area === "bookcase_top") {
+        tops.push(room.querySelector(AREAS.bookcase_top).getBoundingClientRect().top + 3);
+    }
+
+    else if (piece.room_area === "shelf") {
+        room.querySelectorAll(".bookcase .shelf-board").forEach((board) => tops.push(board.getBoundingClientRect().top + 2));
+    }
+
+    else {
+        const sill = room.querySelector(".window-sill");
+        if (sill && sill.offsetParent) tops.push(sill.getBoundingClientRect().top + 3);
+        const floor = room.querySelector(".room-floor");
+        if (floor) tops.push(floor.getBoundingClientRect().top + 8);
+    }
+
+    // The nearest surface just below (or a touch above) the piece.
+    const target = tops
+        .filter((top) => top - bottom <= (piece.room_area === "bookcase_top" ? SETTLE_REACH * 2.5 : SETTLE_REACH) && bottom - top <= 10)
+        .sort((a, b) => Math.abs(a - bottom) - Math.abs(b - bottom))[0];
+
+    if (target === undefined) {
+        return;
+    }
+
+    const shift =
+        target - bottom;
+
+    if (Math.abs(shift) < 0.5) {
+        return;
+    }
+
+    const span =
+        piece.room_area === "bookcase_top" ? -TOP_SPAN * caseZoom()
+            : piece.room_area === "shelf" ? SHELF_SPAN * caseZoom()
+            : layerFor(piece.room_area).getBoundingClientRect().height;
+
+    element.classList.add("is-settling");
+    window.setTimeout(() => element.classList.remove("is-settling"), 260);
+
+    adjust(piece, { position_y: piece.position_y + (shift / span) * 100 });
 
 }
 
@@ -1072,16 +2045,16 @@ function onBarClick(event) {
         return;
     }
 
-    if (paletteGroup === "room" && onRoomPanelClick(event)) {
+    if ((isRoomTab(paletteGroup) || paletteGroup === "rugs") && onRoomPanelClick(event)) {
 
         // Redraw, keeping the panel where it was scrolled to.
         const scrolled =
-            bar.querySelector(".arrange-bar__room")?.scrollTop || 0;
+            bar.querySelector(".arrange-bar__room, .arrange-bar__palette")?.scrollTop || 0;
 
         drawBar();
 
         const panel =
-            bar.querySelector(".arrange-bar__room");
+            bar.querySelector(".arrange-bar__room, .arrange-bar__palette");
 
         if (panel) {
             panel.scrollTop = scrolled;
@@ -1128,6 +2101,13 @@ function onBarClick(event) {
         return;
     }
 
+    if (action === "picture") {
+        select(null);
+        selectBuiltIn(null);
+        takeRoomPicture();
+        return;
+    }
+
     if (action === "side") {
         setTraySide(bar.dataset.side === "left" ? "right" : "left");
         drawBar();
@@ -1152,7 +2132,11 @@ function onBarClick(event) {
 
         if (tinted) {
 
+            const before = snapshot(tinted);
+
             tinted.decoration_type = fabricButton.dataset.fabric ? `tint:${fabricButton.dataset.fabric}` : "ornament";
+
+            remember({ kind: "change", id: tinted.id, before, after: snapshot(tinted) });
 
             draw();
             drawBar();
@@ -1185,7 +2169,17 @@ function onBarClick(event) {
         return;
     }
 
-    adjust(piece, changes[action]);
+    if (action === "duplicate") {
+        duplicate(piece);
+        return;
+    }
+
+    if (NUDGES[action]) {
+        changePiece(piece, nudge(piece, NUDGES[action]), `nudge:${action}`);
+        return;
+    }
+
+    changePiece(piece, changes[action], `edit:${action}`);
 
 }
 
@@ -1290,6 +2284,19 @@ function onPointerDown(event) {
         return;
     }
 
+    // While arranging, the rug can be dragged across the floor.
+    if (arranging && event.button <= 0 && event.target.closest(".room-rug") && !event.target.closest(".placed-decor")) {
+
+        if (selectedId) {
+            select(null);
+        }
+
+        dragRug(event);
+
+        return;
+
+    }
+
     // While arranging, the window can be dragged along the wall.
     if (arranging && event.button <= 0 && event.target.closest(".moon-window") && !event.target.closest(".placed-decor")) {
 
@@ -1345,9 +2352,30 @@ function onPointerDown(event) {
 
     event.preventDefault();
 
-    select(piece.id);
+    // A piece moves only once it's been picked: the first touch
+    // just selects it, so nothing else gets bumped by accident.
+    if (selectedId !== piece.id) {
+        select(piece.id);
+        return;
+    }
 
     element.classList.remove("is-new");
+
+    const before =
+        snapshot(piece);
+
+    // Where on the piece it was taken hold of, so it doesn't jump
+    // to put its middle under the finger.
+    const box =
+        element.getBoundingClientRect();
+
+    const grip = {
+        x: event.clientX - (box.left + box.width / 2),
+        y: event.clientY - (box.top + box.height / 2)
+    };
+
+    // It only starts moving once the finger really moves.
+    let moved = false;
 
     element.setPointerCapture(event.pointerId);
     element.classList.add("is-dragging");
@@ -1361,8 +2389,15 @@ function onPointerDown(event) {
 
     const place = () => {
 
+        const x =
+            pointer.x - grip.x;
+
+        // A rug stays down on the floor.
+        const y =
+            assetFor(piece.asset_id)?.floor ? onFloor({ y: pointer.y - grip.y }).y : pointer.y - grip.y;
+
         const area =
-            areaAt(pointer.x, pointer.y) || piece.room_area;
+            areaAt(x, y) || piece.room_area;
 
         const layer =
             layerFor(area);
@@ -1388,12 +2423,13 @@ function onPointerDown(event) {
 
         }
 
-        adjust(piece, positionIn(area, pointer.x, pointer.y));
+        adjust(piece, positionIn(area, x, y));
 
     };
 
     // The second finger, while it's down.
     let pinch = null;
+    let pinched = false;
 
     const spread = () =>
         Math.hypot(pinch.x - pointer.x, pinch.y - pointer.y);
@@ -1410,6 +2446,7 @@ function onPointerDown(event) {
         downEvent.preventDefault();
 
         pinch = { id: downEvent.pointerId, x: downEvent.clientX, y: downEvent.clientY };
+        pinched = true;
         pinch.spread = Math.max(20, spread());
         pinch.angle = angle();
         pinch.scale = piece.scale;
@@ -1425,8 +2462,16 @@ function onPointerDown(event) {
         }
 
         else if (moveEvent.pointerId === event.pointerId) {
+
+            if (!moved && Math.hypot(moveEvent.clientX - event.clientX, moveEvent.clientY - event.clientY) < 5) {
+                return;
+            }
+
+            moved = true;
+
             pointer.x = moveEvent.clientX;
             pointer.y = moveEvent.clientY;
+
         }
 
         else {
@@ -1456,7 +2501,7 @@ function onPointerDown(event) {
 
     const stopScrolling =
         autoScroll(pointer, () => {
-            if (!pinch) {
+            if (!pinch && moved) {
                 place();
             }
         });
@@ -1488,6 +2533,17 @@ function onPointerDown(event) {
         window.removeEventListener("pointermove", move);
         window.removeEventListener("pointerup", stop);
         window.removeEventListener("pointercancel", stop);
+
+        if (moved || pinched) {
+            settle(piece);
+        }
+
+        const after =
+            snapshot(piece);
+
+        if (!same(before, after)) {
+            remember({ kind: "change", id: piece.id, before, after });
+        }
 
         drawEditor();
 
@@ -1555,7 +2611,7 @@ function onPalettePointerDown(event) {
         ghost = document.createElement("div");
         ghost.className = "decor-ghost";
         ghost.style.width = `${asset.width}px`;
-        ghost.innerHTML = `<svg viewBox="${asset.box}" aria-hidden="true"><use href="#${asset.id}"></use></svg>`;
+        ghost.innerHTML = artMarkup(asset);
         document.body.appendChild(ghost);
 
         bar.classList.add("is-dragging");
@@ -1706,7 +2762,7 @@ function areaAt(x, y) {
         }
 
         const box =
-            room.querySelector(AREAS[area]).getBoundingClientRect();
+            areaBox(area);
 
         return x >= box.left && x <= box.right && y >= box.top && y <= box.bottom;
 
@@ -1729,6 +2785,19 @@ function onKeyDown(event) {
         return;
     }
 
+    // Undo and redo, wherever the focus is (but not while typing).
+    if ((event.ctrlKey || event.metaKey) && !event.target.closest?.("input, textarea")) {
+
+        const key = event.key.toLowerCase();
+
+        if (key === "z" || key === "y") {
+            event.preventDefault();
+            (key === "y" || event.shiftKey) ? redo() : undo();
+            return;
+        }
+
+    }
+
     if (!element) {
         return;
     }
@@ -1742,8 +2811,9 @@ function onKeyDown(event) {
     const moves = {
         ArrowLeft: { position_x: piece.position_x - step },
         ArrowRight: { position_x: piece.position_x + step },
-        ArrowUp: { position_y: piece.position_y - step },
-        ArrowDown: { position_y: piece.position_y + step },
+        // On top of the bookcase, up is further from its edge.
+        ArrowUp: { position_y: piece.position_y + (piece.room_area === "bookcase_top" ? step : -step) },
+        ArrowDown: { position_y: piece.position_y - (piece.room_area === "bookcase_top" ? step : -step) },
         "+": { scale: piece.scale + 0.1 },
         "=": { scale: piece.scale + 0.1 },
         "-": { scale: piece.scale - 0.1 },
@@ -1760,7 +2830,7 @@ function onKeyDown(event) {
     if (moves[event.key]) {
         event.preventDefault();
         select(piece.id);
-        adjust(piece, moves[event.key]);
+        changePiece(piece, moves[event.key], `key:${event.key}`);
     }
 
 }
@@ -1778,6 +2848,7 @@ export function setArranging(on) {
         selectedId = null;
         selectedBuiltIn = null;
         trayFolded = false;
+        forgetHistory();
         room.querySelectorAll(".is-built-in-selected").forEach((element) => element.classList.remove("is-built-in-selected"));
     }
 
@@ -1798,6 +2869,8 @@ export function setArranging(on) {
     }
 
     draw();
+
+    drawHistory();
 
     if (on) {
         bar?.querySelector("[data-add-decor]")?.focus();

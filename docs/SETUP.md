@@ -36,6 +36,15 @@ whole file into the editor and select **Run**:
    → `site_updates`; read notes in `reader_notes`, where you can set a
    `status` (seen, planned, done, not_planned) and a `reply` that the
    reader sees.
+7. `sql/notes-inbox.sql`: the Novellow account's notes inbox. First
+   create an account on the site with novellow.contact@gmail.com and
+   confirm it, then run this file. It makes that account the one that
+   sees every reader's note on About Novellow. It's safe to run again.
+8. `sql/public.sql`: who can visit a library (only me, friends, or
+   everyone aged 18 and over), the public library page, and reporting,
+   blocking and hiding. It's safe to run again.
+9. `sql/wall.sql`: lets decorations sit anywhere on the wall, up to the
+   ceiling and out across the floor. It's safe to run again.
 
 Each should finish with "Success. No rows returned". If one shows an
 error, stop there and send me the message.
