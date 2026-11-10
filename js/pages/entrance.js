@@ -6,6 +6,7 @@
    email confirmation / reset links.
 ========================================================= */
 
+import "../core/offline.js?v=__VERSION__";
 import { isConfigured } from "../core/supabase.js?v=__VERSION__";
 
 import {
@@ -16,7 +17,10 @@ import {
     updatePassword,
     onPasswordRecovery,
     afterSignInUrl,
-    recordEmailLinkSignIn
+    resendConfirmation,
+    recordEmailLinkSignIn,
+    verifyEmailLink,
+    EMAIL_LINK_TYPES
 } from "../core/auth.js?v=__VERSION__";
 
 import { loadSprite } from "../core/art.js?v=__VERSION__";
@@ -28,6 +32,7 @@ import { growIvy } from "../room/ivy.js?v=__VERSION__";
 
 const note = $("#authNote");
 const errorLine = $("#authError");
+const resendButton = $("#resendConfirmation");
 const title = $("#authTitle");
 const subtitle = $("#authSubtitle");
 const switcher = $("#authSwitch");
@@ -58,12 +63,20 @@ const COPY = {
     }
 };
 
-let recovering = queryParam("reset") === "1";
+// A link from one of Novellow's own emails carries a one-time
+// code (token_hash) and what it's for (type).
+const linkCode =
+    queryParam("token_hash");
+
+const linkType =
+    EMAIL_LINK_TYPES.includes(queryParam("type")) ? queryParam("type") : null;
+
+let recovering = queryParam("reset") === "1" || linkType === "recovery";
 
 // Read before Supabase tidies the address bar: did the reader
 // arrive through a confirmation / reset email link?
 const arrivedByEmailLink =
-    /access_token=/.test(window.location.hash);
+    /access_token=/.test(window.location.hash) || Boolean(linkCode && linkType);
 
 
 /* =========================================================
@@ -90,6 +103,8 @@ function clearMessages() {
 
     showNote("");
     showError("");
+
+    resendButton.hidden = true;
 
     $all("[aria-invalid]").forEach((field) => field.removeAttribute("aria-invalid"));
 
@@ -352,6 +367,36 @@ forms["sign-in"].addEventListener("submit", async (event) => {
 
             showError(error.userMessage || friendlyAuthError(error));
 
+            // Not confirmed yet: offer to send the email again.
+            resendButton.hidden =
+                !(error.cause?.code === "email_not_confirmed" || /email not confirmed/i.test(error.cause?.message || ""));
+
+        }
+
+    });
+
+});
+
+
+resendButton.addEventListener("click", async () => {
+
+    const email =
+        forms["sign-in"].elements.email.value.trim();
+
+    await withBusy(resendButton, "Sending…", async () => {
+
+        try {
+
+            await resendConfirmation(email);
+
+            clearMessages();
+
+            showNote(`A new confirmation email is on its way to ${email}. It comes from hello@novellow.com; check your spam folder if you don't see it in a few minutes.`);
+
+        }
+
+        catch (error) {
+            showError(error.userMessage || friendlyAuthError(error));
         }
 
     });
@@ -582,10 +627,53 @@ async function start() {
         setMode("reset");
     }
 
+    // Trade an email link's one-time code for a session, then tidy
+    // the code out of the address bar (it only works once).
+    let linkFailed = false;
+
+    if (linkCode && linkType) {
+
+        try {
+            await verifyEmailLink(linkCode, linkType);
+        }
+
+        catch (error) {
+            console.error(error);
+            linkFailed = true;
+        }
+
+        const tidy =
+            new URL(window.location.href);
+
+        ["token_hash", "type"].forEach((name) => tidy.searchParams.delete(name));
+
+        if (linkType === "signup" || linkType === "email") {
+            tidy.searchParams.set("confirmed", "1");
+        }
+
+        window.history.replaceState(null, "", tidy);
+
+    }
+
     try {
 
         const session =
             await getSession();
+
+        if (linkFailed && !session) {
+
+            if (recovering) {
+                setMode("forgot");
+                showError("That reset link has expired or was already used. Request a new one below.");
+            }
+
+            else {
+                showError("That link has expired or was already used. Sign in, or request a new link.");
+            }
+
+            return;
+
+        }
 
         if (session && arrivedByEmailLink) {
             await recordEmailLinkSignIn();

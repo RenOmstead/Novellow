@@ -14,7 +14,10 @@ VERSION="${SHA::8}"
 
 rm -rf _site
 mkdir -p _site
-cp -r *.html manifest.webmanifest css js assets _site/
+cp -r *.html manifest.webmanifest sw.js css js assets _site/
+
+# The Android app's link to the site (docs/APP-STORES.md), once it exists.
+if [ -d .well-known ]; then cp -r .well-known _site/; fi
 
 find _site -type f \( -name '*.html' -o -name '*.css' -o -name '*.js' -o -name '*.svg' \) \
     -exec sed -i "s/__VERSION__/${VERSION}/g" {} +

@@ -129,7 +129,7 @@ function watchAuthChanges() {
 ========================================================= */
 
 // The date the Terms of Use and Privacy Policy last changed.
-export const TERMS_VERSION = "2026-09-28";
+export const TERMS_VERSION = "2026-11-09";
 
 
 export async function signUp({ displayName, email, password }) {
@@ -191,6 +191,23 @@ export async function signIn({ email, password }) {
 }
 
 
+// For a reader whose confirmation email never arrived.
+export async function resendConfirmation(email) {
+
+    const { error } =
+        await supabase.auth.resend({
+            type: "signup",
+            email,
+            options: { emailRedirectTo: appUrl("index.html?confirmed=1") }
+        });
+
+    if (error) {
+        throw new NovellowError(friendlyAuthError(error), error);
+    }
+
+}
+
+
 export function afterSignInUrl() {
 
     const next =
@@ -227,6 +244,30 @@ export async function updatePassword(password) {
     if (error) {
         throw new NovellowError(friendlyAuthError(error), error);
     }
+
+}
+
+
+/*
+    A link from one of Novellow's emails (js/pages/entrance.js):
+    index.html?token_hash=…&type=signup|recovery|email_change|
+    magiclink. The link goes straight to novellow.com, and the app
+    trades the one-time code for a signed-in session here.
+*/
+
+export const EMAIL_LINK_TYPES =
+    ["signup", "recovery", "email_change", "magiclink", "invite", "email"];
+
+export async function verifyEmailLink(tokenHash, type) {
+
+    const { data, error } =
+        await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
+
+    if (error) {
+        throw new NovellowError(friendlyAuthError(error), error);
+    }
+
+    return data.session;
 
 }
 
