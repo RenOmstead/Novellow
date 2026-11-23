@@ -116,7 +116,26 @@ export const WALLPAPERS = [
     { id: "wine-damask", name: "Worn wine damask", wall: ["#5b3132", "#6a3a3b", "#703d3e"], src: "assets/wallpapers/wine_damask.webp", pattern: `url("../assets/wallpapers/wine_damask.webp?v=__VERSION__")`, size: "581px 595px" },
     { id: "cobweb-grey", name: "Cobwebs", wall: ["#746461", "#887571", "#907c77"], src: "assets/wallpapers/cobweb_grey.webp", pattern: `url("../assets/wallpapers/cobweb_grey.webp?v=__VERSION__")`, size: "292px 298px" },
     { id: "bat-stripe", name: "Bat stripes", wall: ["#302b27", "#38322e", "#3b3530"], src: "assets/wallpapers/bat_stripe.webp", pattern: `url("../assets/wallpapers/bat_stripe.webp?v=__VERSION__")`, size: "178px 240px" },
-    { id: "climbing-roses", name: "Climbing roses", wall: ["#bca78d", "#dbc3a5", "#e8ceae"], src: "assets/wallpapers/climbing_roses.webp", pattern: `url("../assets/wallpapers/climbing_roses.webp?v=__VERSION__")`, size: "581px 595px", light: true }
+    { id: "climbing-roses", name: "Climbing roses", wall: ["#bca78d", "#dbc3a5", "#e8ceae"], src: "assets/wallpapers/climbing_roses.webp", pattern: `url("../assets/wallpapers/climbing_roses.webp?v=__VERSION__")`, size: "581px 595px", light: true },
+
+    // Holiday wallpapers, in a row of their own in the panel
+    // (alphabetical, so no holiday comes first by default).
+    { id: "holiday-christmas-1", name: "Christmas holly and bows", wall: ["#d8cdbb", "#fdf0db", "#fffee7"], src: "assets/wallpapers/holiday_christmas_1.webp", pattern: `url("../assets/wallpapers/holiday_christmas_1.webp?v=__VERSION__")`, size: "150px 150px", holiday: true, light: true },
+    { id: "holiday-christmas-2", name: "Christmas stars and baubles", wall: ["#414a29", "#4c5630", "#505b33"], src: "assets/wallpapers/holiday_christmas_2.webp", pattern: `url("../assets/wallpapers/holiday_christmas_2.webp?v=__VERSION__")`, size: "150px 118px", holiday: true },
+    { id: "holiday-hanukkah-1", name: "Hanukkah dreidels and olives", wall: ["#617d8f", "#7192a7", "#779ab1"], src: "assets/wallpapers/holiday_hanukkah_1.webp", pattern: `url("../assets/wallpapers/holiday_hanukkah_1.webp?v=__VERSION__")`, size: "147px 140px", holiday: true },
+    { id: "holiday-hanukkah-2", name: "Hanukkah stars and olive sprigs", wall: ["#d7cbb5", "#fbeed4", "#fffce0"], src: "assets/wallpapers/holiday_hanukkah_2.webp", pattern: `url("../assets/wallpapers/holiday_hanukkah_2.webp?v=__VERSION__")`, size: "113px 113px", holiday: true, light: true },
+    { id: "holiday-harvest-1", name: "Harvest acorns and oak leaves", wall: ["#d8cfbb", "#fdf2db", "#ffffe7"], src: "assets/wallpapers/holiday_harvest_1.webp", pattern: `url("../assets/wallpapers/holiday_harvest_1.webp?v=__VERSION__")`, size: "145px 143px", holiday: true, light: true },
+    { id: "holiday-harvest-2", name: "Harvest pumpkins and wheat", wall: ["#66303d", "#773847", "#7e3b4b"], src: "assets/wallpapers/holiday_harvest_2.webp", pattern: `url("../assets/wallpapers/holiday_harvest_2.webp?v=__VERSION__")`, size: "195px 147px", holiday: true },
+    { id: "holiday-krampus-1", name: "Krampus bells and bows", wall: ["#5b3940", "#6b434b", "#71474f"], src: "assets/wallpapers/holiday_krampus_1.webp", pattern: `url("../assets/wallpapers/holiday_krampus_1.webp?v=__VERSION__")`, size: "150px 149px", holiday: true },
+    { id: "holiday-krampus-2", name: "Krampus horns and pine", wall: ["#d6cab6", "#faecd5", "#fff9e1"], src: "assets/wallpapers/holiday_krampus_2.webp", pattern: `url("../assets/wallpapers/holiday_krampus_2.webp?v=__VERSION__")`, size: "141px 141px", holiday: true, light: true },
+    { id: "holiday-kwanzaa-1", name: "Kwanzaa diamonds", wall: ["#d7ccb5", "#fcefd4", "#fffde0"], src: "assets/wallpapers/holiday_kwanzaa_1.webp", pattern: `url("../assets/wallpapers/holiday_kwanzaa_1.webp?v=__VERSION__")`, size: "113px 150px", holiday: true, light: true },
+    { id: "holiday-kwanzaa-2", name: "Kwanzaa corn and leaves", wall: ["#d0bca2", "#f3dcbd", "#ffe9c8"], src: "assets/wallpapers/holiday_kwanzaa_2.webp", pattern: `url("../assets/wallpapers/holiday_kwanzaa_2.webp?v=__VERSION__")`, size: "113px 150px", holiday: true, light: true },
+    { id: "holiday-new-year-1", name: "New Year bows and stars", wall: ["#263118", "#2c391c", "#2f3c1e"], src: "assets/wallpapers/holiday_new_year_1.webp", pattern: `url("../assets/wallpapers/holiday_new_year_1.webp?v=__VERSION__")`, size: "149px 140px", holiday: true },
+    { id: "holiday-new-year-2", name: "New Year pocket watches", wall: ["#d8ceba", "#fdf1da", "#ffffe6"], src: "assets/wallpapers/holiday_new_year_2.webp", pattern: `url("../assets/wallpapers/holiday_new_year_2.webp?v=__VERSION__")`, size: "169px 141px", holiday: true, light: true },
+    { id: "holiday-winter-1", name: "Winter snowflakes", wall: ["#865861", "#9d6771", "#a66d77"], src: "assets/wallpapers/holiday_winter_1.webp", pattern: `url("../assets/wallpapers/holiday_winter_1.webp?v=__VERSION__")`, size: "150px 139px", holiday: true },
+    { id: "holiday-winter-2", name: "Winter snowy pines", wall: ["#d8ccb6", "#fdefd5", "#fffde1"], src: "assets/wallpapers/holiday_winter_2.webp", pattern: `url("../assets/wallpapers/holiday_winter_2.webp?v=__VERSION__")`, size: "150px 150px", holiday: true, light: true },
+    { id: "holiday-yule-1", name: "Yule oranges and evergreen", wall: ["#d7cbb7", "#fceed6", "#fffce2"], src: "assets/wallpapers/holiday_yule_1.webp", pattern: `url("../assets/wallpapers/holiday_yule_1.webp?v=__VERSION__")`, size: "113px 150px", holiday: true, light: true },
+    { id: "holiday-yule-2", name: "Yule suns and pinecones", wall: ["#5c323d", "#6c3a47", "#723d4b"], src: "assets/wallpapers/holiday_yule_2.webp", pattern: `url("../assets/wallpapers/holiday_yule_2.webp?v=__VERSION__")`, size: "150px 150px", holiday: true }
 ];
 
 
@@ -333,7 +352,13 @@ export const CASE_FINISHES = [
     { id: "painted-sage", name: "Painted sage", side: ["#2e3a2a", "#a4b48a", "#7e906a"], crown: ["#aebe94", "#86986e", "#66764e"], frieze: ["#7e906a", "#5e6e4c"], back: ["#1e2a1e", "#2c3a2a"], board: ["#b0c094", "#8a9c70", "#64744e"] },
     { id: "painted-plum", name: "Painted plum", side: ["#24101e", "#8a5478", "#6a3a5a"], crown: ["#96607e", "#6e3e5c", "#4e2a42"], frieze: ["#6a3a5a", "#4a2840"], back: ["#1e1018", "#2e1a26"], board: ["#9a6484", "#74425e", "#502c42"] },
     { id: "painted-navy", name: "Painted navy", side: ["#0e1424", "#4a5a84", "#323e62"], crown: ["#526290", "#384670", "#262f4e"], frieze: ["#323e62", "#222a46"], back: ["#0e1220", "#1a2034"], board: ["#5a6a98", "#3e4c78", "#2a3454"] },
-    { id: "painted-black", name: "Black and gold", side: ["#050404", "#3a3226", "#1e1a16"], crown: ["#2e2820", "#1c1814", "#0e0c0a"], frieze: ["#241e18", "#120e0c"], back: ["#0c0a08", "#18140f"], board: ["#3a3226", "#24201a", "#14110e"] }
+    { id: "painted-black", name: "Black and gold", side: ["#050404", "#3a3226", "#1e1a16"], crown: ["#2e2820", "#1c1814", "#0e0c0a"], frieze: ["#241e18", "#120e0c"], back: ["#0c0a08", "#18140f"], board: ["#3a3226", "#24201a", "#14110e"] },
+    // Painted bookcases (css/bookcase.css, PAINTED BOOKCASES); the
+    // colours are for anything drawn rather than painted.
+    { id: "art-walnut-evergreen", name: "Evergreen walnut", art: "walnut-evergreen", side: ["#3a2216", "#8f5335", "#824c31"], crown: ["#5f3525", "#573122", "#45271b"], frieze: ["#49291c", "#3c2217"], back: ["#351f14", "#43271a"], board: ["#905537", "#834e32", "#623a25"] },
+    { id: "art-plum-star", name: "Plum with a star", art: "plum-star", side: ["#31191d", "#7a3e47", "#6f3941"], crown: ["#492326", "#432023", "#35191c"], frieze: ["#381b1d", "#2e1618"], back: ["#392015", "#48291b"], board: ["#7b3d46", "#703840", "#542a30"] },
+    { id: "art-frosted-cream", name: "Frosted cream", art: "frosted-cream", side: ["#6a5c4c", "#ffe2bb", "#ecceaa"], crown: ["#cfa77d", "#bd9872", "#97795b"], frieze: ["#a08160", "#846a4f"], back: ["#3f2316", "#4f2c1c"], board: ["#f8d4ac", "#e2c19d", "#a99075"] },
+    { id: "art-solstice-green", name: "Solstice green", art: "solstice-green", side: ["#2d2d1c", "#6f7046", "#656640"], crown: ["#525332", "#4b4c2e", "#3c3c24"], frieze: ["#3f4027", "#343520"], back: ["#442818", "#55321e"], board: ["#5c603b", "#545836", "#3f4228"] }
 ];
 
 const CASE_VARS = [
@@ -497,6 +522,13 @@ export function applyFixtures(theme = document.documentElement.dataset.theme) {
     }
 
     root.dataset.caseFinish = fixtures.case;
+
+    // A painted bookcase (css/bookcase.css).
+    if (finish?.art) {
+        root.dataset.caseArt = finish.art;
+    } else {
+        delete root.dataset.caseArt;
+    }
 
     // The wallpaper and floor, over the room's own.
     const paper =
@@ -1018,7 +1050,7 @@ function swatchStyle(kind, choice) {
     if (kind === "wallpaper") {
         // A painted wallpaper: its own picture, a little smaller.
         if (choice.src) {
-            return `background: url("${choice.src}?v=__VERSION__") center / 90px auto`;
+            return `background: url("${choice.src}?v=__VERSION__") center / ${choice.holiday ? Math.round(parseFloat(choice.size) * 0.5) : 90}px auto`;
         }
 
         return choice.wall
@@ -1034,6 +1066,10 @@ function swatchStyle(kind, choice) {
         return choice.top
             ? `background: ${choice.pattern ? `${choice.pattern}, ` : ""}repeating-linear-gradient(90deg, ${choice.planks || "rgba(0, 0, 0, 0.2)"} 0 2px, transparent 2px 22px), linear-gradient(${choice.top}, ${choice.bottom})`
             : "";
+    }
+
+    if (kind === "case" && choice.art) {
+        return `background: url("assets/bookcases/${choice.art}/thumb.webp?v=__VERSION__") center / contain no-repeat, #3a2a24`;
     }
 
     if (kind === "case") {
@@ -1059,13 +1095,13 @@ function swatchStyle(kind, choice) {
 }
 
 
-function swatches(kind, label, current) {
+function swatches(kind, label, current, only = () => true) {
 
     return html`
         <fieldset class="room-choices">
             <legend class="room-choices__label">${label}</legend>
             <div class="room-choices__swatches">
-                ${CHOICES[kind].map((choice) => html`
+                ${CHOICES[kind].filter(only).map((choice) => html`
                     <button
                         class="room-swatch ${choice.id === "room" ? "room-swatch--own" : ""} ${choice.id === current ? "is-current" : ""}"
                         type="button"
@@ -1109,6 +1145,24 @@ function chips(kind, label, current) {
 
 // Window shapes and curtains that are pictures show as small
 // pictures; the drawn ones by name.
+// The winter windows are painted with their own view (and some
+// with curtains), so a few of the room's choices don't reach them.
+function windowNote(id) {
+
+    const shape =
+        WINDOW_SHAPES.find((item) => item.id === id);
+
+    if (!shape?.view) {
+        return "";
+    }
+
+    return shape.curtains
+        ? " This one has its own snowy view and curtains, so the view outside, the curtains and the frame wood don't change it."
+        : " This one has its own snowy view, so the view outside and the frame wood don't change it.";
+
+}
+
+
 function pictureTiles(kind, label, current, folder, painted) {
 
     return html`
@@ -1158,7 +1212,10 @@ export function roomSectionMarkup(section) {
     switch (section) {
 
         case "wallpaper":
-            return swatches("wallpaper", "Wallpaper", fixtures.wallpaper);
+            return html`
+                ${swatches("wallpaper", "Wallpaper", fixtures.wallpaper, (choice) => !choice.holiday)}
+                ${swatches("wallpaper", "Holiday wallpaper", fixtures.wallpaper, (choice) => choice.holiday)}
+            `;
 
         case "floor":
             return swatches("floor", "Floor", fixtures.floor);
@@ -1176,7 +1233,7 @@ export function roomSectionMarkup(section) {
             return html`
                 ${pictureTiles("window", "Window", fixtures.window, "assets/decor/windows/", PAINTED_WINDOWS)}
                 ${fixtures.window === "none" ? "" : html`
-                    <p class="room-choices__note">Drag the window in the room to move it.</p>
+                    <p class="room-choices__note">Drag the window in the room to move it.${windowNote(fixtures.window)}</p>
                     ${fixtures.windowX === null || fixtures.windowX === undefined ? "" : html`
                         <button class="text-button room-choices__reset" type="button" data-fixture-action="reset-window">Put the window back in its usual place</button>
                     `}
