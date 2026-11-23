@@ -48,13 +48,23 @@ export const DECOR_GROUPS = [
     { id: "witchy", name: "Witchy" },
     { id: "spooky", name: "Spooky" },
     { id: "haunted", name: "Haunted" },
-    { id: "rugs", name: "Rugs" }
+    { id: "rugs", name: "Rugs" },
+    // The holidays, alphabetical, so none comes first by default.
+    { id: "holiday-christmas", name: "Christmas" },
+    { id: "holiday-hanukkah", name: "Hanukkah" },
+    { id: "holiday-harvest", name: "Harvest" },
+    { id: "holiday-krampus", name: "Krampus" },
+    { id: "holiday-kwanzaa", name: "Kwanzaa" },
+    { id: "holiday-new-year", name: "New Year" },
+    { id: "holiday-winter", name: "Winter" },
+    { id: "holiday-yule", name: "Yule" }
 ];
 
 // The panel's tabs: one for each part of the room. Each opens
 // straight onto everything for that part: the room's own
 // choices (wallpaper, window, curtains…) first, then the pieces
-// that belong there. "icon" is the painted piece on the tab.
+// that belong there. "icon" is the painted piece on the tab
+// (from assets/decor/painted/, or a path under assets/decor/).
 export const DECOR_TABS = [
     { id: "walls", name: "Walls", icon: "ghost_moon_portrait", room: ["wallpaper"], groups: ["pictures", "garlands"], hint: "Wallpaper, pictures and garlands. Each room keeps its own choices." },
     { id: "window", name: "Window", icon: "ivy_arch", room: ["window", "outside"], groups: ["vines", "plants"], hint: "The window, its curtains, the view outside, and ivy and plants." },
@@ -63,7 +73,8 @@ export const DECOR_TABS = [
     { id: "furniture", name: "Furniture", icon: "armchair_plum", room: ["bookcase", "built-in"], groups: ["seating", "tables", "storage"], hint: "The bookcase's wood, then chairs, sofas, tables, cabinets and fireplaces." },
     { id: "tabletop", name: "Tabletop", icon: "pink_teacup", room: [], groups: ["tabletop", "bookish", "treats"], hint: "Cups, teapots, books and treats to set on tables and shelves." },
     { id: "cozy", name: "Cozy", icon: "pumpkin_lantern", room: [], groups: ["cozy", "autumn"], hint: "Cozy touches and autumn things." },
-    { id: "spooky", name: "Spooky", icon: "ghost_candle", room: [], groups: ["witchy", "spooky", "haunted"], hint: "Witchy, spooky and haunted things." }
+    { id: "spooky", name: "Spooky", icon: "ghost_candle", room: [], groups: ["witchy", "spooky", "haunted"], hint: "Witchy, spooky and haunted things." },
+    { id: "holidays", name: "Holidays", icon: "holiday/snowflake", room: [], groups: ["holiday-christmas", "holiday-hanukkah", "holiday-harvest", "holiday-krampus", "holiday-kwanzaa", "holiday-new-year", "holiday-winter", "holiday-yule"], hint: "Pieces for the holidays, from harvest time to the new year. The holiday wallpapers are in Walls." }
 ];
 
 const tabFor = (id) => DECOR_TABS.find((tab) => tab.id === id);
@@ -468,6 +479,7 @@ export const DECOR_ASSETS = [
     { id: "decor-candelabra", box: "0 0 220 220", width: 110, name: "Candelabra", group: "cozy" },
     { id: "decor-lantern", box: "0 0 100 186", width: 48, name: "Lantern", group: "cozy" },
     { id: "scene-cat", box: "0 0 220 160", width: 96, name: "Sleeping cat", group: "cozy" },
+    { id: "scene-dog", box: "0 0 220 160", width: 104, name: "Sleeping dog", group: "cozy" },
     { id: "decor-cat-sitting", box: "0 0 80 104", width: 60, name: "Cat", group: "cozy" },
     { id: "decor-belljar", box: "0 0 100 150", width: 50, name: "Bell jar", group: "cozy" },
     { id: "decor-umbrella-stand", box: "0 0 160 210", width: 80, name: "Umbrella stand", group: "cozy" },
@@ -584,7 +596,79 @@ export const DECOR_ASSETS = [
     // Older pieces, still shown if they were placed before.
     { id: "frame-moth", box: "0 0 80 100", width: 70, name: "Moth frame", group: "retired" },
     { id: "frame-ghost", box: "0 0 70 90", width: 62, name: "Ghost portrait", group: "retired" },
-    { id: "frame-castle", box: "0 0 130 100", width: 100, name: "Castle painting", group: "retired" }
+    { id: "frame-castle", box: "0 0 130 100", width: 100, name: "Castle painting", group: "retired" },
+
+    // Winter rugs (in Floor, with the other rugs).
+    { id: "hol-rug-burgundy-stars", src: "assets/decor/holiday/rug_burgundy_stars.webp", size: [480, 225], width: 270, name: "Burgundy star rug", group: "rugs", floor: true },
+    { id: "hol-rug-winter-plaid", src: "assets/decor/holiday/rug_winter_plaid.webp", size: [480, 164], width: 260, name: "Winter plaid rug", group: "rugs", floor: true },
+    { id: "hol-rug-frosted-snowflake", src: "assets/decor/holiday/rug_frosted_snowflake.webp", size: [480, 277], width: 240, name: "Frosted snowflake rug", group: "rugs", floor: true },
+    { id: "hol-rug-solstice-orange", src: "assets/decor/holiday/rug_solstice_orange.webp", size: [480, 232], width: 270, name: "Solstice orange rug", group: "rugs", floor: true },
+
+    // Holiday pieces (assets/decor/holiday/), in the Holidays tab.
+    { id: "hol-christmas-tree", src: "assets/decor/holiday/christmas_tree.webp", size: [304, 460], width: 170, name: "Christmas tree", group: "holiday-christmas" },
+    { id: "hol-christmas-wreath", src: "assets/decor/holiday/christmas_wreath.webp", size: [424, 460], width: 120, name: "Christmas wreath", group: "holiday-christmas" },
+    { id: "hol-christmas-stocking", src: "assets/decor/holiday/christmas_stocking.webp", size: [241, 460], width: 70, name: "Christmas stocking", group: "holiday-christmas" },
+    { id: "hol-evergreen-garland", src: "assets/decor/holiday/evergreen_garland.webp", size: [560, 164], width: 260, name: "Evergreen garland", group: "holiday-christmas" },
+    { id: "hol-gingerbread-house", src: "assets/decor/holiday/gingerbread_house.webp", size: [444, 460], width: 100, name: "Gingerbread house", group: "holiday-christmas" },
+    { id: "hol-gift-stack", src: "assets/decor/holiday/gift_stack.webp", size: [286, 460], width: 80, name: "Stack of gifts", group: "holiday-christmas" },
+    { id: "hol-cookies-milk", src: "assets/decor/holiday/cookies_milk.webp", size: [460, 362], width: 100, name: "Cookies and milk", group: "holiday-christmas" },
+    { id: "hol-holiday-table-lamp", src: "assets/decor/holiday/holiday_table_lamp.webp", size: [293, 460], width: 80, name: "Holly table lamp", group: "holiday-christmas" },
+    { id: "hol-hanukkah-hanukkiah", src: "assets/decor/holiday/hanukkah_hanukkiah.webp", size: [454, 460], width: 100, name: "Hanukkiah", group: "holiday-hanukkah" },
+    { id: "hol-wooden-dreidel", src: "assets/decor/holiday/wooden_dreidel.webp", size: [317, 460], width: 45, name: "Wooden dreidel", group: "holiday-hanukkah" },
+    { id: "hol-hanukkah-star-hanging", src: "assets/decor/holiday/hanukkah_star_hanging.webp", size: [236, 460], width: 60, name: "Hanging Star of David", group: "holiday-hanukkah" },
+    { id: "hol-sufganiyot-plate", src: "assets/decor/holiday/sufganiyot_plate.webp", size: [460, 352], width: 95, name: "Plate of sufganiyot", group: "holiday-hanukkah" },
+    { id: "hol-latkes-plate", src: "assets/decor/holiday/latkes_plate.webp", size: [460, 338], width: 95, name: "Plate of latkes", group: "holiday-hanukkah" },
+    { id: "hol-gelt-bowl", src: "assets/decor/holiday/gelt_bowl.webp", size: [460, 411], width: 80, name: "Bowl of gelt", group: "holiday-hanukkah" },
+    { id: "hol-hanukkah-candle-box", src: "assets/decor/holiday/hanukkah_candle_box.webp", size: [376, 460], width: 60, name: "Hanukkah candle box", group: "holiday-hanukkah" },
+    { id: "hol-olive-branch-vase", src: "assets/decor/holiday/olive_branch_vase.webp", size: [299, 460], width: 75, name: "Olive branch vase", group: "holiday-hanukkah" },
+    { id: "hol-turkey", src: "assets/decor/holiday/turkey.webp", size: [455, 460], width: 110, name: "Turkey", group: "holiday-harvest" },
+    { id: "hol-pumpkin", src: "assets/decor/holiday/pumpkin.webp", size: [460, 408], width: 85, name: "Harvest pumpkin", group: "holiday-harvest" },
+    { id: "hol-pumpkin-pie", src: "assets/decor/holiday/pumpkin_pie.webp", size: [460, 359], width: 90, name: "Pumpkin pie", group: "holiday-harvest" },
+    { id: "hol-apple-basket", src: "assets/decor/holiday/apple_basket.webp", size: [404, 460], width: 90, name: "Apple basket", group: "holiday-harvest" },
+    { id: "hol-harvest-wreath", src: "assets/decor/holiday/harvest_wreath.webp", size: [430, 460], width: 120, name: "Harvest wreath", group: "holiday-harvest" },
+    { id: "hol-harvest-pitcher", src: "assets/decor/holiday/harvest_pitcher.webp", size: [363, 460], width: 80, name: "Wheat pitcher", group: "holiday-harvest" },
+    { id: "hol-acorn-dish", src: "assets/decor/holiday/acorn_dish.webp", size: [460, 411], width: 75, name: "Acorn dish", group: "holiday-harvest" },
+    { id: "hol-plaid-throw", src: "assets/decor/holiday/plaid_throw.webp", size: [460, 289], width: 110, name: "Plaid throw", group: "holiday-harvest" },
+    { id: "hol-krampus-figurine", src: "assets/decor/holiday/krampus_figurine.webp", size: [310, 460], width: 75, name: "Krampus figurine", group: "holiday-krampus" },
+    { id: "hol-horned-mask", src: "assets/decor/holiday/horned_mask.webp", size: [367, 460], width: 95, name: "Horned mask", group: "holiday-krampus" },
+    { id: "hol-krampus-bell", src: "assets/decor/holiday/krampus_bell.webp", size: [298, 460], width: 55, name: "Krampus bell", group: "holiday-krampus" },
+    { id: "hol-bell-wreath", src: "assets/decor/holiday/bell_wreath.webp", size: [448, 460], width: 120, name: "Bell wreath", group: "holiday-krampus" },
+    { id: "hol-krampus-boot", src: "assets/decor/holiday/krampus_boot.webp", size: [421, 460], width: 75, name: "Krampus boot", group: "holiday-krampus" },
+    { id: "hol-krampus-lantern", src: "assets/decor/holiday/krampus_lantern.webp", size: [259, 460], width: 60, name: "Krampus lantern", group: "holiday-krampus" },
+    { id: "hol-krampus-snowglobe", src: "assets/decor/holiday/krampus_snowglobe.webp", size: [337, 460], width: 70, name: "Krampus snow globe", group: "holiday-krampus" },
+    { id: "hol-goat-plush", src: "assets/decor/holiday/goat_plush.webp", size: [350, 460], width: 75, name: "Goat plush", group: "holiday-krampus" },
+    { id: "hol-kwanzaa-kinara", src: "assets/decor/holiday/kwanzaa_kinara.webp", size: [460, 325], width: 110, name: "Kinara", group: "holiday-kwanzaa" },
+    { id: "hol-unity-cup", src: "assets/decor/holiday/unity_cup.webp", size: [411, 460], width: 60, name: "Unity cup", group: "holiday-kwanzaa" },
+    { id: "hol-mkeka-mat", src: "assets/decor/holiday/mkeka_mat.webp", size: [460, 319], width: 120, name: "Mkeka mat", group: "holiday-kwanzaa" },
+    { id: "hol-kwanzaa-corn", src: "assets/decor/holiday/kwanzaa_corn.webp", size: [268, 460], width: 55, name: "Ears of corn", group: "holiday-kwanzaa" },
+    { id: "hol-harvest-basket", src: "assets/decor/holiday/harvest_basket.webp", size: [352, 460], width: 85, name: "Harvest basket", group: "holiday-kwanzaa" },
+    { id: "hol-harvest-fruit-bowl", src: "assets/decor/holiday/harvest_fruit_bowl.webp", size: [429, 460], width: 90, name: "Bowl of fruit", group: "holiday-kwanzaa" },
+    { id: "hol-kwanzaa-gift", src: "assets/decor/holiday/kwanzaa_gift.webp", size: [460, 332], width: 75, name: "Kwanzaa gift", group: "holiday-kwanzaa" },
+    { id: "hol-kwanzaa-cushion", src: "assets/decor/holiday/kwanzaa_cushion.webp", size: [460, 448], width: 90, name: "Kwanzaa cushion", group: "holiday-kwanzaa" },
+    { id: "hol-midnight-clock", src: "assets/decor/holiday/midnight_clock.webp", size: [460, 372], width: 110, name: "Midnight clock", group: "holiday-new-year" },
+    { id: "hol-new-year-star-garland", src: "assets/decor/holiday/new_year_star_garland.webp", size: [560, 159], width: 260, name: "Gold star garland", group: "holiday-new-year" },
+    { id: "hol-new-year-wreath", src: "assets/decor/holiday/new_year_wreath.webp", size: [392, 460], width: 120, name: "New Year wreath", group: "holiday-new-year" },
+    { id: "hol-pocket-watch", src: "assets/decor/holiday/pocket_watch.webp", size: [388, 460], width: 60, name: "Pocket watch", group: "holiday-new-year" },
+    { id: "hol-new-year-party-hat", src: "assets/decor/holiday/new_year_party_hat.webp", size: [308, 460], width: 50, name: "Party hat", group: "holiday-new-year" },
+    { id: "hol-new-year-gift", src: "assets/decor/holiday/new_year_gift.webp", size: [415, 460], width: 70, name: "New Year gift", group: "holiday-new-year" },
+    { id: "hol-victorian-candleholder", src: "assets/decor/holiday/victorian_candleholder.webp", size: [355, 460], width: 75, name: "Victorian candleholder", group: "holiday-new-year" },
+    { id: "hol-winter-ghost-portrait", src: "assets/decor/holiday/winter_ghost_portrait.webp", size: [344, 460], width: 110, name: "Winter ghost portrait", group: "holiday-new-year" },
+    { id: "hol-snowman", src: "assets/decor/holiday/snowman.webp", size: [333, 460], width: 120, name: "Snowman", group: "holiday-winter" },
+    { id: "hol-snowy-pine", src: "assets/decor/holiday/snowy_pine.webp", size: [294, 460], width: 120, name: "Snowy pine", group: "holiday-winter" },
+    { id: "hol-winter-sled", src: "assets/decor/holiday/winter_sled.webp", size: [460, 172], width: 150, name: "Wooden sled", group: "holiday-winter" },
+    { id: "hol-winter-armchair", src: "assets/decor/holiday/winter_armchair.webp", size: [460, 456], width: 180, name: "Winter armchair", group: "holiday-winter" },
+    { id: "hol-snowflake", src: "assets/decor/holiday/snowflake.webp", size: [303, 460], width: 80, name: "Snowflake", group: "holiday-winter" },
+    { id: "hol-mittens", src: "assets/decor/holiday/mittens.webp", size: [460, 460], width: 100, name: "Mittens", group: "holiday-winter" },
+    { id: "hol-cocoa-mug", src: "assets/decor/holiday/cocoa_mug.webp", size: [460, 425], width: 60, name: "Mug of cocoa", group: "holiday-winter" },
+    { id: "hol-snowy-cottage", src: "assets/decor/holiday/snowy_cottage.webp", size: [414, 460], width: 95, name: "Snowy cottage", group: "holiday-winter" },
+    { id: "hol-yule-log", src: "assets/decor/holiday/yule_log.webp", size: [460, 315], width: 120, name: "Yule log", group: "holiday-yule" },
+    { id: "hol-yule-wreath", src: "assets/decor/holiday/yule_wreath.webp", size: [460, 444], width: 120, name: "Yule wreath", group: "holiday-yule" },
+    { id: "hol-solstice-sun-plaque", src: "assets/decor/holiday/solstice_sun_plaque.webp", size: [405, 460], width: 110, name: "Solstice sun plaque", group: "holiday-yule" },
+    { id: "hol-solstice-lantern", src: "assets/decor/holiday/solstice_lantern.webp", size: [243, 460], width: 60, name: "Solstice lantern", group: "holiday-yule" },
+    { id: "hol-winter-herb-bundle", src: "assets/decor/holiday/winter_herb_bundle.webp", size: [228, 460], width: 70, name: "Winter herb bundle", group: "holiday-yule" },
+    { id: "hol-orange-cinnamon-bundle", src: "assets/decor/holiday/orange_cinnamon_bundle.webp", size: [460, 335], width: 85, name: "Oranges and cinnamon", group: "holiday-yule" },
+    { id: "hol-pinecone-bowl", src: "assets/decor/holiday/pinecone_bowl.webp", size: [442, 460], width: 85, name: "Bowl of pinecones", group: "holiday-yule" },
+    { id: "hol-evergreen-pitcher", src: "assets/decor/holiday/evergreen_pitcher.webp", size: [311, 460], width: 75, name: "Evergreen pitcher", group: "holiday-yule" }
 ];
 
 /*
@@ -679,6 +763,37 @@ function heightRange(area) {
 
 }
 
+// The database doesn't have shelf_id and shelf_row yet
+// (sql/shelf-pieces.sql).
+function isAnchorRefused(error) {
+    return /shelf_(id|row)/.test(`${error?.message || ""} ${error?.details || ""}`);
+}
+
+// Measured from the top of the bookcase again, the old way.
+function unanchor(piece) {
+
+    if (anchoredOnShelf(piece)) {
+        piece.position_y = Number(((shelfTop(piece) / SHELF_SPAN) * 100).toFixed(2));
+    }
+
+    delete piece.shelf_id;
+    delete piece.shelf_row;
+
+}
+
+// What a piece remembers about its shelf, for saving.
+function anchorValues(piece) {
+
+    if (!shelfAnchors) {
+        return {};
+    }
+
+    return anchoredOnShelf(piece)
+        ? { shelf_id: piece.shelf_id || null, shelf_row: piece.shelf_row }
+        : { shelf_id: null, shelf_row: null };
+
+}
+
 // The database hasn't taken the new heights yet (sql/wall.sql).
 function isHeightRefused(error) {
     return error?.code === "23514" && /position_y/.test(error.message || "");
@@ -691,7 +806,7 @@ function topFor(piece) {
     }
 
     if (piece.room_area === "shelf") {
-        return `${(piece.position_y * SHELF_SPAN) / 100}px`;
+        return `${shelfTop(piece)}px`;
     }
 
     // Out on a deep floor: past 100 is a share of the floor's
@@ -836,6 +951,148 @@ function crownHeight() {
     return room?.querySelector(".bookcase-body")?.offsetTop || 0;
 }
 
+
+/*
+    A piece on the shelves remembers which shelf it's on and
+    which of that shelf's rows (shelf_id, shelf_row), and its
+    height (position_y) is measured from the top of that row.
+    Books come and go, and a narrower bookcase wraps them into
+    more rows, so shelves move up and down; the piece moves with
+    its shelf instead of staying at a fixed distance from the
+    top of the bookcase. A piece saved before this (shelf_row
+    empty) is still measured from the top of the bookcase, until
+    it's moved.
+
+    Until the database has these columns (sql/shelf-pieces.sql),
+    pieces are saved the old way.
+*/
+let shelfAnchors = true;
+
+// A piece's height on its row: a little above the row's top (a
+// tall piece leaning up) to well below it.
+const ROW_RANGE = [-40, 100];
+
+const anchoredOnShelf = (piece) =>
+    piece.room_area === "shelf" && piece.shelf_row !== null && piece.shelf_row !== undefined;
+
+// The row of books level with a point on the screen.
+function shelfRowAt(y) {
+
+    const rows =
+        [...(room?.querySelectorAll(".bookcase-body .shelf-unit[data-shelf-id] > .shelf-row") || [])]
+            .map((row) => ({ row, box: row.getBoundingClientRect() }));
+
+    if (!rows.length) {
+        return null;
+    }
+
+    const found =
+        rows.find(({ box }) => y >= box.top && y < box.bottom)
+        || rows.reduce((best, item) => (Math.abs((item.box.top + item.box.bottom) / 2 - y) < Math.abs((best.box.top + best.box.bottom) / 2 - y) ? item : best));
+
+    const unit =
+        found.row.closest(".shelf-unit");
+
+    return {
+        shelfId: unit.dataset.shelfId,
+        row: [...unit.querySelectorAll(":scope > .shelf-row")].indexOf(found.row),
+        top: found.box.top
+    };
+
+}
+
+// Where a shelf's row starts, in the shelf layer's pixels (from
+// the top of the bookcase, before the shelves slide). A shelf
+// that's gone puts its pieces on the first shelf; a row that's
+// gone (a wider bookcase needs fewer) puts them on its last row.
+function rowTop(shelfId, rowIndex) {
+
+    const body =
+        room?.querySelector(".bookcase-body");
+
+    const units =
+        [...(body?.querySelectorAll(".shelf-unit[data-shelf-id]") || [])];
+
+    if (!units.length) {
+        return null;
+    }
+
+    const unit =
+        units.find((item) => item.dataset.shelfId === shelfId) || units[0];
+
+    const rows =
+        unit.querySelectorAll(":scope > .shelf-row");
+
+    const row =
+        rows[Math.min(Math.max(0, Number(rowIndex) || 0), rows.length - 1)];
+
+    return body.offsetTop + unit.offsetTop + (row ? row.offsetTop : 0);
+
+}
+
+// A piece's height in the shelf layer, in pixels.
+function shelfTop(piece) {
+
+    const base =
+        anchoredOnShelf(piece) ? rowTop(piece.shelf_id, piece.shelf_row) : 0;
+
+    return (base ?? 0) + (piece.position_y * SHELF_SPAN) / 100;
+
+}
+
+// The shelves were drawn again (books added or moved, or the
+// bookcase changed width): put their pieces back on their rows.
+function followRows() {
+
+    if (!room) {
+        return;
+    }
+
+    const crown =
+        crownHeight();
+
+    const misplaced =
+        pieces.some((piece) => {
+
+            if (!anchoredOnShelf(piece)) {
+                return false;
+            }
+
+            const element =
+                room.querySelector(`[data-decor-id="${piece.id}"]`);
+
+            const onCrown =
+                Boolean(element?.closest(".decor-layer[data-area=crown]"));
+
+            return !element || onCrown !== (shelfTop(piece) < crown);
+
+        });
+
+    // A piece that has to change layer: draw them all again.
+    if (misplaced) {
+        draw();
+        return;
+    }
+
+    pieces.forEach((piece) => {
+
+        if (anchoredOnShelf(piece)) {
+
+            const element =
+                room.querySelector(`[data-decor-id="${piece.id}"]`);
+
+            if (element) {
+                element.style.top = topFor(piece);
+            }
+
+        }
+
+    });
+
+    followShelves();
+
+}
+
 // The pieces up on the crown, which stay put while the shelves
 // slide (measured from the top of the bookcase, like the rest).
 function crownLayer() {
@@ -951,7 +1208,7 @@ function draw() {
                 crownHeight();
 
             const onCrown =
-                list.filter((piece) => (piece.position_y * SHELF_SPAN) / 100 < crown);
+                list.filter((piece) => shelfTop(piece) < crown);
 
             const still =
                 crownLayer();
@@ -1045,7 +1302,7 @@ function drawBarNow() {
         <div class="arrange-bar__tabs" role="tablist" aria-label="Parts of the room">
             ${DECOR_TABS.map((tab) => html`
                 <button class="arrange-bar__tab ${tab.id === paletteGroup ? "is-current" : ""}" type="button" role="tab" aria-selected="${String(tab.id === paletteGroup)}" data-decor-group="${tab.id}">
-                    <img src="assets/decor/painted/${tab.icon}.webp?v=__VERSION__" alt="" draggable="false">
+                    <img src="assets/decor/${tab.icon.includes("/") ? tab.icon : `painted/${tab.icon}`}.webp?v=__VERSION__" alt="" draggable="false">
                     <span>${tab.name}</span>
                 </button>
             `)}
@@ -1215,7 +1472,8 @@ async function duplicate(piece) {
                 position_y: piece.position_y,
                 scale: piece.scale,
                 rotation: piece.rotation,
-                z_index: Math.min(50, piece.z_index + 1)
+                z_index: Math.min(50, piece.z_index + 1),
+                ...anchorValues(piece)
             });
 
         const copy = {
@@ -1424,7 +1682,8 @@ function saveSoon(piece) {
                 position_y: latest.position_y,
                 scale: latest.scale,
                 rotation: latest.rotation,
-                z_index: latest.z_index
+                z_index: latest.z_index,
+                ...anchorValues(latest)
             });
 
             try {
@@ -1434,6 +1693,17 @@ function saveSoon(piece) {
             }
 
             catch (error) {
+
+                if (isAnchorRefused(error)) {
+
+                    // Measured the old way for now (sql/shelf-pieces.sql).
+                    shelfAnchors = false;
+                    pieces.forEach(unanchor);
+                    adjust(latest, {});
+
+                    return;
+
+                }
 
                 if (!isHeightRefused(error)) {
                     toastError(error, "That decoration didn't save. Please try again.");
@@ -1628,6 +1898,9 @@ function positionIn(area, pointX, pointY) {
     let box =
         layerFor(area).getBoundingClientRect();
 
+    let onCrown =
+        false;
+
     // Over the crown, a piece stays with the crown however far the
     // shelves have slid, so it's measured from the bookcase's top.
     if (area === "shelf") {
@@ -1637,6 +1910,7 @@ function positionIn(area, pointX, pointY) {
 
         if (still && y - still.top < crownHeight() * caseZoom()) {
             box = still;
+            onCrown = true;
         }
 
     }
@@ -1663,9 +1937,28 @@ function positionIn(area, pointX, pointY) {
         };
     }
 
+    // On the shelves (below the crown): which shelf and row, and
+    // how far down that row.
+    if (area === "shelf" && !onCrown && shelfAnchors) {
+
+        const anchor =
+            shelfRowAt(y);
+
+        if (anchor) {
+            return {
+                position_x: Number(clamp(((x - box.left) / box.width) * 100, 0, 100).toFixed(2)),
+                position_y: Number(clamp(((y - anchor.top) / height) * 100, ...ROW_RANGE).toFixed(2)),
+                shelf_id: anchor.shelfId,
+                shelf_row: anchor.row
+            };
+        }
+
+    }
+
     return {
         position_x: Number(clamp(((x - box.left) / box.width) * 100, 0, 100).toFixed(2)),
-        position_y: Number(clamp(((y - box.top) / height) * 100, ...heightRange(area)).toFixed(2))
+        position_y: Number(clamp(((y - box.top) / height) * 100, ...heightRange(area)).toFixed(2)),
+        ...(area === "shelf" && shelfAnchors ? { shelf_id: null, shelf_row: null } : {})
     };
 
 }
@@ -1703,6 +1996,11 @@ async function addPiece(assetId, spot = spotInView()) {
 
         const saved =
             await createRow("decorations", row()).catch((error) => {
+                if (isAnchorRefused(error)) {
+                    // Measured the old way for now (sql/shelf-pieces.sql).
+                    shelfAnchors = false;
+                    return createRow("decorations", row());
+                }
                 if (!isHeightRefused(error)) throw error;
                 // As high as the database allows for now (sql/wall.sql).
                 wholeWall = false;
@@ -1750,7 +2048,7 @@ async function addPiece(assetId, spot = spotInView()) {
    row, so later steps follow it by its new id.
 ========================================================= */
 
-const KEPT = ["room_area", "position_x", "position_y", "scale", "rotation", "z_index", "decoration_type"];
+const KEPT = ["room_area", "position_x", "position_y", "scale", "rotation", "z_index", "decoration_type", "shelf_id", "shelf_row"];
 
 const history = { done: [], undone: [] };
 
@@ -1847,7 +2145,8 @@ async function putBack(row) {
         position_y: row.position_y,
         scale: row.scale,
         rotation: row.rotation,
-        z_index: row.z_index
+        z_index: row.z_index,
+        ...anchorValues(row)
     };
 
     const saved =
@@ -2006,7 +2305,7 @@ function adjust(piece, change) {
     piece.rotation = Number(clamp(piece.rotation, -180, 180).toFixed(1));
     piece.z_index = clamp(Math.round(piece.z_index), 0, 50);
     piece.position_x = Number(clamp(piece.position_x, 0, 100).toFixed(2));
-    piece.position_y = Number(clamp(piece.position_y, ...heightRange(piece.room_area)).toFixed(2));
+    piece.position_y = Number(clamp(piece.position_y, ...(anchoredOnShelf(piece) ? ROW_RANGE : heightRange(piece.room_area))).toFixed(2));
 
     const element =
         room.querySelector(`[data-decor-id="${piece.id}"]`);
@@ -3072,6 +3371,22 @@ export async function startDecorations(container, themeId) {
 
     room.querySelector(".bookcase-body")?.addEventListener("scroll", follow, { passive: true });
     window.addEventListener("resize", follow);
+
+    // When the shelves are drawn again, their pieces go back on
+    // their rows.
+    const body =
+        room.querySelector(".bookcase-body");
+
+    if (body && "MutationObserver" in window) {
+
+        let reflowing = 0;
+
+        new MutationObserver(() => {
+            cancelAnimationFrame(reflowing);
+            reflowing = requestAnimationFrame(followRows);
+        }).observe(body, { childList: true });
+
+    }
 
     document.addEventListener("novellow:appearance", (event) => {
 
