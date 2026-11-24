@@ -23,7 +23,7 @@ import { html, raw, render, clamp, debounce } from "../core/helpers.js?v=__VERSI
 import { art, toast, toastError } from "../core/ui.js?v=__VERSION__";
 import { takeRoomPicture } from "./capture.js?v=__VERSION__";
 import { paintedFx, isSnowGlobe } from "./painted-fx.js?v=__VERSION__";
-import { setFixtureRows, roomSectionMarkup, roomSummary, onRoomPanelClick, dragWindow, dragRug, dragCase, roomBox, builtInAt, builtInElements, toggleBuiltIn } from "./fixtures.js?v=__VERSION__";
+import { setFixtureRows, roomSectionMarkup, roomSummary, onRoomPanelClick, dragWindow, dragRug, dragCase, sizeCase, roomBox, builtInAt, builtInElements, toggleBuiltIn } from "./fixtures.js?v=__VERSION__";
 
 
 /*
@@ -80,6 +80,8 @@ export const DECOR_GROUPS = [
 */
 
 export const PIECE_KINDS = [
+    // Every piece of the painted collections, set by set.
+    { id: "collections", name: "Collections", icon: "set-cottage-snowglobe" },
     { id: "furniture", name: "Furniture", icon: "art-armchair-plum" },
     { id: "lights", name: "Lights", icon: "art-fringed-lamp" },
     { id: "wall", name: "Wall", icon: "art-ghost-moon-portrait" },
@@ -1033,7 +1035,7 @@ let panelMode = "pieces";
 let pieceKind = "furniture";
 let pieceStyle = "";
 let pieceHoliday = "";
-let roomOpen = "wallpaper";
+let roomOpen = "collection";
 
 try {
     const kept = JSON.parse(localStorage.getItem(PANEL_KEY) || "{}") || {};
@@ -1493,6 +1495,8 @@ function drawBarNow() {
 
         bar.addEventListener("click", onBarClick);
         bar.addEventListener("pointerdown", onPalettePointerDown);
+        bar.addEventListener("input", onCaseSize);
+        bar.addEventListener("change", onCaseSize);
         bar.addEventListener("input", onPaletteSearch);
 
         // Leave room under the page for the tray on a phone.
@@ -1611,6 +1615,15 @@ function piecesMarkup() {
                 `)}
             </div>
 
+            ${pieceKind === "collections" ? html`
+                <div class="piece-styles piece-styles--holidays" role="group" aria-label="Collection">
+                    <button class="piece-style ${pieceHoliday ? "" : "is-current"}" type="button" aria-pressed="${String(!pieceHoliday)}" data-piece-holiday="">Every collection</button>
+                    ${PIECE_COLLECTIONS.map((group) => html`
+                        <button class="piece-style ${group.id === pieceHoliday ? "is-current" : ""}" type="button" aria-pressed="${String(group.id === pieceHoliday)}" data-piece-holiday="${group.id}">${group.name}</button>
+                    `)}
+                </div>
+                <p class="arrange-bar__hint">Each collection's wallpaper, ceiling, window and bookcase are in The room → Whole collection.</p>
+            ` : html`
             <div class="piece-styles" role="group" aria-label="Style">
                 <button class="piece-style ${pieceStyle ? "" : "is-current"}" type="button" aria-pressed="${String(!pieceStyle)}" data-piece-style="">All styles</button>
                 ${PIECE_STYLES.map((style) => html`
@@ -1626,6 +1639,7 @@ function piecesMarkup() {
                     `)}
                 </div>
             ` : ""}
+            `}
 
         </div>
 
@@ -1689,6 +1703,10 @@ function listMarkup() {
 
     const fits = (asset) => {
         const entry = catalogueEntry(asset);
+        if (pieceKind === "collections") {
+            return Boolean(entry.collection) && (!pieceHoliday || entry.collection === pieceHoliday);
+        }
+
         return entry.kind === pieceKind
             && (!pieceStyle || entry.style === pieceStyle)
             && (!pieceHoliday || entry.sub === pieceHoliday);
@@ -1727,6 +1745,20 @@ function listMarkup() {
     </div>`;
 
 }
+
+// Decorate → The room → Bookcase → Size: it grows as the slider
+// moves and is saved when let go.
+function onCaseSize(event) {
+
+    const slider =
+        event.target.closest?.("[data-case-size]");
+
+    if (slider) {
+        sizeCase(slider.value, { persist: event.type === "change" });
+    }
+
+}
+
 
 function onPaletteSearch(event) {
 
@@ -3023,6 +3055,12 @@ function onBarClick(event) {
     if (filter) {
 
         if (filter.dataset.pieceKind) {
+            // Collections have their own choices; other kinds start
+            // from every style.
+            if ((filter.dataset.pieceKind === "collections") !== (pieceKind === "collections")) {
+                pieceStyle = "";
+                pieceHoliday = "";
+            }
             pieceKind = filter.dataset.pieceKind;
         }
 
@@ -4039,8 +4077,9 @@ function isGlobePiece(element) {
 }
 
 function stillness() {
-    return document.documentElement.classList.contains("reduce-motion")
-        || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Settings → Keep things still (the room's own life doesn't
+    // follow the device's setting).
+    return document.documentElement.classList.contains("reduce-motion");
 }
 
 export function shakeGlobe(element) {
