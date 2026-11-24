@@ -170,6 +170,12 @@ function buildWindow() {
         return;
     }
 
+    // The view outside the collections' windows: a layer of its
+    // own behind the frame (css/themes.css), drifting slowly.
+    wall.querySelector(".moon-window")?.insertAdjacentHTML("beforebegin", `
+        <div class="window-view" aria-hidden="true"><span class="window-view__scene"></span></div>
+    `);
+
     // The arch of the glass, in the window's own proportions.
     wall.insertAdjacentHTML("beforeend", `
         <svg class="window-clip-defs" width="0" height="0" aria-hidden="true" focusable="false">
@@ -183,6 +189,8 @@ function buildWindow() {
             <span class="window-weather__drop" style="left: 22%; animation-delay: -1s"></span>
             <span class="window-weather__drop" style="left: 47%; animation-delay: -4s"></span>
             <span class="window-weather__drop" style="left: 71%; animation-delay: -2.5s"></span>
+            <span class="window-weather__snow"></span>
+            <span class="window-weather__snow window-weather__snow--near"></span>
         </div>
     `);
 
@@ -323,7 +331,12 @@ const HAPPENINGS = {
 
     },
 
-    lightning: () => briefly(windowWeather, "is-lightning", 900),
+    // Only in a storm: never under clear skies or in the snow.
+    lightning: () => {
+        if (!["clear", "snow"].includes(root().dataset.weather)) {
+            briefly(windowWeather, "is-lightning", 900);
+        }
+    },
 
     leaf: () => {
 
